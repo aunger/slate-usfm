@@ -1,17 +1,20 @@
 import React from "react";
-import {Value} from "slate"
+import {Value} from "slate";
 import {Editor} from "slate-react";
-import usfmjs from "usfm-js"
-import {identity, pathRule, transform} from "json-transforms"
+import usfmjs from "usfm-js";
+import {identity, pathRule, transform} from "json-transforms";
+import "./UsfmEditor.css";
 
 /**
  * Simple pass-through to slate Editor for now....
  */
 const UsfmEditor = React.forwardRef(({plugins, usfmString, ...props}, ref) => {
         const value = deserialize(usfmString);
+        const amendedPlugins = plugins ? plugins.concat(UsfmRenderingPlugin()) : [UsfmRenderingPlugin()];
+
         return (
             <Editor
-                plugins={plugins}
+                plugins={amendedPlugins}
                 value={value}
                 {...props}
                 // onChange={handleChange}
@@ -21,6 +24,46 @@ const UsfmEditor = React.forwardRef(({plugins, usfmString, ...props}, ref) => {
         );
     }
 );
+
+function UsfmRenderingPlugin(options) {
+    function numberClassNames(node) {
+        const isFront = node.text === "front";
+        const isOne = node.text === "1";
+        return isFront ? "Front" : isOne ? "One" : "";
+    }
+
+    function ChapterNumberNode(props) {
+        const className = `ChapterNumber ${numberClassNames(props.node)}`
+        return (
+            <h2 {...props.attributes} className={className}>
+                {props.children}
+            </h2>
+        )
+    }
+
+    function VerseNumberNode(props) {
+        const className = `VerseNumber ${numberClassNames(props.node)}`
+        return (
+            <sup {...props.attributes} className={className}>
+                {props.children}
+            </sup>
+        )
+    }
+
+    return {
+        renderInline(props, editor, next) {
+            //const { node, attributes, children } = props;
+            switch (props.node.type) {
+                case 'chapterNumber':
+                    return <ChapterNumberNode {...props} />;
+                case 'verseNumber':
+                    return <VerseNumberNode {...props} />;
+                default:
+                    return next()
+            }
+        }
+    }
+}
 
 // Convert chapter/verse objects to arrays
 const objectToArrayRules = [
@@ -90,7 +133,7 @@ const slateRules = [
         d => ({
             "object": "block",
             "type": "chapter",
-            "data": { "source": d.context.source },
+            "data": {"source": d.context.source},
             "nodes": [chapterNumberNode(d.match)]
                 .concat(d.runner(d.context.verses))
         })
@@ -100,7 +143,7 @@ const slateRules = [
         d => ({
             "object": "inline",
             "type": "verse",
-            "data": { "source": d.context.source },
+            "data": {"source": d.context.source},
             "nodes": [verseNumberNode(d.match)]
                 .concat(d.runner(d.context.nodes))
         })
@@ -110,7 +153,7 @@ const slateRules = [
         d => ({
             "object": "inline",
             "type": d.match,
-            "data": { source: d.context },
+            "data": {source: d.context},
             "nodes": [textNode(d.context.text)]
         })
     ),

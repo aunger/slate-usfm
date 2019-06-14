@@ -1,0 +1,22 @@
+.Front {
+    display: none;
+}
+
+.ChapterNumber {
+    display: inline;
+}
+
+.ChapterNumber:after,.VerseNumber:after {
+    content: "\00a0";
+}
+
+.VerseNumber {
+}
+
+/*.VerseNumber:after {*/
+/*    content: "\00a0";*/
+/*}*/
+
+.VerseNumber.One {
+    display: none;
+}
