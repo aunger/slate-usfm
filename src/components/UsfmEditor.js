@@ -29,10 +29,12 @@ const objectToArrayRules = [
         d => Object.assign({}, d.context, {
             chapters: Object.entries(d.match)
                 .map(e => ({
+                    source: e[1],
                     chapterNumber: e[0],
                     sort: (+e[0] || 0),
                     verses: Object.entries(e[1])
                         .map(f => ({
+                            source: f[1],
                             verseNumber: f[0],
                             sort: (+f[0] || 0),
                             nodes: d.runner(f[1].verseObjects)
@@ -78,6 +80,8 @@ const slateRules = [
             "object": "block",
             "type": "book",
             "data": {},
+            // d.runner() strangely returns an array if multiple children, otherwise an object. The [].concat
+            // trick turns either case into an array.
             "nodes": [].concat(d.runner())
         })
     ),
@@ -86,8 +90,9 @@ const slateRules = [
         d => ({
             "object": "block",
             "type": "chapter",
-            "data": {},
-            "nodes": [chapterNumberNode(d.match), ...(d.runner(d.context.verses))]
+            "data": { "source": d.context.source },
+            "nodes": [chapterNumberNode(d.match)]
+                .concat(d.runner(d.context.verses))
         })
     ),
     pathRule(
@@ -95,8 +100,9 @@ const slateRules = [
         d => ({
             "object": "inline",
             "type": "verse",
-            "data": {},
-            "nodes": [verseNumberNode(d.match), ...(d.runner(d.context.nodes))]
+            "data": { "source": d.context.source },
+            "nodes": [verseNumberNode(d.match)]
+                .concat(d.runner(d.context.nodes))
         })
     ),
     pathRule(
@@ -104,13 +110,13 @@ const slateRules = [
         d => ({
             "object": "inline",
             "type": d.match,
-            "data": {},
+            "data": { source: d.context },
             "nodes": [textNode(d.context.text)]
         })
     ),
     pathRule(
         '.text',
-            d => textNode(d.match)
+        d => textNode(d.match)
     ),
     identity
 ];
@@ -132,7 +138,7 @@ function deserialize(usfm) {
     console.debug("slateDocument", slateDocument);
 
     const value = Value.fromJSON(slateDocument);
-    console.debug("value", value);
+    console.debug("Value object", value);
     return value;
 }
 
