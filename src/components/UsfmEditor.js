@@ -33,7 +33,7 @@ function UsfmRenderingPlugin(options) {
     }
 
     function ChapterNumberNode(props) {
-        const className = `ChapterNumber ${numberClassNames(props.node)}`
+        const className = `ChapterNumber ${numberClassNames(props.node)}`;
         return (
             <h2 {...props.attributes} className={className}>
                 {props.children}
@@ -42,7 +42,7 @@ function UsfmRenderingPlugin(options) {
     }
 
     function VerseNumberNode(props) {
-        const className = `VerseNumber ${numberClassNames(props.node)}`
+        const className = `VerseNumber ${numberClassNames(props.node)}`;
         return (
             <sup {...props.attributes} className={className}>
                 {props.children}
@@ -50,14 +50,32 @@ function UsfmRenderingPlugin(options) {
         )
     }
 
+    function Footnote(props) {
+        return (
+            <div {...props.attributes} className="Footnote">
+                {props.children}
+            </div>
+        )
+    }
+
+    function trimLeadingPluses(str) {
+        return str.replace(/^\++/, '');
+    }
+
     return {
         renderInline(props, editor, next) {
             //const { node, attributes, children } = props;
-            switch (props.node.type) {
+            switch (trimLeadingPluses(props.node.type)) {
                 case 'chapterNumber':
                     return <ChapterNumberNode {...props} />;
                 case 'verseNumber':
                     return <VerseNumberNode {...props} />;
+                case 'f':
+                    return <Footnote {...props} />;
+                case 'bk':
+                    return <cite {...props} />;
+                case 'nd':
+                    return <span className="NomenDomini" {...props} />;
                 default:
                     return next()
             }
@@ -154,7 +172,12 @@ const slateRules = [
             "object": "inline",
             "type": d.match,
             "data": {source: d.context},
-            "nodes": [textNode(d.context.text)]
+            "nodes": [
+                d.context.text ? textNode(d.context.text) : null,
+                d.context.content ? textNode(d.context.content) : null
+            ]
+                .concat(d.context.children ? d.runner(d.context.children) : null)
+                .filter(el => el)
         })
     ),
     pathRule(

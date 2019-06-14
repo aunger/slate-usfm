@@ -13,10 +13,16 @@
 .VerseNumber {
 }
 
-/*.VerseNumber:after {*/
-/*    content: "\00a0";*/
-/*}*/
-
 .VerseNumber.One {
     display: none;
+}
+
+.NomenDomini {
+    font-variant: small-caps;
+}
+
+.Footnote {
+    display: inline-block;
+    outline: dashed deeppink;
+    background-color: pink;
 }

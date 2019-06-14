@@ -53,7 +53,24 @@ be baptized,” he told the people,
 “and God will forgive your sins.”
 `;
 
-const usfmString = usfmString3;
+const usfmNestedTags = `
+ \\id GEN
+ \\c 1
+ \\p
+ \\v 1 the first verse
+ \\v 2 the second verse
+ \\v 14 That is why \\bk The Book of 
+ the \\+nd Lord\\+nd*'s Battles\\bk* 
+ speaks of “...the town of Waheb in 
+ the area of Suphah
+ `;
 
-(<UsfmEditor usfmString={usfmString} />);
+const usfmString = usfmNestedTags;
+
+(
+    <div>
+        <UsfmEditor usfmString={usfmString} />
+        <pre>{usfmString}</pre>
+    </div>
+);
 ```
