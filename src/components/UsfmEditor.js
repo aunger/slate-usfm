@@ -50,6 +50,14 @@ function UsfmRenderingPlugin(options) {
         )
     }
 
+    function BookIdNode(props) {
+        return (
+            <div {...props.attributes} className="BookId">
+                {props.children}
+            </div>
+        )
+    }
+
     function Footnote(props) {
         return (
             <div {...props.attributes} className="Footnote">
@@ -63,6 +71,8 @@ function UsfmRenderingPlugin(options) {
             //const { node, attributes, children } = props;
             const [, pluses, baseTag, number] = props.node.type.match(/^(\+*)(.*?)(\d*)$/);
             switch (baseTag) {
+                case 'id':
+                    return <BookIdNode {...props} />;
                 case 'chapterNumber':
                     return <ChapterNumberNode {...props} />;
                 case 'verseNumber':
@@ -76,6 +86,8 @@ function UsfmRenderingPlugin(options) {
                 case 's':
                     const HeadingTag = `h${number || 1}`;
                     return <HeadingTag {...props} />;
+                case 'r':
+                    return <h3 {...props.attributes}><cite>{props.children}</cite></h3>;
                 default:
                     return next()
             }
@@ -134,17 +146,28 @@ function verseNumberNode(verseNumber) {
     };
 }
 
+function headersNode(sourceArray, runner) {
+    return {
+        "object": "block",
+        "type": "headers",
+        "data": { "source": sourceArray },
+        "nodes": [].concat(runner(sourceArray))
+    };
+}
+
 const slateRules = [
     pathRule(
         '.chapters',
-        d => ({
-            "object": "block",
-            "type": "book",
-            "data": {},
-            // d.runner() strangely returns an array if multiple children, otherwise an object. The [].concat
-            // trick turns either case into an array.
-            "nodes": [].concat(d.runner())
-        })
+        d => {
+            const processedHeaders = headersNode(d.context.headers, d.runner);
+            const processedChapters = d.runner(d.context.chapters);
+            return ({
+                "object": "block",
+                "type": "book",
+                "data": {},
+                "nodes": [processedHeaders].concat(processedChapters)
+            });
+        }
     ),
     pathRule(
         '.chapterNumber',

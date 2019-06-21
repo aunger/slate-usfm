@@ -27,10 +27,8 @@ and Jacob,
 ["usfmString3", `
 \\id JHN
 \\c 1
-\\s1 The Preaching of John the 
-Baptist
-\\r (Matthew 3.1-12; Luke 3.1-18; 
-John 1.19-28)
+\\s1 The Preaching of John the Baptist
+\\r (Matthew 3.1-12; Luke 3.1-18; John 1.19-28)
 \\p
 \\v 1 This is the Good News about 
 Jesus Christ, the Son of God.
@@ -55,16 +53,16 @@ be baptized,” he told the people,
 `],
 
 ["usfmNestedTags", `
- \\id GEN
- \\c 1
- \\p
- \\v 1 the first verse
- \\v 2 the second verse
- \\v 14 That is why \\bk The Book of 
- the \\+nd Lord\\+nd*'s Battles\\bk* 
- speaks of “...the town of Waheb in 
- the area of Suphah
- `],
+\\id GEN
+\\c 1
+\\p
+\\v 1 the first verse
+\\v 2 the second verse
+\\v 14 That is why \\bk The Book of 
+the \\+nd Lord\\+nd*'s Battles\\bk* 
+speaks of “...the town of Waheb in 
+the area of Suphah
+`],
 
 ["Isaiah 1 (be patient)", `
 \\id ISA Unlocked Literal Bible
