@@ -79,6 +79,8 @@ function UsfmRenderingPlugin(options) {
                     return <VerseNumberNode {...props} />;
                 case 'f':
                     return <Footnote {...props} />;
+                case 'p':
+                    return <p {...props} />;
                 case 'bk':
                     return <cite {...props} />;
                 case 'nd':
