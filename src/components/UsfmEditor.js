@@ -35,9 +35,9 @@ function UsfmRenderingPlugin(options) {
     function ChapterNumberNode(props) {
         const className = `ChapterNumber ${numberClassNames(props.node)}`;
         return (
-            <h2 {...props.attributes} className={className}>
+            <h1 {...props.attributes} className={className}>
                 {props.children}
-            </h2>
+            </h1>
         )
     }
 
@@ -58,14 +58,11 @@ function UsfmRenderingPlugin(options) {
         )
     }
 
-    function trimLeadingPluses(str) {
-        return str.replace(/^\++/, '');
-    }
-
     return {
         renderInline(props, editor, next) {
             //const { node, attributes, children } = props;
-            switch (trimLeadingPluses(props.node.type)) {
+            const [, pluses, baseTag, number] = props.node.type.match(/^(\+*)(.*?)(\d*)$/);
+            switch (baseTag) {
                 case 'chapterNumber':
                     return <ChapterNumberNode {...props} />;
                 case 'verseNumber':
@@ -76,6 +73,9 @@ function UsfmRenderingPlugin(options) {
                     return <cite {...props} />;
                 case 'nd':
                     return <span className="NomenDomini" {...props} />;
+                case 's':
+                    const HeadingTag = `h${number || 1}`;
+                    return <HeadingTag {...props} />;
                 default:
                     return next()
             }
