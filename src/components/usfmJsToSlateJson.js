@@ -2,6 +2,9 @@ import {identity, pathRule, transform} from "json-transforms";
 import usfmjs from "usfm-js";
 import {objectToArrayRules} from "./usfmJsStructuralTransform";
 
+const NumberTypeEnum = {"chapter": 1, "verse": 2};
+const NumberNames = new Map([ [NumberTypeEnum.chapter, "chapterNumber"], [NumberTypeEnum.verse, "verseNumber"] ]);
+
 function textNode(textString) {
     return {
         "object": "text",
@@ -10,21 +13,12 @@ function textNode(textString) {
     };
 }
 
-function chapterNumberNode(verseNumber) {
+function numberNode(numberType, number) {
     return {
         "object": "inline",
-        "type": "chapterNumber",
+        "type": NumberNames.get(numberType),
         "data": {},
-        "nodes": [textNode(verseNumber)]
-    };
-}
-
-function verseNumberNode(verseNumber) {
-    return {
-        "object": "inline",
-        "type": "verseNumber",
-        "data": {},
-        "nodes": [textNode(verseNumber)]
+        "nodes": [textNode(number)]
     };
 }
 
@@ -57,7 +51,7 @@ const slateRules = [
             "object": "block",
             "type": "chapter",
             "data": {"source": d.context.source},
-            "nodes": [chapterNumberNode(d.match)]
+            "nodes": [numberNode(NumberTypeEnum.chapter, d.match)]
                 .concat(d.runner(d.context.verses))
         })
     ),
@@ -67,7 +61,7 @@ const slateRules = [
             "object": "inline",
             "type": "verse",
             "data": {"source": d.context.source},
-            "nodes": [verseNumberNode(d.match)]
+            "nodes": [numberNode(NumberTypeEnum.verse, d.match)]
                 .concat(d.runner(d.context.nodes))
         })
     ),
