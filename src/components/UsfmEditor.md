@@ -213,6 +213,64 @@ be baptized,” he told the people,
 \\v 31 The strong man will be like tinder, and his work like a spark;
 \\q1 they will both burn together, and no one will quench them."
 \\s5
+`],
+
+["1 Chronicles 2",
+`
+\\c 2
+\\p
+\\v 1 These were the sons of Israel: Reuben, Simeon, Levi, Judah, Issachar, Zebulun,
+\\v 2 Dan, Joseph, Benjamin, Naphtali, Gad, and Asher.
+
+\\s5
+\\p
+\\v 3 Judah's sons were Er, Onan, and Shelah, who were born to him by Shua's daughter, a Canaanite woman. Er, Judah's firstborn, was wicked in the sight of Yahweh, and Yahweh killed him.
+\\v 4 Tamar, his daughter-in-law, bore him Perez and Zerah. Judah had five sons.
+
+\\s5
+\\p
+\\v 5 Perez's sons were Hezron and Hamul.
+\\p
+\\v 6 Zerah's sons were Zimri, Ethan, Heman, Kalkol, and Darda, five in all.
+\\p
+\\v 7 Karmi's son was Achar, who brought trouble on Israel when he stole what was reserved for God. \\f + \\ft Some Hebrew copies spell the name: \\fqa Achan \\fqa* instead of \\fqa Achar \\fqa* , a name which means \\fqa trouble \\fqa* . \\f*
+\\p
+\\v 8 Ethan's son was Azariah.
+
+\\s5
+\\p
+\\v 9 Hezron's sons were Jerahmeel, Ram, and Caleb.
+\\p
+\\v 10 Ram became the father of Amminadab, and Amminadab became the father of Nahshon, a leader among Judah's descendants.
+\\v 11 Nahshon became the father of Salmon, and Salmon became the father of Boaz.
+\\v 12 Boaz became the father of Obed, and Obed became the father of Jesse.
+
+\\s5
+\\p
+\\v 13 Jesse became the father of his firstborn Eliab, Abinadab the second, Shimea the third,
+\\v 14 Nethanel the fourth, Raddai the fifth,
+\\v 15 Ozem the sixth, and David the seventh.
+
+\\s5
+\\v 16 Their sisters were Zeruiah and Abigail. The sons of Zeruiah were Abishai, Joab, and Asahel, three of them.
+\\v 17 Abigail bore Amasa, whose father was Jether the Ishmaelite.
+
+\\s5 Hur
+\\p
+\\v 50 These were the descendants of Caleb. The sons of Hur the firstborn of Ephrathah: Shobal the father of Kiriath Jearim,
+\\v 51 Salma the father of Bethlehem, and Hareph the father of Beth Gader.
+
+\\s5
+\\p
+\\v 52 Shobal the father of Kiriath Jearim had descendants: Haroeh, half of the Manahathites,
+\\v 53 and the clans of Kiriath Jearim: the Ithrites, Puthites, Shumathites, and Mishraites. The Zorathites and Eshtaolites descended from these.
+
+\\s5
+\\p
+\\v 54 The descendants of Salma were Bethlehem, the Netophathites, Atroth Beth Joab, and half of the Manahathites—the Zorites,
+\\v 55 and the clans of the scribes who lived at Jabez: the Tirathites, Shimeathites, and Sucathites. These were the Kenites who came from Hammath, father of the house of Rekab.
+
+\\s5
 `]
 ]);
 
