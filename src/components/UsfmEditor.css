@@ -3,6 +3,9 @@
 }
 
 .ChapterNumber {
+    float: left;
+    font-size: 200%;
+    margin: 0;
     display: inline;
 }
 
