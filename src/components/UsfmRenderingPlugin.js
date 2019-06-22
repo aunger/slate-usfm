@@ -56,6 +56,8 @@ export function UsfmRenderingPlugin(options) {
                     return <Footnote {...props} />;
                 case 'p':
                     return <p {...props} />;
+                case 'q':
+                    return <blockquote {...props} />;
                 case 'bk':
                     return <cite {...props} />;
                 case 'nd':
