@@ -1,6 +1,7 @@
 import {identity, pathRule, transform} from "json-transforms";
 import usfmjs from "usfm-js";
 import {objectToArrayRules} from "./usfmJsStructuralTransform";
+import * as jsonPath from "./jsonPath";
 
 const NumberTypeEnum = {"chapter": 1, "verse": 2};
 const NumberTypeNames = new Map([
@@ -110,6 +111,8 @@ const slateRules = [
 export function toUsfmJsonAndSlateJson(usfm) {
     const usfmJsDocument = usfmjs.toJSON(usfm);
     console.debug("parsed", usfmJsDocument);
+
+    const path = jsonPath.build(usfmJsDocument);
 
     const restructured = transform(usfmJsDocument, objectToArrayRules);
     // console.debug("restructured", restructured);
