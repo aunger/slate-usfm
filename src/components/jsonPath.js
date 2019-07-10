@@ -4,8 +4,8 @@ export function build(object = {}) {
     const map = new Map([]);
     function f(o, oPath) {
         map.set(o, oPath);
-        if (Array.isArray(o)) o.forEach(([x, i]) => f(x, oPath.concat(i)));
-        else if (o === Object(o)) for([k, v] of o.entries()) f(v, oPath.concat(k));
+        if (Array.isArray(o)) o.forEach((x, i) => f(x, oPath.concat(i)));
+        else if (o && o instanceof Object) for(const [k, v] of Object.entries(o)) f(v, oPath.concat(k));
     }
     f(object, []);
     return (queryObject) => map.get(queryObject);
