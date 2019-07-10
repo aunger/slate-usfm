@@ -57,19 +57,21 @@ const nodeRenderers = {
     },
 };
 
+function renderInline(props, editor, next) {
+    const {isFocused, isSelected, attributes, children, node, parent, readOnly, editor: propsEditor} = props;
+    const {pluses, baseTag, number} = destructureTag(node);
+
+    const renderer = nodeRenderers[baseTag];
+    if (renderer) {
+        return renderer(props);
+    } else {
+        return next();
+    }
+}
+
 export function UsfmRenderingPlugin(options) {
     return {
-        renderInline: function (props, editor, next) {
-            const {isFocused, isSelected, attributes, children, node, parent, readOnly, editor: propsEditor} = props;
-            const {pluses, baseTag, number} = destructureTag(node);
-
-            const componentBuilder = nodeRenderers.get(baseTag);
-            if (componentBuilder) {
-                return componentBuilder(props);
-            } else {
-                return next();
-            }
-        }
+        renderInline: renderInline
     };
 }
 
