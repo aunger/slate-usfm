@@ -36,12 +36,12 @@ function chapterBody(children) {
     };
 }
 
-function verseBody(children) {
+function verseBody(sourceArray, runner) {
     return {
         "object": "inline",
         "type": "verseBody",
-        "data": {},
-        "nodes": [].concat(children)
+        "data": {"source": sourceArray},
+        "nodes": [].concat(runner(sourceArray))
     };
 }
 
@@ -110,7 +110,7 @@ export const slateRules = [
             "data": {"source": d.context.source},
             "nodes": [
                 verseNumber(d.context),
-                verseBody(d.runner(d.context.nodes))
+                verseBody(d.context.nodes, d.runner)
             ]
         })
     ),
