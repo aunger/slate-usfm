@@ -106,11 +106,8 @@ class Schema {
                 ],
             },
             verseNumber: this.numberRule,
-            front: {
-                // isVoid: true
-            },
-            p: {
-                // isVoid: true,
+            f: {
+                isVoid: true,
             },
             id: {
                 isVoid: true,

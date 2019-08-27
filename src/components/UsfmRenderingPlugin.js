@@ -1,4 +1,5 @@
 import React from "react";
+import Footnote from "./Footnote";
 
 export function UsfmRenderingPlugin(options) {
     return {
@@ -73,7 +74,7 @@ const nodeRenderers = {
 
     /** Footnote */
     'f': props =>
-        <div {...props.attributes} className="Footnote">{props.children}</div>,
+        <Footnote {...props}/>,
 
     /** Paragraph */
     'p': props =>
