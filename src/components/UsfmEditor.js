@@ -14,6 +14,7 @@ import {verseNumberName} from "./numberTypes";
 import {HoverMenu} from "../hoveringMenu/HoveringMenu"
 import {handleKeyPress} from "./keyHandlers";
 import {Normalize} from "./normalizeNode";
+import { handleOnClick } from "./onClickHandlers";
 
 /**
  * A WYSIWYG editor component for USFM
@@ -95,6 +96,9 @@ class UsfmEditor extends React.Component {
                 onChange={this.handleChange}
                 renderEditor={this.renderEditor}
                 onKeyDown={this.onKeyDown}
+                // onClick={this.onClick}
+                onMouseDown={this.onClick}
+                // onDragStart={this.onClick}
             />
         );
     };
@@ -103,15 +107,44 @@ class UsfmEditor extends React.Component {
         handleKeyPress(event, editor, next)
     }
 
+    onClick = (event, editor, next) => {
+        this.setState({enableSelection: true})
+        console.log("******* Setting enableSelection to TRUE")
+        return next()
+        // handleOnClick(event, editor, next)
+    }
+
     handleChange = (change) => {
         console.info("handleChange", change);
         console.info("      handleChange operations", change.operations.toJS());
         let value = this.state.value;
+        let doit = false
         try {
+            let i = 0
             for (const op of change.operations) {
+                i++
+                if (op.type == "insert_text") {
+                    console.log("inserting")
+                }
+                if (op.type == "set_selection") {
+                    if (this.state.enableSelection) {
+                        if (change.operations.size == 1) {
+                            doit = true
+                        // } else if (change.operations.size == 4 && i == 2) {
+                        } else if (change.operations.size == 4 && i % 2 == 0 && op.newProperties.focus && op.newProperties.focus.offset == 15) {
+                            console.log("******* Setting enableSelection to FALSE")
+                            this.setState({enableSelection: false})
+                        }
+                    } else {
+                        console.log("***************** enableSelection FALSE")
+                        continue
+                    }
+                }
                 // console.debug(op.type, op.toJS());
 
                 const newValue = op.apply(value);
+
+
                 const {isDirty} = handleOperation(op, value, newValue, this.state.initialized);
                 if (isDirty) {
                     this.scheduleOnChange();
@@ -123,6 +156,14 @@ class UsfmEditor extends React.Component {
             console.warn("Operation failed; cancelling remainder of change.");
         }
         this.setState({value: value, usfmJsDocument: this.state.usfmJsDocument, initialized: true});
+        if (doit) {
+            this.editor.moveToEndOfPreviousText()
+            this.editor.moveToEndOfPreviousText()
+            // this.editor.moveAnchorToEndOfPreviousText()
+            // this.editor.moveToAnchor()
+            // this.editor.moveAnchorToEndOfPreviousText()
+            // this.editor.moveToAnchor()
+        }
     };
 
     scheduleOnChange = debounce(() => {
@@ -142,7 +183,8 @@ class UsfmEditor extends React.Component {
         plugins: (this.props.plugins || []).concat([UsfmRenderingPlugin(), SectionHeaderPlugin, Normalize()]),
         schema: new Schema(this.handlerHelpers),
         ...UsfmEditor.deserialize(this.props.usfmString),
-        initialized: false
+        initialized: false,
+        enableSelection: true
     };
 
     /**
