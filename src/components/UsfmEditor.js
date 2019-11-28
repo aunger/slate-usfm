@@ -14,7 +14,7 @@ import {verseNumberName} from "./numberTypes";
 import {HoverMenu} from "../hoveringMenu/HoveringMenu"
 import {handleKeyPress} from "./keyHandlers";
 import {Normalize} from "./normalizeNode";
-import { handleOnClick } from "./onClickHandlers";
+import { getAncestor } from "../utils/documentUtils";
 
 /**
  * A WYSIWYG editor component for USFM
@@ -97,7 +97,7 @@ class UsfmEditor extends React.Component {
                 renderEditor={this.renderEditor}
                 onKeyDown={this.onKeyDown}
                 // onClick={this.onClick}
-                onMouseDown={this.onClick}
+                onMouseDown={this.onMouseDown}
                 // onDragStart={this.onClick}
             />
         );
@@ -107,9 +107,9 @@ class UsfmEditor extends React.Component {
         handleKeyPress(event, editor, next)
     }
 
-    onClick = (event, editor, next) => {
-        this.setState({enableSelection: true})
-        console.log("******* Setting enableSelection to TRUE")
+    onMouseDown = (event, editor, next) => {
+        this.setState({enableForwardSelectionChange: true})
+        console.log("******* Setting enableForwardSelectionChange to TRUE")
         return next()
         // handleOnClick(event, editor, next)
     }
@@ -118,26 +118,40 @@ class UsfmEditor extends React.Component {
         console.info("handleChange", change);
         console.info("      handleChange operations", change.operations.toJS());
         let value = this.state.value;
-        let doit = false
         try {
-            let i = 0
             for (const op of change.operations) {
-                i++
                 if (op.type == "insert_text") {
                     console.log("inserting")
                 }
                 if (op.type == "set_selection") {
-                    if (this.state.enableSelection) {
-                        if (change.operations.size == 1) {
-                            doit = true
-                        // } else if (change.operations.size == 4 && i == 2) {
-                        } else if (change.operations.size == 4 && i % 2 == 0 && op.newProperties.focus && op.newProperties.focus.offset == 15) {
-                            console.log("******* Setting enableSelection to FALSE")
-                            this.setState({enableSelection: false})
+                    const oldPoint = value.selection.anchor
+                    const newPoint = op.newProperties.anchor
+
+                    if (oldPoint && oldPoint.path && newPoint && newPoint.path && newPoint.isAfterPoint(oldPoint)) {
+                        if (!this.state.enableForwardSelectionChange) {
+                            console.log("***************** enableForwardSelectionChange FALSE")
+                            continue
                         }
-                    } else {
-                        console.log("***************** enableSelection FALSE")
-                        continue
+                    }
+
+                    if (newPoint && newPoint.path != null && newPoint.path.some(val => val != 0)) {
+                        let current = value.document.getNode(newPoint.path)
+                        if (shouldSkipTextNode(current, value.document)) {
+                            do {
+                                current = value.document.getPreviousText(current.key)
+                            }
+                            while (current && shouldSkipTextNode(current, value.document))
+                            if (current) {
+                                this.editor.moveToEndOfNode(current)
+                                return
+                            }
+                        }
+                    }
+                    if (oldPoint && oldPoint.path && newPoint && newPoint.path && newPoint.isAfterPoint(oldPoint)) {
+                        if (this.state.enableForwardSelectionChange) {
+                            console.log("******* Setting enableForwardSelectionChange to FALSE")
+                            this.setState({enableForwardSelectionChange: false})
+                        }
                     }
                 }
                 // console.debug(op.type, op.toJS());
@@ -156,14 +170,6 @@ class UsfmEditor extends React.Component {
             console.warn("Operation failed; cancelling remainder of change.");
         }
         this.setState({value: value, usfmJsDocument: this.state.usfmJsDocument, initialized: true});
-        if (doit) {
-            this.editor.moveToEndOfPreviousText()
-            this.editor.moveToEndOfPreviousText()
-            // this.editor.moveAnchorToEndOfPreviousText()
-            // this.editor.moveToAnchor()
-            // this.editor.moveAnchorToEndOfPreviousText()
-            // this.editor.moveToAnchor()
-        }
     };
 
     scheduleOnChange = debounce(() => {
@@ -184,7 +190,7 @@ class UsfmEditor extends React.Component {
         schema: new Schema(this.handlerHelpers),
         ...UsfmEditor.deserialize(this.props.usfmString),
         initialized: false,
-        enableSelection: true
+        enableForwardSelectionChange: true
     };
 
     /**
@@ -201,5 +207,33 @@ class UsfmEditor extends React.Component {
         )
     }
 }
+
+function shouldSkipTextNode(textNode, document) {
+    // return !textNode.text.trim() && 
+    //        !textIsTextOrContentWrapperText(textNode, document)
+    const parent = getAncestor(1, textNode, document)
+    // return parent.type == "verseNumber" ||
+    //        textIsStandaloneEmptyText(textNode, parent)
+    return textIsStandaloneEmptyText(textNode, parent)
+}
+
+function nodeIsVerseNumber(node) {
+    return node.type == "verseNumber"
+}
+
+function textIsStandaloneEmptyText(textNode, parent) {
+    return !textNode.text.trim() && 
+           !nodeIsTextOrContentWrapper(parent)
+}
+
+// function textIsTextOrContentWrapperText(textNode, document) {
+//     const parent = getAncestor(1, textNode, document)
+//     return parent.type == "textWrapper" || parent.type == "contentWrapper"
+// }
+
+function nodeIsTextOrContentWrapper(node) {
+    return node.type == "textWrapper" || node.type == "contentWrapper"
+}
+
 
 export default UsfmEditor;
