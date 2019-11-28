@@ -96,9 +96,7 @@ class UsfmEditor extends React.Component {
                 onChange={this.handleChange}
                 renderEditor={this.renderEditor}
                 onKeyDown={this.onKeyDown}
-                // onClick={this.onClick}
                 onMouseDown={this.onMouseDown}
-                // onDragStart={this.onClick}
             />
         );
     };
@@ -109,9 +107,8 @@ class UsfmEditor extends React.Component {
 
     onMouseDown = (event, editor, next) => {
         this.setState({enableForwardSelectionChange: true})
-        console.log("******* Setting enableForwardSelectionChange to TRUE")
+        console.debug("     Enabling forward selection change")
         return next()
-        // handleOnClick(event, editor, next)
     }
 
     handleChange = (change) => {
@@ -120,44 +117,15 @@ class UsfmEditor extends React.Component {
         let value = this.state.value;
         try {
             for (const op of change.operations) {
-                if (op.type == "insert_text") {
-                    console.log("inserting")
-                }
                 if (op.type == "set_selection") {
-                    const oldPoint = value.selection.anchor
-                    const newPoint = op.newProperties.anchor
-
-                    if (oldPoint && oldPoint.path && newPoint && newPoint.path && newPoint.isAfterPoint(oldPoint)) {
-                        if (!this.state.enableForwardSelectionChange) {
-                            console.log("***************** enableForwardSelectionChange FALSE")
-                            continue
-                        }
-                    }
-
-                    if (newPoint && newPoint.path != null && newPoint.path.some(val => val != 0)) {
-                        let current = value.document.getNode(newPoint.path)
-                        if (shouldSkipTextNode(current, value.document)) {
-                            do {
-                                current = value.document.getPreviousText(current.key)
-                            }
-                            while (current && shouldSkipTextNode(current, value.document))
-                            if (current) {
-                                this.editor.moveToEndOfNode(current)
-                                return
-                            }
-                        }
-                    }
-                    if (oldPoint && oldPoint.path && newPoint && newPoint.path && newPoint.isAfterPoint(oldPoint)) {
-                        if (this.state.enableForwardSelectionChange) {
-                            console.log("******* Setting enableForwardSelectionChange to FALSE")
-                            this.setState({enableForwardSelectionChange: false})
-                        }
+                    let shouldSkipOperation = this.normalizeSelection(op.newProperties.anchor, value)
+                    if (shouldSkipOperation) {
+                        continue
                     }
                 }
                 // console.debug(op.type, op.toJS());
 
                 const newValue = op.apply(value);
-
 
                 const {isDirty} = handleOperation(op, value, newValue, this.state.initialized);
                 if (isDirty) {
@@ -206,34 +174,80 @@ class UsfmEditor extends React.Component {
         </React.Fragment>
         )
     }
+
+    /**
+     * Normalizes the user's selection and returns true if the set_selection
+     * operation should be skipped, false otherwise
+     */
+    normalizeSelection = (newPoint, value) => {
+        const oldPoint = value.selection.anchor
+
+        if (newPointIsAfterOldPoint(newPoint, oldPoint) &&
+            !this.state.enableForwardSelectionChange) {
+            console.debug("     Skipping set_selection forward change")
+            return true
+        }
+        if (pointHasNonzeroPath(newPoint)) {
+            const current = value.document.getNode(newPoint.path)
+            const corrected = correctSelectionBackwards(value.document, current)
+            if (corrected != current) {
+                this.editor.moveToEndOfNode(corrected)
+                return true
+            }
+        }
+        if (newPointIsAfterOldPoint(newPoint, oldPoint) &&
+            this.state.enableForwardSelectionChange) {
+            console.debug("     Disabling forward selection change")
+            this.setState({enableForwardSelectionChange: false})
+        }
+        return false
+    }
 }
 
-function shouldSkipTextNode(textNode, document) {
-    // return !textNode.text.trim() && 
-    //        !textIsTextOrContentWrapperText(textNode, document)
+function pointHasNonzeroPath(point) {
+    return point &&
+           point.path != null &&
+           point.path.some(val => val != 0)
+}
+
+/**
+ * Finds a textNode that the user is allowed to select by traversing
+ * backwards through the document tree 
+ */
+function correctSelectionBackwards(document, current) {
+    const initial = current
+    if (textIsStandaloneEmptyText(current, document)) {
+        do {
+            current = document.getPreviousText(current.key)
+        }
+        while (current && textIsStandaloneEmptyText(current, document))
+    }
+    if (!current) {
+        console.warn("Failed to correct selection")
+        return initial
+    } else {
+        return current
+    }
+}
+
+/**
+ * Returns true if the new point is after the old point.
+ * Returns false if one or both points are not initialized. 
+ */
+function newPointIsAfterOldPoint(newPoint, oldPoint) {
+    return oldPoint && oldPoint.path &&
+           newPoint && newPoint.path &&
+           newPoint.isAfterPoint(oldPoint)
+}
+
+function textIsStandaloneEmptyText(textNode, document) {
+    return !textNode.text.trim() &&
+           !textIsTextOrContentWrapperText(textNode, document)
+}
+
+function textIsTextOrContentWrapperText(textNode, document) {
     const parent = getAncestor(1, textNode, document)
-    // return parent.type == "verseNumber" ||
-    //        textIsStandaloneEmptyText(textNode, parent)
-    return textIsStandaloneEmptyText(textNode, parent)
+    return parent.type == "textWrapper" || parent.type == "contentWrapper"
 }
-
-function nodeIsVerseNumber(node) {
-    return node.type == "verseNumber"
-}
-
-function textIsStandaloneEmptyText(textNode, parent) {
-    return !textNode.text.trim() && 
-           !nodeIsTextOrContentWrapper(parent)
-}
-
-// function textIsTextOrContentWrapperText(textNode, document) {
-//     const parent = getAncestor(1, textNode, document)
-//     return parent.type == "textWrapper" || parent.type == "contentWrapper"
-// }
-
-function nodeIsTextOrContentWrapper(node) {
-    return node.type == "textWrapper" || node.type == "contentWrapper"
-}
-
 
 export default UsfmEditor;
