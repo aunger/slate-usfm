@@ -70,7 +70,7 @@ class UsfmEditor extends React.Component {
         const { fragment, selection } = value
 
         if (selection.isBlurred || selection.isCollapsed || fragment.text === '') {
-            // menu.removeAttribute('style')
+            menu.removeAttribute('style')
             return
         }
 
