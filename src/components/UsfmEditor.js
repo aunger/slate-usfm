@@ -140,7 +140,8 @@ class UsfmEditor extends React.Component {
     scheduleOnChange = debounce(() => {
         console.debug("Serializing updated USFM", this.state.usfmJsDocument);
         addTrailingNewLineToSections(this.state.usfmJsDocument)
-        const serialized = usfmjs.toUSFM(this.state.usfmJsDocument);
+        // if we don't clone the usfmJsDocument, usfmjs.toUSFM removes the front matter
+        const serialized = usfmjs.toUSFM(clonedeep(this.state.usfmJsDocument));
         const withNewlines = serialized.replace(/(\\[vps])/g, '\r\n$1');
         this.props.onChange(withNewlines);
     }, 1000);
