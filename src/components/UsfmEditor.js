@@ -8,13 +8,13 @@ import "./UsfmEditor.css";
 import {UsfmRenderingPlugin} from "./UsfmRenderingPlugin"
 import {SectionHeaderPlugin} from "./SectionHeaderPlugin"
 import {InsertParagraphPlugin} from "./keyHandlers"
-import {toUsfmJsonDocAndSlateJsonDoc} from "./jsonTransforms/usfmToSlate";
+import {toUsfmJsonDocAndSlateJsonDoc, nodeTypes} from "./jsonTransforms/usfmToSlate";
 import {handleOperation} from "./operationHandlers";
 import Schema from "./schema";
 import {verseNumberName} from "./numberTypes";
 import {HoverMenu} from "../hoveringMenu/HoveringMenu"
 import {handleKeyPress} from "./keyHandlers";
-import {Normalize} from "./normalizeNode";
+import {Normalize, isMergeWrappersAllowed} from "./normalizeNode";
 import clonedeep from "lodash/cloneDeep";
 
 /**
@@ -120,10 +120,10 @@ class UsfmEditor extends React.Component {
                     // By the time the following debug statement prints, the data will likely have changed
                     console.debug("Deep cloning data properties before split_node nested operation")
                 }
-                if (isSetSelectionAndAnchorPathDefined(op)) {
+                else if (isSetSelectionAndAnchorPathDefined(op)) {
                     correctSelectionIfNecessary(op, value, this.editor)
                 }
-                if (op.type == "merge_node") {
+                else if (isInvalidMerge(op, value.document)) {
                     console.log("Cancelling merge_node and subsequent operations")
                     shouldCollapseSelection = true
                     break
@@ -231,6 +231,23 @@ function correctSelectionIfNecessary(op, value, editor) {
     } else if (direction == 1) {
         console.debug("Correcting selection forwards")
         editor.moveToStartOfNextText()
+    }
+}
+
+function isInvalidMerge(op, document) {
+    return op.type == "merge_node" && 
+        !isMergeAllowedAtPath(document, op.path)
+}
+
+function isMergeAllowedAtPath(document, path) {
+    const node = document.getNode(path)
+    const prevNode = document.getPreviousSibling(path)
+    if (node.has("text") && prevNode.has("text")) {
+        return true
+    } else if (node.has("type") && prevNode.has("type")) {
+        return isMergeWrappersAllowed(node, prevNode)
+    } else {
+        return false
     }
 }
 
