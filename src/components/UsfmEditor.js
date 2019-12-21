@@ -109,6 +109,7 @@ class UsfmEditor extends React.Component {
         console.info("handleChange", change);
         console.info("      handleChange operations", change.operations.toJS());
         let value = this.state.value;
+        let shouldCollapseSelection = false
         try {
             for (const op of change.operations) {
                 // console.debug(op.type, op.toJS());
@@ -121,6 +122,11 @@ class UsfmEditor extends React.Component {
                 }
                 if (isSetSelectionAndAnchorPathDefined(op)) {
                     correctSelectionIfNecessary(op, value, this.editor)
+                }
+                if (op.type == "merge_node") {
+                    console.log("Cancelling merge_node and subsequent operations")
+                    shouldCollapseSelection = true
+                    break
                 }
 
                 const newValue = op.apply(value);
@@ -135,6 +141,11 @@ class UsfmEditor extends React.Component {
             console.warn("Operation failed; cancelling remainder of change.");
         }
         this.setState({value: value, usfmJsDocument: this.state.usfmJsDocument, initialized: true});
+
+        if (shouldCollapseSelection) {
+            console.log("Collapsing selection")
+            this.editor.moveToAnchor()
+        }
     };
 
     scheduleOnChange = debounce(() => {
