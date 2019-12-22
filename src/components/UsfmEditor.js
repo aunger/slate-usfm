@@ -7,7 +7,7 @@ import usfmjs from "usfm-js";
 import "./UsfmEditor.css";
 import {UsfmRenderingPlugin} from "./UsfmRenderingPlugin"
 import {SectionHeaderPlugin} from "./SectionHeaderPlugin"
-import {InsertParagraphPlugin} from "./keyHandlers"
+import {InsertParagraphPlugin, changeWrapperType} from "./keyHandlers"
 import {toUsfmJsonDocAndSlateJsonDoc, nodeTypes} from "./jsonTransforms/usfmToSlate";
 import {handleOperation} from "./operationHandlers";
 import Schema from "./schema";
@@ -109,7 +109,7 @@ class UsfmEditor extends React.Component {
         console.info("handleChange", change);
         console.info("      handleChange operations", change.operations.toJS());
         let value = this.state.value;
-        let shouldCollapseSelection = false
+        let firstInvalidMergeOp = null
         try {
             for (const op of change.operations) {
                 // console.debug(op.type, op.toJS());
@@ -124,8 +124,8 @@ class UsfmEditor extends React.Component {
                     correctSelectionIfNecessary(op, value, this.editor)
                 }
                 else if (isInvalidMerge(op, value.document)) {
-                    console.log("Cancelling merge_node and subsequent operations")
-                    shouldCollapseSelection = true
+                    console.log("Cancelling invalid merge_node and subsequent operations")
+                    firstInvalidMergeOp = op
                     break
                 }
 
@@ -142,9 +142,9 @@ class UsfmEditor extends React.Component {
         }
         this.setState({value: value, usfmJsDocument: this.state.usfmJsDocument, initialized: true});
 
-        if (shouldCollapseSelection) {
-            console.log("Collapsing selection")
-            this.editor.moveToAnchor()
+        if (firstInvalidMergeOp != null) {
+            // Need to handle this here since this.editor's value is now updated
+            handleInvalidMergeOp(firstInvalidMergeOp, this.editor)
         }
     };
 
@@ -249,6 +249,19 @@ function isMergeAllowedAtPath(document, path) {
     } else {
         return false
     }
+}
+
+function handleInvalidMergeOp(op, editor) {
+    // If a merge operation failed on a newline node, we still need to replace
+    //  the newline node with a textWrapper so the line break goes away
+    let node = editor.value.document.getNode(op.path)
+    if (node.has("type") && (node.type == nodeTypes.P || node.type == nodeTypes.S)) { // Change to is newline node
+        changeWrapperType(editor, node, nodeTypes.TEXTWRAPPER)
+    }
+
+    // The selection may appear to be collapsed but it may still span two nodes
+    console.log("Collapsing selection")
+    editor.moveToFocus()
 }
 
 export default UsfmEditor;
