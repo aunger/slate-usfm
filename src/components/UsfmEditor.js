@@ -7,8 +7,8 @@ import usfmjs from "usfm-js";
 import "./UsfmEditor.css";
 import {UsfmRenderingPlugin} from "./UsfmRenderingPlugin"
 import {SectionHeaderPlugin} from "./SectionHeaderPlugin"
-import {InsertParagraphPlugin, changeWrapperType} from "./keyHandlers"
-import {toUsfmJsonDocAndSlateJsonDoc, nodeTypes} from "./jsonTransforms/usfmToSlate";
+import {changeWrapperType} from "./keyHandlers"
+import {toUsfmJsonDocAndSlateJsonDoc, nodeTypes, isNewlineNodeType} from "./jsonTransforms/usfmToSlate";
 import {handleOperation} from "./operationHandlers";
 import Schema from "./schema";
 import {verseNumberName} from "./numberTypes";
@@ -159,7 +159,7 @@ class UsfmEditor extends React.Component {
 
     scheduleOnChange = debounce(() => {
         console.debug("Serializing updated USFM", this.state.usfmJsDocument);
-        addTrailingNewLineToSections(this.state.usfmJsDocument)
+        addTrailingNewlineToSections(this.state.usfmJsDocument)
         // if we don't clone the usfmJsDocument, usfmjs.toUSFM removes the front matter
         const serialized = usfmjs.toUSFM(clonedeep(this.state.usfmJsDocument));
         const withNewlines = serialized.replace(/([^\n])(\\[vps])/g, '$1\n$2');
@@ -193,7 +193,7 @@ class UsfmEditor extends React.Component {
     }
 }
 
-function addTrailingNewLineToSections(object) {
+function addTrailingNewlineToSections(object) {
     for (var x in object) {
         if (object.hasOwnProperty(x)) {
             let item = object[x]
@@ -201,7 +201,7 @@ function addTrailingNewLineToSections(object) {
                 item.content = item.content + "\n"
             }
             else if (typeof item == 'object') {
-                addTrailingNewLineToSections(item)
+                addTrailingNewlineToSections(item)
             }
         }
     }
@@ -259,7 +259,8 @@ function handleInvalidMergeOp(op, editor) {
     // If a merge operation failed on a newline node, we still need to replace
     //  the newline node with a textWrapper so the line break goes away
     let node = editor.value.document.getNode(op.path)
-    if (node.has("type") && (node.type == nodeTypes.P || node.type == nodeTypes.S)) { // Change to is newline node
+    if (node.has("type") &&
+        isNewlineNodeType(node.type)) {
         changeWrapperType(editor, node, nodeTypes.TEXTWRAPPER)
     }
 
