@@ -77,7 +77,7 @@ const nodeRenderers = {
 
     /** Paragraph */
     'p': props =>
-        <span {...props.attributes}><br className="paragraphBreak"/>{props.children}</span>,
+        <p {...props.attributes}>{props.children}</p>,
 
     /** BookReference */
     'bk': props =>
@@ -96,10 +96,10 @@ const nodeRenderers = {
         const {number} = destructureTag(props.node);
         if (number == 5 && props.node.text.trim() === "") {
             // Some editors use \s5 as a chunk delimiter. Separate chunks by horizontal rules.
-            return <hr className="HideFollowingLineBreak" {...props.attributes} />;
+            return <hr {...props.attributes} />;
         } else {
             const HeadingTag = `h${number || 3}`;
-            return <HeadingTag className="HideFollowingLineBreak" {...props.attributes}>{props.children}</HeadingTag>;
+            return <HeadingTag {...props.attributes}>{props.children}</HeadingTag>;
         }
     },
 };

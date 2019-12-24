@@ -43,7 +43,13 @@
 }
 
 p {
+    display: inline-block;
     margin: 0;
+}
+
+p:before {
+    content:"\000A";
+    white-space: pre;
 }
 
 hr {
@@ -53,14 +59,6 @@ hr {
 br {
     display: none;
 }
-
-br.paragraphBreak {
-    display: block;
-}
-
-.HideFollowingLineBreak + * br:first-child {
-    display: none;
-} 
 
 h1 { text-align: center; margin: 0.5em; font-size: 2em; }
 h2 { text-align: center; margin: 0.5em; font-size: 1.5em; }
