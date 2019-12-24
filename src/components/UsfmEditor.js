@@ -114,7 +114,16 @@ class UsfmEditor extends React.Component {
             for (const op of change.operations) {
                 // console.debug(op.type, op.toJS());
 
-                if (isNestedSplit(op)) {
+                if (firstInvalidMergeOp != null &&
+                    op.type != "insert_text") {
+                    // After an invalid merge operation is found, the only operation known
+                    // to be valid is an insert text operation. (We assume that the selection was
+                    // expanded and the user typed a key other than just Backspace or Delete.)
+                    continue
+                }
+
+                if (op.type == "split_node" &&
+                    op.properties.data.has("source")) {
                     // Data needs to be deep cloned so the new node doesn't have a pointer to the same source
                     op.properties.data = clonedeep(op.properties.data)
                     // By the time the following debug statement prints, the data will likely have changed
@@ -124,9 +133,9 @@ class UsfmEditor extends React.Component {
                     correctSelectionIfNecessary(op, value, this.editor)
                 }
                 else if (isInvalidMerge(op, value.document)) {
-                    console.log("Cancelling invalid merge_node and subsequent operations")
+                    console.log("Cancelling invalid merge_node and subsequent merge operations")
                     firstInvalidMergeOp = op
-                    break
+                    continue
                 }
 
                 const newValue = op.apply(value);
@@ -183,10 +192,6 @@ class UsfmEditor extends React.Component {
         </React.Fragment>
         )
     }
-}
-
-function isNestedSplit(op) {
-    return op.type == "split_node" && op.target
 }
 
 function addTrailingNewLineToSections(object) {
@@ -261,7 +266,7 @@ function handleInvalidMergeOp(op, editor) {
 
     // The selection may appear to be collapsed but it may still span two nodes
     console.log("Collapsing selection")
-    editor.moveToFocus()
+    editor.moveToAnchor()
 }
 
 export default UsfmEditor;
