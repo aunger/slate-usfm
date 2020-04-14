@@ -6,7 +6,7 @@ const usfmStrings = new Map([
 \\id GEN
 \\c 1
 \\q
-\\v 1 Poetry with \\unk unknown \\unk*tag.
+\\v 1 Poetry with \\wj unknown \\wj*tag.
 `]
 ]);
 
