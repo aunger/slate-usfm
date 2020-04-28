@@ -36,26 +36,34 @@ export class DemoEditor extends React.Component {
     render() {
         return (
             <div>
-                <div className="column column-left">
-                    <InputSelector 
-                        onChange={this.handleInputChange} 
-                        demoUsfmStrings={this.props.usfmStrings}
-                    />
-                    <h2>Editor</h2>
-                    <UsfmEditor
-                        usfmString={this.state.usfmInput}
-                        key={this.state.usfmInput}
-                        onChange={this.handleEditorChange}
-                    />
+                <div className={ this.state.showInputUsfm ? "" : "row" }>
+                    <div className="column column-left">
+                        <InputSelector 
+                            onChange={this.handleInputChange} 
+                            demoUsfmStrings={this.props.usfmStrings}
+                        />
+                    </div>
+                    <div className="column column-right">
+                        <InputUsfm
+                            usfm={this.state.usfmInput}
+                            onShowInputChange={this.handleShowInputChange}
+                            showInput={this.state.showInputUsfm}
+                        />
+                    </div>
                 </div>
-                <div className="column column-right">
-                    <InputUsfm
-                        usfm={this.state.usfmInput}
-                        onShowInputChange={this.handleShowInputChange}
-                        showInput={this.state.showInputUsfm}
-                    />
-                    <h2>Output USFM</h2>
-                    <pre className="usfm-container">{this.state.usfmOutput}</pre>
+                <div className="row">
+                    <div className="column column-left">
+                        <h2>Editor</h2>
+                        <UsfmEditor
+                            usfmString={this.state.usfmInput}
+                            key={this.state.usfmInput}
+                            onChange={this.handleEditorChange}
+                        />
+                    </div>
+                    <div className="column column-right">
+                        <h2>Output USFM</h2>
+                        <pre className="usfm-container">{this.state.usfmOutput}</pre>
+                    </div>
                 </div>
             </div>
         )
