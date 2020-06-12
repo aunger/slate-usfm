@@ -100,8 +100,9 @@ function getNearbyBlock(
 
 /**
  * Get the verse corresponding to the selected element
+ * Returns undefined if there is no chapter currently selected
  */
-function getVerse(editor: Editor): NodeEntry {
+function getVerse(editor: Editor): NodeEntry | undefined {
     return Editor.above(
         editor,
         { match: (node) => node.type == NodeTypes.VERSE }
@@ -144,8 +145,9 @@ function matchVerseByVerseNumberOrRange(
 
 /**
  * Get the current chapter, using the current selection. 
+ * Returns undefined if there is no chapter currently selected
  */
-function getChapter(editor: Editor): NodeEntry {
+function getChapter(editor: Editor): NodeEntry | undefined {
     return Editor.above(
         editor,
         { match: (node) => node.type == NodeTypes.CHAPTER }
@@ -154,9 +156,13 @@ function getChapter(editor: Editor): NodeEntry {
 
 /**
  * Get the last verse of the current chapter. 
+ * Returns undefined if there is no chapter currently selected
  */
-function getLastVerse(editor: Editor): NodeEntry {
-    const [chapter, chapterPath] = MyEditor.getChapter(editor)
+function getLastVerse(editor: Editor): NodeEntry | undefined {
+    const [chapter, chapterPath] = MyEditor.getChapter(editor) || [null, null]
+    if (!chapter) {
+        return undefined
+    }
     const children = Node.children(
         chapter, 
         [],
@@ -171,8 +177,11 @@ function getLastVerse(editor: Editor): NodeEntry {
 
 /**
  * Get the last verse number/range of the current chapter. 
+ * Returns undefined if there is no chapter currently selected
  */
-function getLastVerseNumberOrRange(editor: Editor): string {
-    const [lastVerse, lastVersePath] = MyEditor.getLastVerse(editor)
-    return Node.string(lastVerse.children[0])
+function getLastVerseNumberOrRange(editor: Editor): string | undefined {
+    const [lastVerse, lastVersePath] = MyEditor.getLastVerse(editor) || [null, null]
+    return lastVerse
+        ? Node.string(lastVerse.children[0])
+        : undefined
 }

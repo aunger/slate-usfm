@@ -1,7 +1,8 @@
 import { useEffect, RefObject } from "react";
 
 export const useInsideOutsideClickListener = (
-    ref: RefObject,
+    // ref: RefObject<T>,
+    ref,
     onClickInside: ((event: MouseEvent) => void), 
     onClickOutside: ((event: MouseEvent) => void),
     disableIf: () => boolean = () => false
@@ -11,6 +12,7 @@ export const useInsideOutsideClickListener = (
             ref.current && 
             ref.current.contains(event.target)
         ) {
+            console.log("IN CLICK LISTENER")
             onClickInside(event)
             document.removeEventListener("mousedown", handleClickInside)
             document.addEventListener("mousedown", handleClickOutside);

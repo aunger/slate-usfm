@@ -1,28 +1,95 @@
 import * as React from 'react'
 import { useSlate } from 'slate-react'
-import { Button } from './menu/menuComponents'
 import { MyTransforms } from '../plugins/helpers/MyTransforms'
 import { MyEditor } from '../plugins/helpers/MyEditor'
-import { ContextMenu } from './ContextMenu'
 import { compose } from "../utils/commonFunctions"
+import { PropTypes } from "prop-types" 
+
+import { withStyles } from '@material-ui/core/styles';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+
+import LinkIcon from '@material-ui/icons/Link';
+import LinkOffIcon from '@material-ui/icons/LinkOff';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+const StyledMenu = withStyles({
+    paper: {
+      border: '1px solid #d3d4d5',
+    },
+  })((props) => (
+    <Menu
+      elevation={0}
+      getContentAnchorEl={null}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
+      {...props}
+    />
+  ));
+
+
+  const StyledMenuItem = withStyles((theme) => ({
+    root: {
+      '&:focus': {
+        backgroundColor: theme.palette.primary.main,
+        '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+          color: theme.palette.common.white,
+        },
+      },
+    },
+  }))(MenuItem);
+
+export const MaterialMenu = (props) => {
+    return (
+        <StyledMenu
+            id="customized-menu"
+            anchorEl={props.anchorEl}
+            keepMounted
+            open={Boolean(props.anchorEl)}
+            onClose={props.onClickOutside}
+            onClick={props.onClickOutside}
+        >
+            {...props.children}
+        </StyledMenu>
+    )
+}
+
+MaterialMenu.propTypes = {
+    anchorEl: PropTypes.any.isRequired,
+    onClickOutside: PropTypes.any.isRequired
+}
+
+function materialMenu(anchorEl, onClickOutside) {
+    return function(props) {
+        return <MaterialMenu 
+            {...props}
+            anchorEl={anchorEl}
+            onClickOutside={onClickOutside}
+        />
+    }
+}
 
 export const VerseNumberMenu = ({
-    verseNumberRef,
+    anchorEl,
+    onClickOutside,
     verseNumberString
 }) => {
-        const BaseMenu = () => withContextRef(ContextMenu, verseNumberRef)
+        const BaseMenu = () => materialMenu(anchorEl, onClickOutside)
         const MenuWithButtons = compose(
             (Menu) => withVerseJoinUnjoin(Menu, verseNumberString),
             (Menu) => withVerseAddRemove(Menu, verseNumberString),
             BaseMenu
         )()
     return <MenuWithButtons />
-}
-
-function withContextRef(ContextMenu, contextRef) {
-    return function(props) {
-        return <ContextMenu {...props} contextRef={contextRef} />
-    }
 }
 
 function withVerseJoinUnjoin(VerseMenu, verseNumberString) {
@@ -82,66 +149,79 @@ const VerseAddRemoveMenuFragment = ({
         <React.Fragment>
             {
                 isLastVerse
-                ? <RemoveVerseButton editor={editor} />
+                ? <AddVerseButton editor={editor} />
                 : null
             }
             {
                 isLastVerse
-                ? <AddVerseButton editor={editor} />
+                ? <RemoveVerseButton editor={editor} />
                 : null
             }
         </React.Fragment>
     )
 }
 
+const VerseMenuButton = ({ 
+    Icon,
+    text,
+    handleClick
+}) => {
+    return (
+        <StyledMenuItem
+            onClick={event => {handleClick()}}
+        >
+            <ListItemIcon>
+                <Icon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={text} />
+        </StyledMenuItem>
+    )
+}
+
 const JoinWithPreviousVerseButton = ({ editor }) => {
     return (
-        <Button
-            active={true}
-            onMouseDown={event => {
+        <VerseMenuButton
+            Icon={LinkIcon}
+            text={"Merge with previous verse"}
+            handleClick={event => {
                 MyTransforms.joinWithPreviousVerse(editor)
             }}
-        >
-            Merge with previous verse
-        </Button>
+        />
     )
 }
 
 const UnjoinVerseRangeButton = ({ editor }) => {
     return (
-        <Button
-            active={true}
-            onMouseDown={event => {
+        <VerseMenuButton
+            Icon={LinkOffIcon}
+            text={"Unjoin verses"}
+            handleClick={event => {
                 MyTransforms.unjoinVerses(editor)
             }}
-        >
-            Unjoin verses
-        </Button>
+        />
     )
 }
 
 const AddVerseButton = ({ editor }) => {
     return (
-        <Button
-            active={true}
-            onMouseDown={event => {
+        <VerseMenuButton
+            Icon={AddIcon}
+            text={"Add verse"}
+            handleClick={event => {
                 MyTransforms.addVerse(editor)
             }}
-        >
-            Add verse
-        </Button>
+        />
     )
 }
 
 const RemoveVerseButton = ({ editor }) => {
     return (
-        <Button
-            active={true}
-            onMouseDown={event => {
+        <VerseMenuButton
+            Icon={DeleteIcon}
+            text={"Remove verse"}
+            handleClick={event => {
                 MyTransforms.removeVerseAndConcatenateContentsWithPrevious(editor)
             }}
-        >
-            Remove verse
-        </Button>
+        />
     )
 }
