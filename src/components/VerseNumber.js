@@ -13,7 +13,9 @@ export const VerseNumber = React.forwardRef(
             {...props} 
             ref={ref}
             contentEditable={false} 
-            className={`VerseNumber ${numberClassNames(props.element)}`}
+            className={
+                props.className +
+                ` VerseNumber ${numberClassNames(props.element)}`}
         >
             {props.children}
         </sup>
@@ -35,18 +37,20 @@ function withVerseMenu(VerseNumber) {
             setVerseMenuActive(!verseMenuActive)
         }
         const onClickOutside = (event) => setVerseMenuActive(false)
-        const disableIf = () => ReactEditor.isReadOnly(editor)
+        const disableMenuIf = () => ReactEditor.isReadOnly(editor)
         useInsideOutsideClickListener(
             ref, 
             onClickInside, 
             onClickOutside, 
-            disableIf
+            disableMenuIf
         )
+        if (!disableMenuIf()) {
+            props = {...props, className: "CursorPointer"}
+        }
         return (
-            <span>
+            <React.Fragment>
                 <VerseNumber 
                     {...props} 
-                    style={{cursor: "pointer"}} 
                     ref={ref} 
                 />
                 {
@@ -57,7 +61,7 @@ function withVerseMenu(VerseNumber) {
                         />
                         : null
                 }
-            </span>
+            </React.Fragment>
         )
     }
 }
