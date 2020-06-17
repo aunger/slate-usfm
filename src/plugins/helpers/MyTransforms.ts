@@ -13,6 +13,17 @@ export const MyTransforms = {
 }
 
 /**
+ * When the base deselect method is called, it sets the
+ * selection to null and prevents click listeners from
+ * firing. A number of slate users have elected to disable
+ * the deselect method to prevent this. See the following:
+ * https://app.slack.com/client/T1RFVK5FV/C1RH7AXSS/thread/C1RH7AXSS-1580555813.385600
+ */
+Transforms.deselect = () => {
+    console.debug("Deselect method is disabled")
+}
+
+/**
  * Merges the selected block with the next or previous block,
  * then sets the resulting block to an inline container type.
  */
