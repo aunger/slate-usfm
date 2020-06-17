@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useMemo, useState } from 'react';
 import { withReact, Slate, Editable } from "slate-react";
-import { createEditor, } from 'slate';
+import { createEditor, Transforms } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
 import { usfmToSlate } from '../transforms/usfmToSlate';
 import { withNormalize } from "../plugins/normalizeNode";
@@ -11,6 +11,10 @@ import { HoveringToolbar } from "./HoveringToolbar";
 import { slateToUsfm } from "../transforms/slateToUsfm";
 import { debounce } from "debounce";
 import { compose } from "../utils/commonFunctions"
+
+Transforms.deselect = () => {
+    console.debug("Deselect method is disabled")
+}
 
 /**
  * A WYSIWYG editor component for USFM

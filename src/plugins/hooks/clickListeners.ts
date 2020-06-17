@@ -1,7 +1,6 @@
-import { useEffect, RefObject } from "react";
+import { useEffect } from "react";
 
 export const useInsideOutsideClickListener = (
-    // ref: RefObject<T>,
     ref,
     onClickInside: ((event: MouseEvent) => void), 
     onClickOutside: ((event: MouseEvent) => void),
@@ -12,9 +11,8 @@ export const useInsideOutsideClickListener = (
             ref.current && 
             ref.current.contains(event.target)
         ) {
-            console.log("IN CLICK LISTENER")
-            onClickInside(event)
-            document.removeEventListener("mousedown", handleClickInside)
+            onClickInside(event);
+            document.removeEventListener("mousedown", handleClickInside);
             document.addEventListener("mousedown", handleClickOutside);
         }
     }
@@ -24,17 +22,14 @@ export const useInsideOutsideClickListener = (
             ref.current && 
             !ref.current.contains(event.target)
         ) {
-            onClickOutside(event)
+            onClickOutside(event);
             document.removeEventListener("mousedown", handleClickOutside);
+            document.addEventListener("mousedown", handleClickInside);
         }
     }
 
     useEffect(() => {
-        // bind the click inside listener when the callback changes
         document.addEventListener("mousedown", handleClickInside);
-    }, [onClickInside])
-
-    useEffect(() => {
         return () => {
             // Unbind the event listener on clean up when the ref changes
             document.removeEventListener("mousedown", handleClickInside);
