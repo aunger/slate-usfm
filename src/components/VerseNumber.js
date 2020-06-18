@@ -33,7 +33,7 @@ function withVerseMenu(VerseNumber) {
             // that was clicked (the verse number text.)
             MyTransforms.selectDOMNodeStart(editor, event.target)
             setAnchorEl(
-                getAnchorEl() ? null : event.target
+                getAnchorEl() ? null : event.target // TODO: can this be set to ref???
             )
         }
         const onClickOutside = (event) => setAnchorEl(null)
