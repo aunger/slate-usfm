@@ -103,9 +103,8 @@ function getNearbyBlock(
 
 /**
  * Get the verse corresponding to the selected element
- * Returns undefined if there is no chapter currently selected
  */
-function getVerse(editor: Editor, path: Path): NodeEntry | undefined {
+function getVerse(editor: Editor, path: Path): NodeEntry {
     return Editor.above(
         editor,
         { 
@@ -123,18 +122,20 @@ function getPreviousVerse(
     editor: Editor,
     path: Path,
     includeFront: boolean = false
-): NodeEntry | undefined {
-    const options = includeFront 
-        ? { at: path }
+): NodeEntry {
+    const matchOption = includeFront
+        ? {}
         : { 
             match: matchVerseByVerseNumberOrRange(
                 (verseNum) => verseNum != "front"
-            ),
-            at: path
+            )
         }
     return Editor.previous(
         editor,
-        options
+        {
+            at: path,
+            ...matchOption
+        }
     )
 }
 
@@ -153,9 +154,11 @@ function matchVerseByVerseNumberOrRange(
 
 /**
  * Get the current chapter, using the current selection. 
- * Returns undefined if there is no chapter currently selected
  */
-function getChapter(editor: Editor, path: Path): NodeEntry | undefined {
+function getChapter(
+    editor: Editor, 
+    path: Path
+): NodeEntry {
     return Editor.above(
         editor,
         { 
@@ -167,13 +170,12 @@ function getChapter(editor: Editor, path: Path): NodeEntry | undefined {
 
 /**
  * Get the last verse of the current chapter. 
- * Returns undefined if there is no chapter currently selected
  */
-function getLastVerse(editor: Editor, path: Path): NodeEntry | undefined {
-    const [chapter, chapterPath] = MyEditor.getChapter(editor, path) || [null, null]
-    if (!chapter) {
-        return undefined
-    }
+function getLastVerse(
+    editor: Editor,
+    path: Path
+): NodeEntry {
+    const [chapter, chapterPath] = MyEditor.getChapter(editor, path)
     const children = Node.children(
         chapter, 
         [],
@@ -188,16 +190,22 @@ function getLastVerse(editor: Editor, path: Path): NodeEntry | undefined {
 
 /**
  * Get the last verse number/range of the current chapter. 
- * Returns undefined if there is no chapter currently selected
  */
-function getLastVerseNumberOrRange(editor: ReactEditor, path: Path): string | undefined {
-    const [lastVerse, lastVersePath] = MyEditor.getLastVerse(editor, path) || [null, null]
-    return lastVerse
-        ? Node.string(lastVerse.children[0])
-        : undefined
+function getLastVerseNumberOrRange(
+    editor: Editor, 
+    path: Path
+): string {
+    const [lastVerse, lastVersePath] = MyEditor.getLastVerse(editor, path)
+    return Node.string(lastVerse.children[0])
 }
 
-function getPathFromDOMNode(editor: ReactEditor, domNode: DOMNode): Path {
+/**
+ * Get the slate path from a given DOM Node.
+ */
+function getPathFromDOMNode(
+    editor: ReactEditor, 
+    domNode: DOMNode
+): Path {
     const slateNode = ReactEditor.toSlateNode(editor, domNode)
     return ReactEditor.findPath(editor, slateNode)
 }
