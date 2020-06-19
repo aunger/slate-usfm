@@ -107,7 +107,7 @@ function getNearbyBlock(
 function getVerse(editor: Editor, path: Path): NodeEntry {
     return Editor.above(
         editor,
-        { 
+        {
             match: (node) => node.type == NodeTypes.VERSE,
             at: path
         }
@@ -125,7 +125,7 @@ function getPreviousVerse(
 ): NodeEntry {
     const matchOption = includeFront
         ? {}
-        : { 
+        : {
             match: matchVerseByVerseNumberOrRange(
                 (verseNum) => verseNum != "front"
             )
@@ -156,12 +156,12 @@ function matchVerseByVerseNumberOrRange(
  * Get the current chapter, using the current selection. 
  */
 function getChapter(
-    editor: Editor, 
+    editor: Editor,
     path: Path
 ): NodeEntry {
     return Editor.above(
         editor,
-        { 
+        {
             match: (node) => node.type == NodeTypes.CHAPTER,
             at: path
         }
@@ -177,7 +177,7 @@ function getLastVerse(
 ): NodeEntry {
     const [chapter, chapterPath] = MyEditor.getChapter(editor, path)
     const children = Node.children(
-        chapter, 
+        chapter,
         [],
         { reverse: true }
     )
@@ -192,7 +192,7 @@ function getLastVerse(
  * Get the last verse number/range of the current chapter. 
  */
 function getLastVerseNumberOrRange(
-    editor: Editor, 
+    editor: Editor,
     path: Path
 ): string {
     const [lastVerse, lastVersePath] = MyEditor.getLastVerse(editor, path)
@@ -203,7 +203,7 @@ function getLastVerseNumberOrRange(
  * Get the slate path from a given DOM Node.
  */
 function getPathFromDOMNode(
-    editor: ReactEditor, 
+    editor: ReactEditor,
     domNode: DOMNode
 ): Path {
     const slateNode = ReactEditor.toSlateNode(editor, domNode)
