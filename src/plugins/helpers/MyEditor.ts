@@ -102,7 +102,8 @@ function getNearbyBlock(
 }
 
 /**
- * Get the verse corresponding to the selected element
+ * Get the verse corresponding to the given path.
+ * The verse node must be above the given path in the slate tree.
  */
 function getVerse(editor: Editor, path: Path): NodeEntry {
     return Editor.above(
@@ -115,7 +116,7 @@ function getVerse(editor: Editor, path: Path): NodeEntry {
 }
 
 /**
- * Get the previous verse node (before the current selection),
+ * Get the previous verse node (before the given path),
  * optionally including the "front" verse (default is false)
  */
 function getPreviousVerse(
@@ -153,7 +154,8 @@ function _matchVerseByVerseNumberOrRange(
 }
 
 /**
- * Get the current chapter, using the current selection. 
+ * Get the chapter corresponding to the given path.
+ * The chapter node must be above the given path in the slate tree.
  */
 function getChapter(
     editor: Editor,
@@ -169,7 +171,7 @@ function getChapter(
 }
 
 /**
- * Get the last verse of the current chapter. 
+ * Get the last verse of the chapter above the given path. 
  */
 function getLastVerse(
     editor: Editor,
@@ -189,7 +191,7 @@ function getLastVerse(
 }
 
 /**
- * Get the last verse number/range of the current chapter. 
+ * Get the last verse number/range (string) of the chapter above the given path. 
  */
 function getLastVerseNumberOrRange(
     editor: Editor,
