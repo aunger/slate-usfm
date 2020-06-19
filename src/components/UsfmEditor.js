@@ -10,7 +10,7 @@ import { NodeTypes } from "../utils/NodeTypes";
 import { HoveringToolbar } from "./HoveringToolbar";
 import { slateToUsfm } from "../transforms/slateToUsfm";
 import { debounce } from "debounce";
-import { compose } from "../utils/commonFunctions"
+import { flowRight } from "lodash"
 
 /**
  * A WYSIWYG editor component for USFM
@@ -25,7 +25,7 @@ export const UsfmEditor = ({
     const initialValue = useMemo(() => usfmToSlate(usfmString), [])
     const editor = useMemo(
         () =>
-            compose(
+            flowRight(
                 withBackspace,
                 withDelete,
                 withEnter,

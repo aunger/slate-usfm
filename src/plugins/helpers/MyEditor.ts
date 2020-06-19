@@ -126,7 +126,7 @@ function getPreviousVerse(
     const matchOption = includeFront
         ? {}
         : {
-            match: matchVerseByVerseNumberOrRange(
+            match: _matchVerseByVerseNumberOrRange(
                 (verseNum) => verseNum != "front"
             )
         }
@@ -143,7 +143,7 @@ function getPreviousVerse(
  * Returns a match function to find a verse whose verse 
  * number or range matches the given comparison function.
  */
-function matchVerseByVerseNumberOrRange(
+function _matchVerseByVerseNumberOrRange(
     matchFcn: (verseNumberOrRange: string) => boolean
 ): ((n: Node) => boolean) {
     return node =>
