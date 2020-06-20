@@ -28,6 +28,8 @@ export const VerseNumberMenu = ({
     handleClose,
     includeVerseAddRemove = true
 }) => {
+    if (!anchorEl) return null
+
     const editor = useSlate()
     const verseNumberPath = MyEditor.getPathFromDOMNode(editor, anchorEl)
 
