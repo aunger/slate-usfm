@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useRef, useState } from "react";
 import { VerseNumberMenu } from "./verseNumberMenu/VerseNumberMenu";
-import { useInsideOutsideClickListener } from "../plugins/hooks/clickListeners";
 import { numberClassNames } from '../transforms/usfmRenderer';
 import { useSlate, ReactEditor } from 'slate-react'
 import { MyTransforms } from "../plugins/helpers/MyTransforms";
