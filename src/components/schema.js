@@ -28,6 +28,7 @@ class Schema {
             },
         ],
         text: /^[\w-]+$/,
+
         normalize: (editor, error) => {
             console.debug("error", error);
             if (error.code === NODE_TEXT_INVALID) {
@@ -59,6 +60,10 @@ class Schema {
                 },
             ],
         },
+
+
+
+
         blocks: {
             book: {
                 nodes: [
@@ -97,6 +102,11 @@ class Schema {
                 }
             },
         },
+
+
+
+
+
         inlines: {
             verse: {
                 nodes: [

@@ -3,25 +3,22 @@ import React from "react";
 class Footnote extends React.Component {
     render = () => {
         console.debug("Footnote.render() props", this.props);
-        if (this.state.isEditorOpen) {
-            return (
-                <textarea
-                    className="Footnote"
-                    autoFocus={true}
-                    onBlur={this.closeFootNoteEditor}
-                >
-                    {this.props.node.text}
-                </textarea>
-            );
-        } else {
-            return (
-                <div className="Footnote"
-                     onClick={this.openFootnoteEditor}
-                >
-                    {this.props.children}
-                </div>
-            );
-        }
+        return [
+            <div className="Footnote"
+                 onClick={this.openFootnoteEditor}
+                 {...this.props.attributes}
+            >
+                {this.props.children}
+            </div>,
+            <textarea
+                className="Footnote"
+                autoFocus={true}
+                onBlur={this.closeFootNoteEditor}
+                defaultValue={this.props.node.text}
+                hidden={!this.state.isEditorOpen}
+            />
+
+        ];
     };
 
     openFootnoteEditor = () => {
@@ -30,9 +27,14 @@ class Footnote extends React.Component {
     };
 
     closeFootNoteEditor = () => {
-        this.props.editor.moveToRangeOfNode(this.props.node);
-        this.props.editor.insertText("sigh");
-        this.setState({isEditorOpen: false})
+        if (this.props.node) {
+            const key = this.props.node.key;
+            console.warn("Inserting by key", key);
+            this.props.editor.insertTextByKey(key, 0, "sigh");
+            // this.props.editor.moveToRangeOfNode(this.props.node);
+            // this.props.editor.insertText("sigh");
+            this.setState({isEditorOpen: false})
+        }
     };
 
     state = {

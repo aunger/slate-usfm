@@ -3,6 +3,7 @@ import Footnote from "./Footnote";
 
 export function UsfmRenderingPlugin(options) {
     return {
+        renderNode: renderNode,
         renderBlock: renderNode,
         renderInline: renderNode
     };
