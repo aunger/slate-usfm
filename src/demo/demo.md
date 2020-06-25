@@ -2,6 +2,7 @@
 const usfmStrings = new Map([
 ["small", `
 \\id GEN
+\\toc1 small
 \\c 1
 \\p
 \\v 1 the first verse
@@ -10,6 +11,7 @@ const usfmStrings = new Map([
 
 ["usfmString1", `
 \\id GEN
+\\toc2 usfm1
 \\c 1
 \\p Front stuffs
 \\v 1 the first verse
@@ -22,6 +24,7 @@ and Jacob,
 
 ["usfmString2", `
 \\id GEN
+\\toc3 usfm2
 \\c 1
 \\v 1 the first verse
 \\v 2 the second verse

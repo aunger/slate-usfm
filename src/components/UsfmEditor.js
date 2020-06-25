@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { withReact, Slate, Editable, ReactEditor } from "slate-react";
 import { createEditor } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
@@ -19,10 +20,20 @@ export const UsfmEditor = ({
     usfmString, 
     plugins, 
     onChange,
-    readOnly
+    readOnly,
+    identification,
+    onIdentificationChange
 }) => {
 
-    const initialValue = useMemo(() => usfmToSlate(usfmString), [])
+    const initialValue = useMemo(() => {
+        const iv = usfmToSlate(usfmString)
+        // TODO: Transform identification from slate into json
+        // Actually, probably just use json parsed from usfm-js
+        // and transform that.
+        onIdentificationChange(iv[0].children) // use transformed result instead
+        return iv
+    }, [])
+
     const editor = useMemo(
         () =>
             flowRight(
@@ -34,6 +45,14 @@ export const UsfmEditor = ({
                 createEditor
             )(),
         []
+    )
+
+    React.useEffect(
+        () => {
+            console.log("in usfmeditor, identification = ", identification)
+            // TODO: Transform identification from json into slate
+            // Then use Transforms.remove and addNodes where appropriate
+        }, [identification]
     )
 
     const [value, setValue] = useState(initialValue)

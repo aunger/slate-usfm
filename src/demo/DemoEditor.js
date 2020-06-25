@@ -1,4 +1,5 @@
 import * as React from "react";
+import { jsx } from "slate-hyperscript";
 import "./demo.css";
 import { UsfmEditor } from "../components/UsfmEditor";
 import { InputSelector } from "./InputSelector";
@@ -26,7 +27,8 @@ export class DemoEditor extends React.Component {
             input => this.setState(
                 { 
                     usfmInput: input,
-                    usfmOutput: transformToOutput(input)
+                    usfmOutput: transformToOutput(input),
+                    identification: null
                 }
             );
         this.handleEditorChange = (usfm) => this.setState({ usfmOutput: usfm });
@@ -35,6 +37,13 @@ export class DemoEditor extends React.Component {
         }
         this.handleReadOnlyChange = () => {
             this.setState({ readOnly: !this.state.readOnly});
+        }
+        this.onIdentificationChange = (id) => {
+            this.setState({ identification: id })
+            console.log("---- in demo: id is: ", id)
+        }
+        this.setId = () => {
+            this.setState({ identification: { 'toc1': 'Mark'} })
         }
     }
 
@@ -53,7 +62,8 @@ export class DemoEditor extends React.Component {
                             <OptionCheckbox
                                 id={"show-input-checkbox"}
                                 text={"Show Input"}
-                                onChange={this.handleShowInputChange}
+                                // onChange={this.handleShowInputChange}
+                                onChange={this.setId}
                                 checked={this.state.showInput}
                             />
                             <OptionCheckbox
@@ -81,6 +91,8 @@ export class DemoEditor extends React.Component {
                             key={this.state.usfmInput}
                             onChange={this.handleEditorChange}
                             readOnly={this.state.readOnly}
+                            identification={this.state.identification}
+                            onIdentificationChange={this.onIdentificationChange}
                         />
                     </div>
                     <div className="column column-right">
