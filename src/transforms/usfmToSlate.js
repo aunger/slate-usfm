@@ -5,10 +5,7 @@ import { jsx } from "slate-hyperscript";
 import { NodeTypes } from "../utils/NodeTypes";
 import { emptyInlineContainer, verseNumber, verseWithChildren } from "./basicSlateNodeFactory";
 
-export function usfmToSlate(usfm) {
-    const usfmJsDoc = usfmjs.toJSON(usfm);
-    console.log("parsed from usfm-js", usfmJsDoc)
-
+export function usfmJsToSlate(usfmJsDoc) {
     const usfmAsArrays = transform(usfmJsDoc, objectToArrayRules);
     console.log("usfmAsArrays", usfmAsArrays)
 
@@ -18,7 +15,31 @@ export function usfmToSlate(usfm) {
     return slateTree
 }
 
-function transformToSlate(el) {
+export function usfmJsArraysToSlate(usfmJsAsArrays) {
+    const slateTree = transformToSlate(usfmJsAsArrays)
+    console.log("slateTree", slateTree)
+
+    return slateTree
+}
+
+export function usfmToJsArrays(usfm) {
+    const usfmJsDoc = usfmjs.toJSON(usfm);
+    console.log("parsed from usfm-js", usfmJsDoc)
+ 
+    const usfmAsArrays = transform(usfmJsDoc, objectToArrayRules);
+    console.log("usfmAsArrays", usfmAsArrays)
+
+    return usfmAsArrays
+}
+
+export function usfmToSlate(usfm) {
+    const usfmJsDoc = usfmjs.toJSON(usfm);
+    console.log("parsed from usfm-js", usfmJsDoc)
+
+    return usfmJsToSlate(usfmJsDoc)
+}
+
+export function transformToSlate(el) {
     if (el.hasOwnProperty("chapters")) {
         return fragment(el)
     } else if (el.hasOwnProperty("chapterNumber")) {
