@@ -3,6 +3,8 @@ const usfmStrings = new Map([
 ["small", `
 \\id GEN
 \\toc1 small
+\\mt1 title 1
+\\mt2 title 2
 \\c 1
 \\p
 \\v 1 the first verse

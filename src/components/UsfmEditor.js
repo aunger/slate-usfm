@@ -1,10 +1,9 @@
 import * as React from "react";
-import { useMemo, useState } from 'react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { withReact, Slate, Editable, ReactEditor } from "slate-react";
 import { createEditor } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
-import { usfmToSlate, usfmJsToSlate, usfmToJsArrays, usfmJsArraysToSlate, transformToSlate } from '../transforms/usfmToSlate';
+import { usfmToSlate } from '../transforms/usfmToSlate';
 import { withNormalize } from "../plugins/normalizeNode";
 import { handleKeyPress, withBackspace, withDelete, withEnter } from '../plugins/keyHandlers';
 import { NodeTypes } from "../utils/NodeTypes";
@@ -12,7 +11,7 @@ import { HoveringToolbar } from "./HoveringToolbar";
 import { slateToUsfm } from "../transforms/slateToUsfm";
 import { debounce } from "debounce";
 import { flowRight } from "lodash"
-import * as usfmjs from "usfm-js";
+import { MyTransforms } from "../plugins/helpers/MyTransforms";
 
 /**
  * A WYSIWYG editor component for USFM
@@ -27,15 +26,9 @@ export const UsfmEditor = ({
 }) => {
 
     const initialValue = useMemo(() => {
-        const usfmAsArrays = usfmToJsArrays(usfmString)
-        const headers = {}
-        usfmAsArrays.headers
-            .filter(h => h.tag)
-            .forEach(h => {
-                headers[h.tag] = h.content
-            })
-        onIdentificationChange(headers)
-        return usfmJsArraysToSlate(usfmAsArrays)
+        const [ slateTree, parsedIdentification ] = usfmToSlate(usfmString)
+        onIdentificationChange(parsedIdentification)
+        return slateTree
     }, [])
 
     const editor = useMemo(
@@ -51,23 +44,10 @@ export const UsfmEditor = ({
         []
     )
 
-    React.useEffect(
+    useEffect(
         () => {
-            console.log("in usfmeditor, identification = ", identification)
             if(!identification) return
-            const headersAsArray = Object.entries(identification)
-                .map(n => {
-                    return {
-                        "tag": n[0],
-                        "content": n[1]
-                    }
-                })
-            console.log("headersAsArray", headersAsArray)
-            const slateHeaders = headersAsArray.map(transformToSlate)
-            console.log("*** slate headers", slateHeaders)
-
-            // TODO: use Transforms.remove and addNodes where appropriate
-            // Or, decide whether the headers even need to be in the slate dom at all!!
+            MyTransforms.updateIdentificationHeaders(editor, identification)
         }, [identification]
     )
 

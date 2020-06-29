@@ -1,5 +1,4 @@
 import * as React from "react";
-import { jsx } from "slate-hyperscript";
 import "./demo.css";
 import { UsfmEditor } from "../components/UsfmEditor";
 import { InputSelector } from "./InputSelector";

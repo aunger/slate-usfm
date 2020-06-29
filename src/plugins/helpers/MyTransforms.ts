@@ -5,6 +5,8 @@ import { ReactEditor } from 'slate-react'
 import { DOMNode } from "slate-react/dist/utils/dom";
 import { MyEditor } from "./MyEditor"
 import { textNode } from "../../transforms/basicSlateNodeFactory";
+import { transformToSlate } from '../../transforms/usfmToSlate';
+import { UsfmMarkers } from "../../utils/UsfmMarkers";
 
 export const MyTransforms = {
     ...Transforms,
@@ -13,7 +15,8 @@ export const MyTransforms = {
     replaceText,
     selectDOMNodeStart,
     selectNextSiblingNonEmptyText,
-    moveToEndOfLastLeaf
+    moveToEndOfLastLeaf,
+    updateIdentificationHeaders
 }
 
 /**
@@ -128,6 +131,36 @@ function moveToEndOfLastLeaf(
         {
             path: lastLeafPath,
             offset: lastLeaf.text.length
+        }
+    )
+}
+
+function updateIdentificationHeaders(editor: Editor, json: Object) {
+    const newIdHeadersAsArray = Object.entries(json)
+        .map(n => {
+            return {
+                "tag": n[0],
+                "content": n[1]
+            }
+        })
+    const newIdHeadersAsSlate = newIdHeadersAsArray.map(transformToSlate)
+
+    Transforms.removeNodes(
+        editor,
+        {
+            at: [0], // look at headers only, not chapter contents
+            voids: true, // captures nodes that aren't represented in the DOM
+            match: node =>
+                node.type &&
+                UsfmMarkers.isIdentification(node.type)
+        }
+    )
+    Transforms.insertNodes(
+        editor,
+        // @ts-ignore
+        newIdHeadersAsSlate,
+        {
+            at: [0,0]
         }
     )
 }

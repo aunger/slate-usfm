@@ -4,39 +4,34 @@ import { transform } from "json-transforms";
 import { jsx } from "slate-hyperscript";
 import { NodeTypes } from "../utils/NodeTypes";
 import { emptyInlineContainer, verseNumber, verseWithChildren } from "./basicSlateNodeFactory";
-
-export function usfmJsToSlate(usfmJsDoc) {
-    const usfmAsArrays = transform(usfmJsDoc, objectToArrayRules);
-    console.log("usfmAsArrays", usfmAsArrays)
-
-    const slateTree = transformToSlate(usfmAsArrays)
-    console.log("slateTree", slateTree)
-
-    return slateTree
-}
-
-export function usfmJsArraysToSlate(usfmJsAsArrays) {
-    const slateTree = transformToSlate(usfmJsAsArrays)
-    console.log("slateTree", slateTree)
-
-    return slateTree
-}
-
-export function usfmToJsArrays(usfm) {
-    const usfmJsDoc = usfmjs.toJSON(usfm);
-    console.log("parsed from usfm-js", usfmJsDoc)
- 
-    const usfmAsArrays = transform(usfmJsDoc, objectToArrayRules);
-    console.log("usfmAsArrays", usfmAsArrays)
-
-    return usfmAsArrays
-}
+import { UsfmMarkers } from "../utils/UsfmMarkers";
 
 export function usfmToSlate(usfm) {
     const usfmJsDoc = usfmjs.toJSON(usfm);
     console.log("parsed from usfm-js", usfmJsDoc)
 
-    return usfmJsToSlate(usfmJsDoc)
+    const usfmAsArrays = transform(usfmJsDoc, objectToArrayRules);
+    console.log("usfmAsArrays", usfmAsArrays)
+
+    const identificationJson = parseIdentificationHeaders(usfmAsArrays)
+
+    const slateTree = transformToSlate(usfmAsArrays)
+    console.log("slateTree", slateTree)
+
+    return [ slateTree, identificationJson ]
+}
+
+function parseIdentificationHeaders(usfmAsArrays) {
+    const parsed = {}
+    usfmAsArrays.headers
+        .filter(h => 
+            h.tag &&
+            UsfmMarkers.isIdentification(h.tag)
+        )
+        .forEach(h => {
+            parsed[h.tag] = h.content
+        })
+    return parsed
 }
 
 export function transformToSlate(el) {
@@ -62,12 +57,12 @@ export function transformToSlate(el) {
 }
 
 function fragment(book) {
+    const books = book.chapters.map(transformToSlate)
     const headers = jsx(
         'element',
         { type: NodeTypes.HEADERS },
         book.headers.map(transformToSlate)
     )
-    const books = book.chapters.map(transformToSlate)
     const children = [headers, books].flat()
     return jsx('fragment', {}, children)
 }
