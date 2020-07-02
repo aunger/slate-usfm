@@ -69,7 +69,12 @@ export const UsfmEditor = ({
         if (identification &&
             !isEqual(identification, identificationState)
         ) {
-            mergeNewIdentification(identification, identificationState)
+            const result = MyTransforms.updateIdentificationHeaders(
+                editor, 
+                identification, 
+                identificationState
+            )
+            setIdentificationState(result)
         }
     }, [identification])
 
@@ -120,32 +125,6 @@ export const UsfmEditor = ({
             />
         </Slate>
     )
-
-    function mergeNewIdentification(input, previous) {
-        const validIdJson = filterInvalidIdentification(input)
-        MyTransforms.updateIdentificationHeaders(editor, validIdJson)
-        setIdentificationState(validIdJson)
-    }
-
-    function filterInvalidIdentification(idJson) {
-        Object.entries(idJson)
-            .filter( ([marker, text]) => 
-                false == UsfmMarkers.isIdentification(marker)
-            )
-            .forEach( ([marker, text]) =>
-                console.error(`Invalid identification marker: ${marker}`)
-            )
-
-        const validIdJson = {}
-        Object.entries(idJson)
-            .filter( ([marker, text]) => 
-                UsfmMarkers.isIdentification(marker)
-            )
-            .forEach( ([marker, text]) => 
-                validIdJson[marker] = text
-            )
-        return validIdJson
-    }
 
     function parseIdentificationHeaders(usfm) {
         const parsed = {}

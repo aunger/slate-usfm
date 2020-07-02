@@ -1,10 +1,11 @@
-import { Transforms, Editor, Path } from "slate";
+import { Transforms, Editor, Path, Node } from "slate";
 import { NodeTypes } from "../../utils/NodeTypes";
 import { VerseTransforms } from "./VerseTransforms"
 import { textNode } from "../../transforms/basicSlateNodeFactory";
 import { transformToSlate } from '../../transforms/usfmToSlate';
 import { UsfmMarkers } from "../../utils/UsfmMarkers";
 import { SelectionTransforms } from "./SelectionTransforms";
+import * as clonedeep from "lodash/cloneDeep"
 
 export const MyTransforms = {
     ...Transforms,
@@ -66,18 +67,56 @@ function replaceText(
  * Updates the identification headers, stored in the "headers" node of
  * the editor's children (at path [0].)
  * 
- * @param {Object} idJson - Json specifying the identification headers
+ * @param {Object} inputJson - Json specifying the updated identification headers.
  *      example: {'toc1': 'The Book of Genesis', 'id': 'GEN'}
+ *      Unspecified headers will be kept the same.
+ *      To delete a header, pass a null, empty string, or empty array value like:
+ *      {'toc1': null} OR {'toc1': ''} OR {'rem':[]}
+ * @param {Object} oldJson - Json specifying the most recent state of the
+ *      identification headers.
+ * @returns The updated identification json
  */
-function updateIdentificationHeaders(editor: Editor, idJson: Object) {
+function updateIdentificationHeaders(
+    editor: Editor, 
+    inputJson: Object, 
+    oldJson: Object
+): Object {
+    // const validIdJson = filterInvalidIdentification(inputJson)
+    const updatedJson = clonedeep(oldJson)
 
-    const newIdHeaders = Object.entries(idJson)
-        .map(entry => (
+    Object.assign(updatedJson, inputJson)
+    Object.entries(updatedJson)
+        .forEach( ([marker, value]) => {
+            if (!value || 
+                // @ts-ignore
+                (value.hasOwnProperty("length") && value.length == 0)
+            ) {
+                delete updatedJson[marker]
+            }
+        })
+
+    const remarks = updatedJson[UsfmMarkers.IDENTIFICATION.rem]
+    const slateRemarks = Array.isArray(remarks)
+        ? remarks.map(
+            text => (
+                {
+                    "tag": UsfmMarkers.IDENTIFICATION.rem,
+                    "content": text
+                }
+            ))
+        : []
+
+    const newIdHeaders = Object.entries(updatedJson)
+        .filter( ([marker, value]) =>
+            typeof value == "string"
+        )
+        .map( ([marker, value]) => (
             {
-                "tag": entry[0],
-                "content": entry[1]
+                "tag": marker,
+                "content": value 
             }
         ))
+        .concat(slateRemarks)
         .map(transformToSlate)
 
     Transforms.removeNodes(
@@ -96,4 +135,32 @@ function updateIdentificationHeaders(editor: Editor, idJson: Object) {
             at: [0, 0]
         }
     )
+
+    return updatedJson
+
+    // function filterInvalidIdentification(idJson: Object) {
+    //     Object.entries(idJson)
+    //         .forEach( ([marker, value]) => {
+    //             if (! UsfmMarkers.isIdentification(marker)) {
+    //                 console.error(`Invalid identification marker: ${marker}`)
+    //                 return false
+    //             } else if (typeof value != "string") {
+    //             }
+    //                 marker != UsfmMarkers.IDENTIFICATION.rem &&
+    //             ) else if (
+    //                 marker == UsfmMarkers.IDENTIFICATION.rem &&
+    //                 typeof value
+    //             )
+    //         })
+
+    //     const validIdJson = {}
+    //     Object.entries(idJson)
+    //         .filter( ([marker, text]) => 
+    //             UsfmMarkers.isIdentification(marker)
+    //         )
+    //         .forEach( ([marker, text]) => 
+    //             validIdJson[marker] = text
+    //         )
+    //     return validIdJson
+    // }
 }
