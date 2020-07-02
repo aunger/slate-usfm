@@ -39,11 +39,8 @@ export const UsfmEditor = ({
             )(),
         []
     )
-    // const identificationReducer = (previous, { action, input }) => {
     const identificationReducer = useMemo(() => 
         (previous, { action, input }) => {
-            console.log("previous:", previous)
-            console.log("input: ", input)
             switch (action) {
                 case "update":
                     if (input &&
@@ -60,7 +57,6 @@ export const UsfmEditor = ({
                     console.log("replace")
                     return input
             }
-        // }
         },
         []
     )
@@ -97,23 +93,16 @@ export const UsfmEditor = ({
     }, [usfmString])
 
     useEffect(() => {
-        console.log("**********state changed: ", identificationState)
         if (onIdentificationChange) {
             onIdentificationChange(identificationState)
         }
     }, [identificationState])
 
     useEffect(() => {
-        console.log("FIRST identification: ", identification)
-        console.log("FIRST identificationState: ", identificationState)
-        // if (identification &&
-        //     !isEqual(identification, identificationState)
-        // ) {
-            dispatchIdentification({
-                action: "update",
-                input: identification
-            })
-        // }
+        dispatchIdentification({
+            action: "update",
+            input: identification
+        })
     }, [identification])
 
     const handleChange = value => {
