@@ -81,44 +81,48 @@ function updateIdentificationHeaders(
     inputJson: Object, 
     oldJson: Object
 ): Object {
-    // const validIdJson = filterInvalidIdentification(inputJson)
-    const updatedJson = clonedeep(oldJson)
+    // Apply the changes to the identificaton json
+    const target = clonedeep(oldJson)
+    Object.assign(target, inputJson)
 
-    Object.assign(updatedJson, inputJson)
-    Object.entries(updatedJson)
+    // Remove markers with null or empty values
+    const isNonEmptyText = (text) => (
+        typeof text == "string" &&
+        text.trim()
+    )
+    const isNonEmptyStringOrArray = (value) => {
+        if (Array.isArray(value)) {
+            return value.length > 0
+        }
+        return isNonEmptyText(value)
+    }
+    const updatedJson = {}
+    Object.entries(target)
         .forEach( ([marker, value]) => {
-            if (!value || 
-                // @ts-ignore
-                (value.hasOwnProperty("length") && value.length == 0)
-            ) {
-                delete updatedJson[marker]
+            if (Array.isArray(value)) {
+                value = value.filter(isNonEmptyText)
+            }
+            if (isNonEmptyStringOrArray(value)) {
+                updatedJson[marker] = value
             }
         })
 
-    const remarks = updatedJson[UsfmMarkers.IDENTIFICATION.rem]
-    const slateRemarks = Array.isArray(remarks)
-        ? remarks.map(
-            text => (
-                {
-                    "tag": UsfmMarkers.IDENTIFICATION.rem,
-                    "content": text
-                }
-            ))
-        : []
-
+    // Construct the slate nodes for the new identification headers
+    const idHeader = (tag, content) => (
+        transformToSlate({
+            "tag": tag,
+            "content": content
+        })
+    )
     const newIdHeaders = Object.entries(updatedJson)
-        .filter( ([marker, value]) =>
-            typeof value == "string"
-        )
-        .map( ([marker, value]) => (
-            {
-                "tag": marker,
-                "content": value 
-            }
+        // @ts-ignore
+        .flatMap( ([marker, value]) => (
+            Array.isArray(value)
+                ? value.map(text => idHeader(marker, text))
+                : idHeader(marker, value)
         ))
-        .concat(slateRemarks)
-        .map(transformToSlate)
 
+    // Replace the existing identification headers
     Transforms.removeNodes(
         editor,
         {
@@ -131,9 +135,7 @@ function updateIdentificationHeaders(
         editor,
         // @ts-ignore
         newIdHeaders,
-        {
-            at: [0, 0]
-        }
+        { at: [0, 0] }
     )
 
     return updatedJson
