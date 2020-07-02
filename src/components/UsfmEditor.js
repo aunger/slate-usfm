@@ -39,41 +39,11 @@ export const UsfmEditor = ({
             )(),
         []
     )
-    const identificationReducer = useMemo(() => 
-        (previous, { action, input }) => {
-            switch (action) {
-                case "update":
-                    if (input &&
-                        !isEqual(input, previous)
-                    ) {
-                        console.log("   update required")
-                        return input
-                    } else {
-                        console.log("   update NOT required")
-                        return previous
-                    }
-                case "replace":
-                default:
-                    console.log("replace")
-                    return input
-            }
-        },
-        []
-    )
-            // const validIdJson = filterInvalidIdentification(newInput)
-            // MyTransforms.updateIdentificationHeaders(editor, validIdJson)
 
-            // return newInput
-
-    const [identificationState, dispatchIdentification] = useReducer(
-        identificationReducer, 
-        identification
-    )
     const [value, setValue] = useState([emptyParagraph()])
 
-    // const [identificationState, setIdentificationState] = useState(identification)
+    const [identificationState, setIdentificationState] = useState(identification)
     // const [value, setValue] = useState(null)
-
 
     // useMemo(() => {
     useEffect(() => {
@@ -86,10 +56,7 @@ export const UsfmEditor = ({
 
     useEffect(() => {
         const parsedIdentification = parseIdentificationHeaders(usfmString)
-        dispatchIdentification({
-            action: "replace",
-            input: parsedIdentification
-        })
+        setIdentificationState(parsedIdentification)
     }, [usfmString])
 
     useEffect(() => {
@@ -99,10 +66,11 @@ export const UsfmEditor = ({
     }, [identificationState])
 
     useEffect(() => {
-        dispatchIdentification({
-            action: "update",
-            input: identification
-        })
+        if (identification &&
+            !isEqual(identification, identificationState)
+        ) {
+            mergeNewIdentification(identification, identificationState)
+        }
     }, [identification])
 
     const handleChange = value => {
@@ -152,6 +120,12 @@ export const UsfmEditor = ({
             />
         </Slate>
     )
+
+    function mergeNewIdentification(input, previous) {
+        const validIdJson = filterInvalidIdentification(input)
+        MyTransforms.updateIdentificationHeaders(editor, validIdJson)
+        setIdentificationState(validIdJson)
+    }
 
     function filterInvalidIdentification(idJson) {
         Object.entries(idJson)
