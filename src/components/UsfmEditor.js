@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as usfmjs from "usfm-js";
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useReducer } from 'react';
 import { withReact, Slate, Editable, ReactEditor } from "slate-react";
 import { createEditor, Transforms } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
@@ -11,7 +11,7 @@ import { NodeTypes } from "../utils/NodeTypes";
 import { HoveringToolbar } from "./HoveringToolbar";
 import { slateToUsfm } from "../transforms/slateToUsfm";
 import { debounce } from "debounce";
-import { flowRight } from "lodash"
+import { flowRight, isEqual } from "lodash"
 import { MyTransforms } from "../plugins/helpers/MyTransforms";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { emptyParagraph } from "../transforms/basicSlateNodeFactory";
@@ -39,10 +39,45 @@ export const UsfmEditor = ({
             )(),
         []
     )
+    // const identificationReducer = (previous, { action, input }) => {
+    const identificationReducer = useMemo(() => 
+        (previous, { action, input }) => {
+            console.log("previous:", previous)
+            console.log("input: ", input)
+            switch (action) {
+                case "update":
+                    if (input &&
+                        !isEqual(input, previous)
+                    ) {
+                        console.log("   update required")
+                        return input
+                    } else {
+                        console.log("   update NOT required")
+                        return previous
+                    }
+                case "replace":
+                default:
+                    console.log("replace")
+                    return input
+            }
+        // }
+        },
+        []
+    )
+            // const validIdJson = filterInvalidIdentification(newInput)
+            // MyTransforms.updateIdentificationHeaders(editor, validIdJson)
 
-    const [identificationState, setIdentificationState] = useState(identification)
+            // return newInput
+
+    const [identificationState, dispatchIdentification] = useReducer(
+        identificationReducer, 
+        identification
+    )
     const [value, setValue] = useState([emptyParagraph()])
+
+    // const [identificationState, setIdentificationState] = useState(identification)
     // const [value, setValue] = useState(null)
+
 
     // useMemo(() => {
     useEffect(() => {
@@ -55,21 +90,30 @@ export const UsfmEditor = ({
 
     useEffect(() => {
         const parsedIdentification = parseIdentificationHeaders(usfmString)
-        setIdentificationState(parsedIdentification)
+        dispatchIdentification({
+            action: "replace",
+            input: parsedIdentification
+        })
     }, [usfmString])
 
     useEffect(() => {
+        console.log("**********state changed: ", identificationState)
         if (onIdentificationChange) {
             onIdentificationChange(identificationState)
         }
     }, [identificationState])
 
     useEffect(() => {
-        if (identification &&
-            identification != identificationState
-        ) {
-            updateIdentification(identification)
-        }
+        console.log("FIRST identification: ", identification)
+        console.log("FIRST identificationState: ", identificationState)
+        // if (identification &&
+        //     !isEqual(identification, identificationState)
+        // ) {
+            dispatchIdentification({
+                action: "update",
+                input: identification
+            })
+        // }
     }, [identification])
 
     const handleChange = value => {
@@ -119,12 +163,6 @@ export const UsfmEditor = ({
             />
         </Slate>
     )
-
-    function updateIdentification(identification) {
-        const validIdJson = filterInvalidIdentification(identification)
-        MyTransforms.updateIdentificationHeaders(editor, validIdJson)
-        setIdentificationState(validIdJson)
-    }
 
     function filterInvalidIdentification(idJson) {
         Object.entries(idJson)
