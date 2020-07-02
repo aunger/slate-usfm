@@ -88,7 +88,6 @@ export class DemoEditor extends React.Component {
                         <h2>Editor</h2>
                         <UsfmEditor
                             usfmString={this.state.usfmInput}
-                            key={this.state.usfmInput}
                             onChange={this.handleEditorChange}
                             readOnly={this.state.readOnly}
                             identification={this.state.identification}

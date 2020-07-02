@@ -1,7 +1,8 @@
 import * as React from "react";
+import * as usfmjs from "usfm-js";
 import { useMemo, useState, useEffect } from 'react';
 import { withReact, Slate, Editable, ReactEditor } from "slate-react";
-import { createEditor } from 'slate';
+import { createEditor, Transforms } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
 import { usfmToSlate } from '../transforms/usfmToSlate';
 import { withNormalize } from "../plugins/normalizeNode";
@@ -13,28 +14,18 @@ import { debounce } from "debounce";
 import { flowRight } from "lodash"
 import { MyTransforms } from "../plugins/helpers/MyTransforms";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
+import { emptyParagraph } from "../transforms/basicSlateNodeFactory";
 
 /**
  * A WYSIWYG editor component for USFM
  */
 export const UsfmEditor = ({ 
     usfmString, 
-    plugins, 
     onChange,
     readOnly,
     identification,
     onIdentificationChange
 }) => {
-    const [identificationState, setIdentificationState] = useState(identification)
-
-    const initialValue = useMemo(() => {
-        const [ slateTree, parsedIdentification ] = usfmToSlate(usfmString)
-        setIdentificationState(parsedIdentification)
-        if (onIdentificationChange) {
-            onIdentificationChange(parsedIdentification)
-        }
-        return slateTree
-    }, [])
 
     const editor = useMemo(
         () =>
@@ -49,23 +40,37 @@ export const UsfmEditor = ({
         []
     )
 
-    useEffect(
-        () => {
-            if (!identification ||
-                identification == identificationState
-            ) {
-                return
-            }
-            const validIdJson = filterInvalidIdentification(identification)
-            MyTransforms.updateIdentificationHeaders(editor, validIdJson)
-            setIdentificationState(validIdJson)
-            if (onIdentificationChange) {
-                onIdentificationChange(validIdJson)
-            }
-        }, [identification]
-    )
+    const [identificationState, setIdentificationState] = useState(identification)
+    const [value, setValue] = useState([emptyParagraph()])
+    // const [value, setValue] = useState(null)
 
-    const [value, setValue] = useState(initialValue)
+    // useMemo(() => {
+    useEffect(() => {
+        const slateTree = usfmToSlate(usfmString)
+        setValue(slateTree) // TODO: or handleChange??
+        if (editor.selection) {
+            Transforms.select(editor, [0,0])
+        }
+    }, [usfmString])
+
+    useEffect(() => {
+        const parsedIdentification = parseIdentificationHeaders(usfmString)
+        setIdentificationState(parsedIdentification)
+    }, [usfmString])
+
+    useEffect(() => {
+        if (onIdentificationChange) {
+            onIdentificationChange(identificationState)
+        }
+    }, [identificationState])
+
+    useEffect(() => {
+        if (identification &&
+            identification != identificationState
+        ) {
+            updateIdentification(identification)
+        }
+    }, [identification])
 
     const handleChange = value => {
         console.debug("after change", value)
@@ -115,6 +120,12 @@ export const UsfmEditor = ({
         </Slate>
     )
 
+    function updateIdentification(identification) {
+        const validIdJson = filterInvalidIdentification(identification)
+        MyTransforms.updateIdentificationHeaders(editor, validIdJson)
+        setIdentificationState(validIdJson)
+    }
+
     function filterInvalidIdentification(idJson) {
         Object.entries(idJson)
             .filter( ([marker, text]) => 
@@ -133,5 +144,19 @@ export const UsfmEditor = ({
                 validIdJson[marker] = text
             )
         return validIdJson
+    }
+
+    function parseIdentificationHeaders(usfm) {
+        const parsed = {}
+        const usfmJsDoc = usfmjs.toJSON(usfm);
+
+        usfmJsDoc.headers
+            .filter(h => 
+                UsfmMarkers.isIdentification(h.tag)
+            )
+            .forEach(h => {
+                parsed[h.tag] = h.content
+            })
+        return parsed
     }
 }
