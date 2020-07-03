@@ -2,6 +2,8 @@
 const usfmStrings = new Map([
 ["small", `
 \\id GEN
+\\rem rem1
+\\rem rem2
 \\c 1
 \\p
 \\v 1 the first verse

@@ -2,7 +2,7 @@ import * as React from "react";
 import * as usfmjs from "usfm-js";
 import { useMemo, useState, useEffect, useReducer } from 'react';
 import { withReact, Slate, Editable, ReactEditor } from "slate-react";
-import { createEditor, Transforms } from 'slate';
+import { createEditor, Transforms, Node } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
 import { usfmToSlate } from '../transforms/usfmToSlate';
 import { withNormalize } from "../plugins/normalizeNode";
@@ -42,7 +42,6 @@ export const UsfmEditor = ({
 
     const [value, setValue] = useState([emptyParagraph()])
 
-    const [identificationState, setIdentificationState] = useState(identification)
     // const [value, setValue] = useState(null)
 
     // useMemo(() => {
@@ -56,25 +55,24 @@ export const UsfmEditor = ({
 
     useEffect(() => {
         const parsedIdentification = parseIdentificationHeaders(usfmString)
-        setIdentificationState(parsedIdentification)
+        if (onIdentificationChange) {
+            onIdentificationChange(parsedIdentification)
+        }
     }, [usfmString])
 
     useEffect(() => {
-        if (onIdentificationChange) {
-            onIdentificationChange(identificationState)
-        }
-    }, [identificationState])
-
-    useEffect(() => {
+        const currentIdentification = getIdentification(value)
         if (identification &&
-            !isEqual(identification, identificationState)
+            !isEqual(identification, currentIdentification)
         ) {
             const result = MyTransforms.updateIdentificationHeaders(
                 editor, 
                 identification, 
-                identificationState
+                currentIdentification
             )
-            setIdentificationState(result)
+            if (onIdentificationChange) {
+                onIdentificationChange(result)
+            }
         }
     }, [identification])
 
@@ -126,17 +124,47 @@ export const UsfmEditor = ({
         </Slate>
     )
 
-    function parseIdentificationHeaders(usfm) {
+    function getIdentification(value) {
         const parsed = {}
+        let remarks = []
+
+        value[0].children
+            .map(node => (
+                {
+                    tag: node.type,
+                    content: Node.string(node)
+                }
+            ))
+            .forEach(h => {
+                if (h.tag == UsfmMarkers.IDENTIFICATION.rem) {
+                    remarks = remarks.concat(h.content)
+                } else if (UsfmMarkers.isIdentification(h.tag)) {
+                    parsed[h.tag] = h.content
+                }
+            })
+        if (remarks.length > 0) {
+            parsed[UsfmMarkers.IDENTIFICATION.rem] = remarks
+        }
+        return parsed
+    }
+
+    function parseIdentificationHeaders(usfm) {
         const usfmJsDoc = usfmjs.toJSON(usfm);
+        const parsed = {}
+        let remarks = []
+        console.log("***** jsDoc: ", usfmJsDoc)
 
         usfmJsDoc.headers
-            .filter(h => 
-                UsfmMarkers.isIdentification(h.tag)
-            )
             .forEach(h => {
-                parsed[h.tag] = h.content
+                if (h.tag == UsfmMarkers.IDENTIFICATION.rem) {
+                    remarks = remarks.concat(h.content)
+                } else if (UsfmMarkers.isIdentification(h.tag)) {
+                    parsed[h.tag] = h.content
+                }
             })
+        if (remarks.length > 0) {
+            parsed[UsfmMarkers.IDENTIFICATION.rem] = remarks
+        }
         return parsed
     }
 }

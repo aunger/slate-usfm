@@ -82,38 +82,19 @@ function updateIdentificationHeaders(
     oldJson: Object
 ): Object {
     // Apply the changes to the identificaton json
-    const target = clonedeep(oldJson)
-    Object.assign(target, inputJson)
-
-    // Remove markers with null or empty values
-    const isNonEmptyText = (text) => (
-        typeof text == "string" &&
-        text.trim()
-    )
-    const isNonEmptyStringOrArray = (value) => {
-        if (Array.isArray(value)) {
-            return value.length > 0
-        }
-        return isNonEmptyText(value)
-    }
-    const updatedJson = {}
-    Object.entries(target)
-        .forEach( ([marker, value]) => {
-            if (Array.isArray(value)) {
-                value = value.filter(isNonEmptyText)
-            }
-            if (isNonEmptyStringOrArray(value)) {
-                updatedJson[marker] = value
-            }
-        })
+    const updatedJson = clonedeep(oldJson)
+    Object.assign(updatedJson, inputJson)
 
     // Construct the slate nodes for the new identification headers
-    const idHeader = (tag, content) => (
-        transformToSlate({
+    const idHeader = (tag, content) => {
+        if (!content) return null
+        const text = content.toString()
+        if (!text.trim()) return null
+        return transformToSlate({
             "tag": tag,
-            "content": content
+            "content": text
         })
-    )
+    }
     const newIdHeaders = Object.entries(updatedJson)
         // @ts-ignore
         .flatMap( ([marker, value]) => (
@@ -121,6 +102,10 @@ function updateIdentificationHeaders(
                 ? value.map(text => idHeader(marker, text))
                 : idHeader(marker, value)
         ))
+        .filter(n => n) // filter out nulls
+
+
+    console.log("new: ", newIdHeaders)
 
     // Replace the existing identification headers
     Transforms.removeNodes(
@@ -138,7 +123,33 @@ function updateIdentificationHeaders(
         { at: [0, 0] }
     )
 
-    return updatedJson
+    console.log("AFTER: ", editor.children)
+
+    return getIdentification(editor.children)
+
+    function getIdentification(value) {
+        const parsed = {}
+        let remarks = []
+
+        value[0].children
+            .map(node => (
+                {
+                    tag: node.type,
+                    content: Node.string(node)
+                }
+            ))
+            .forEach(h => {
+                if (h.tag == UsfmMarkers.IDENTIFICATION.rem) {
+                    remarks = remarks.concat(h.content)
+                } else if (UsfmMarkers.isIdentification(h.tag)) {
+                    parsed[h.tag] = h.content
+                }
+            })
+        if (remarks.length > 0) {
+            parsed[UsfmMarkers.IDENTIFICATION.rem] = remarks
+        }
+        return parsed
+    }
 
     // function filterInvalidIdentification(idJson: Object) {
     //     Object.entries(idJson)
