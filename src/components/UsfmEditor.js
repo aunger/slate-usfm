@@ -1,8 +1,7 @@
 import * as React from "react";
-import * as usfmjs from "usfm-js";
-import { useMemo, useState, useEffect, useReducer } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { withReact, Slate, Editable, ReactEditor } from "slate-react";
-import { createEditor, Transforms, Node } from 'slate';
+import { createEditor, Transforms } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
 import { usfmToSlate } from '../transforms/usfmToSlate';
 import { withNormalize } from "../plugins/normalizeNode";
@@ -13,8 +12,10 @@ import { slateToUsfm } from "../transforms/slateToUsfm";
 import { debounce } from "debounce";
 import { flowRight, isEqual } from "lodash"
 import { MyTransforms } from "../plugins/helpers/MyTransforms";
-import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { emptyParagraph } from "../transforms/basicSlateNodeFactory";
+import { parseIdentificationFromUsfm, 
+         parseIdentificationFromSlateTree 
+} from "../transforms/identificationTransforms";
 
 /**
  * A WYSIWYG editor component for USFM
@@ -54,14 +55,15 @@ export const UsfmEditor = ({
     }, [usfmString])
 
     useEffect(() => {
-        const parsedIdentification = parseIdentificationHeaders(usfmString)
+        const parsedIdentification = parseIdentificationFromUsfm(usfmString)
         if (onIdentificationChange) {
             onIdentificationChange(parsedIdentification)
         }
     }, [usfmString])
 
     useEffect(() => {
-        const currentIdentification = getIdentification(value)
+        // Use editor.children instead of value here since it isn't updated yet!
+        const currentIdentification = parseIdentificationFromSlateTree(editor.children)
         if (identification &&
             !isEqual(identification, currentIdentification)
         ) {
@@ -123,48 +125,4 @@ export const UsfmEditor = ({
             />
         </Slate>
     )
-
-    function getIdentification(value) {
-        const parsed = {}
-        let remarks = []
-
-        value[0].children
-            .map(node => (
-                {
-                    tag: node.type,
-                    content: Node.string(node)
-                }
-            ))
-            .forEach(h => {
-                if (h.tag == UsfmMarkers.IDENTIFICATION.rem) {
-                    remarks = remarks.concat(h.content)
-                } else if (UsfmMarkers.isIdentification(h.tag)) {
-                    parsed[h.tag] = h.content
-                }
-            })
-        if (remarks.length > 0) {
-            parsed[UsfmMarkers.IDENTIFICATION.rem] = remarks
-        }
-        return parsed
-    }
-
-    function parseIdentificationHeaders(usfm) {
-        const usfmJsDoc = usfmjs.toJSON(usfm);
-        const parsed = {}
-        let remarks = []
-        console.log("***** jsDoc: ", usfmJsDoc)
-
-        usfmJsDoc.headers
-            .forEach(h => {
-                if (h.tag == UsfmMarkers.IDENTIFICATION.rem) {
-                    remarks = remarks.concat(h.content)
-                } else if (UsfmMarkers.isIdentification(h.tag)) {
-                    parsed[h.tag] = h.content
-                }
-            })
-        if (remarks.length > 0) {
-            parsed[UsfmMarkers.IDENTIFICATION.rem] = remarks
-        }
-        return parsed
-    }
 }

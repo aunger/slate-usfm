@@ -2,10 +2,10 @@ import { Transforms, Editor, Path, Node } from "slate";
 import { NodeTypes } from "../../utils/NodeTypes";
 import { VerseTransforms } from "./VerseTransforms"
 import { textNode } from "../../transforms/basicSlateNodeFactory";
-import { transformToSlate } from '../../transforms/usfmToSlate';
 import { UsfmMarkers } from "../../utils/UsfmMarkers";
 import { SelectionTransforms } from "./SelectionTransforms";
 import * as clonedeep from "lodash/cloneDeep"
+import { parseIdentificationFromSlateTree, identificationToSlate } from "../../transforms/identificationTransforms";
 
 export const MyTransforms = {
     ...Transforms,
@@ -81,31 +81,10 @@ function updateIdentificationHeaders(
     inputJson: Object, 
     oldJson: Object
 ): Object {
-    // Apply the changes to the identificaton json
     const updatedJson = clonedeep(oldJson)
     Object.assign(updatedJson, inputJson)
 
-    // Construct the slate nodes for the new identification headers
-    const idHeader = (tag, content) => {
-        if (!content) return null
-        const text = content.toString()
-        if (!text.trim()) return null
-        return transformToSlate({
-            "tag": tag,
-            "content": text
-        })
-    }
-    const newIdHeaders = Object.entries(updatedJson)
-        // @ts-ignore
-        .flatMap( ([marker, value]) => (
-            Array.isArray(value)
-                ? value.map(text => idHeader(marker, text))
-                : idHeader(marker, value)
-        ))
-        .filter(n => n) // filter out nulls
-
-
-    console.log("new: ", newIdHeaders)
+    const slateHeaders = identificationToSlate(updatedJson)
 
     // Replace the existing identification headers
     Transforms.removeNodes(
@@ -119,37 +98,11 @@ function updateIdentificationHeaders(
     Transforms.insertNodes(
         editor,
         // @ts-ignore
-        newIdHeaders,
+        slateHeaders,
         { at: [0, 0] }
     )
 
-    console.log("AFTER: ", editor.children)
-
-    return getIdentification(editor.children)
-
-    function getIdentification(value) {
-        const parsed = {}
-        let remarks = []
-
-        value[0].children
-            .map(node => (
-                {
-                    tag: node.type,
-                    content: Node.string(node)
-                }
-            ))
-            .forEach(h => {
-                if (h.tag == UsfmMarkers.IDENTIFICATION.rem) {
-                    remarks = remarks.concat(h.content)
-                } else if (UsfmMarkers.isIdentification(h.tag)) {
-                    parsed[h.tag] = h.content
-                }
-            })
-        if (remarks.length > 0) {
-            parsed[UsfmMarkers.IDENTIFICATION.rem] = remarks
-        }
-        return parsed
-    }
+    return parseIdentificationFromSlateTree(editor.children)
 
     // function filterInvalidIdentification(idJson: Object) {
     //     Object.entries(idJson)
