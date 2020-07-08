@@ -43,7 +43,13 @@ export const UsfmEditor = ({
 
     const [value, setValue] = useState([emptyParagraph()])
 
-    // const [value, setValue] = useState(null)
+    useMemo(() => {
+        const slateTree = usfmToSlate(usfmString)
+        setValue(slateTree)
+        if (editor.selection) {
+            Transforms.select(editor, [0,0])
+        }
+    }, [usfmString])
 
     // useMemo(() => {
     useEffect(() => {
