@@ -76,7 +76,6 @@ export function identificationToSlate(idJson: Object): Array<HasType> {
         })
     }
     return Object.entries(idJson)
-        //@ts-ignore
         .flatMap( ([marker, value]) => (
             Array.isArray(value)
                 ? value.map(text => idHeader(marker, text))
@@ -123,7 +122,7 @@ function isValidMarkerValuePair(marker: string, value: any): boolean {
     }
 }
 
-interface HasType {
+interface HasType extends Element {
     type: string
 }
 

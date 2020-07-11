@@ -67,7 +67,6 @@ const markerToCategoryMap: Map<string, Object> = (() => {
         CHAPTERS_AND_VERSES
     ]
     return new Map<string, object>(
-        // @ts-ignore
         categories.flatMap(e => Object.entries(e).map(v => [v[0], e]))
     )
 })()
