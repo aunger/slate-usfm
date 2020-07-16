@@ -8,6 +8,8 @@ import { PropTypes } from "prop-types"
 import { UIComponentContext } from "../injectedUI/UIComponentContext"
 import Popper from '@material-ui/core/Popper'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import Grow from '@material-ui/core/Grow'
+import Paper from '@material-ui/core/Paper'
 
 export const VerseNumberMenu = ({
     verseNumberEl,
@@ -24,34 +26,33 @@ export const VerseNumberMenu = ({
         .concat(0)
 
     return (
-        <Popper 
-            anchorEl={verseNumberEl}
-            open={open}
-            modifiers={{
-                flip: { enabled: true }
-            }}>
-            <ClickAwayListener 
-                // If "onClick" is used instead of "onMouseDown", multiple menus may be
-                // displayed simultaneously. Additionally, if the verse number displays uses
-                // "onClick" to display the menu rather than "onMouseDown', this 
-                // ClickAwayListener will not work.
-                mouseEvent={"onMouseDown"}
-                onClickAway={handleClose}>
-                <VerseMenu>
-                    <VerseJoinUnjoinSubmenu
-                        editor={editor}
-                        verseNumberPath={verseNumberPath}
-                    />
-                    {
-                        useVerseAddRemove &&
-                            <VerseAddRemoveSubmenu
-                                editor={editor}
-                                verseNumberPath={verseNumberPath}
-                            />
-                    }
-                </VerseMenu>
-            </ClickAwayListener>
-        </Popper>
+        <PopperWithGrow 
+            verseNumberEl={verseNumberEl}
+            open={open}>
+            <Paper>
+                <ClickAwayListener 
+                    // If "onClick" is used instead of "onMouseDown", multiple menus may be
+                    // displayed simultaneously. Additionally, if the verse number displays uses
+                    // "onClick" to display the menu rather than "onMouseDown', this 
+                    // ClickAwayListener will not work.
+                    mouseEvent={"onMouseDown"}
+                    onClickAway={handleClose}>
+                    <VerseMenu>
+                        <VerseJoinUnjoinSubmenu
+                            editor={editor}
+                            verseNumberPath={verseNumberPath}
+                        />
+                        {
+                            useVerseAddRemove &&
+                                <VerseAddRemoveSubmenu
+                                    editor={editor}
+                                    verseNumberPath={verseNumberPath}
+                                />
+                        }
+                    </VerseMenu>
+                </ClickAwayListener>
+            </Paper>
+        </PopperWithGrow>
     )
 }
 
@@ -78,6 +79,22 @@ export function willVerseMenuDisplay(
             isLastVerse
         )
 }
+
+const PopperWithGrow = ({ verseNumberEl, open, ...props }) => (
+    <Popper 
+        anchorEl={verseNumberEl}
+        open={open}
+        transition
+        modifiers={{
+            flip: { enabled: true }
+        }}>
+        {({ TransitionProps }) => (
+            <Grow {...TransitionProps}>
+                {...props.children}
+            </Grow>
+        )}
+    </Popper>
+)
 
 class VerseSubmenu extends React.Component {
     getVerseNumberString() {
