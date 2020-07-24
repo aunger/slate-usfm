@@ -127,8 +127,8 @@ function getDescendantTextNodes(tagNode) {
         textNodes.forEach(text => {
             // Note here that the tag is not a "node type" but rather a usfm character marker
             // that will be applied to the text as a mark.
-            const { baseMarker } = UsfmMarkers.destructureMarker(tagNode.tag)
-            text[baseMarker] = true
+            const { baseMarker, number } = UsfmMarkers.destructureMarker(tagNode.tag)
+            text[`${baseMarker}${number}`] = true
         })
     }
     return textNodes
