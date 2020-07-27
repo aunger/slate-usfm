@@ -17,6 +17,8 @@ export class EditorDemo extends React.Component {
         super(props);
         // Get the first usfm string in the dropdown menu
         const initialUsfm = props.usfmStrings.values().next().value
+        // const initialUsfm = props.usfmStrings.get("allNumbered")
+        // const initialUsfm = props.usfmStrings.get("allUnnumbered")
         this.state = {
             usfmInput: initialUsfm,
             usfmOutput: transformToOutput(initialUsfm),

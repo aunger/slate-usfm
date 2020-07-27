@@ -6,6 +6,10 @@ const usfmStrings = new Map([
 \\p
 \\v 1 the first verse
 \\s section
+\\p para
+\\li li_content\\li*
+\\lf lf_content
+\\lim lim_content
 `],
 
 ["usfmString1", `

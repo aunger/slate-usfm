@@ -1,6 +1,6 @@
 import MarkerInfoMap from "./MarkerInfoMap"
 
-export type StyleType = 'paragraph' | 'character' | 'note'
+export type StyleType = 'paragraph' | 'character' | 'note' | 'milestone'
 
 export interface MarkerInfo {
     endMarker: string
@@ -112,13 +112,24 @@ export class UsfmMarkers {
     }
 
     static destructureMarker(marker: string) {
+        const [, plus, withoutLeadingPlus] = marker.match(/^(\+?)(.*)$/)
+        if (UsfmMarkers.isNumberedMilestoneMarker(marker)) {
+            const [, number, suffix] = marker.match(/^qt(\d*)(.*)$/)
+            const pluses = ""
+            const baseMarker = `qt${suffix}`
+            return { pluses, baseMarker, number, withoutLeadingPlus };
+        }
         const [, pluses, baseMarker, number] = marker.match(/^(\+*)(.*?)(\d*)$/);
-        return { pluses, baseMarker, number };
+        return { pluses, baseMarker, number, withoutLeadingPlus };
     }
 
     static getBaseMarker(marker: string): string {
         const { baseMarker } = this.destructureMarker(marker)
         return baseMarker
+    }
+
+    private static isNumberedMilestoneMarker(marker: string): boolean {
+        return (/^qt(\d*)(-[se])$/).test(marker)
     }
 
     /**

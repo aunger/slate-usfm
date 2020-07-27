@@ -29,13 +29,14 @@ export function transformToSlate(el) {
     } else if (el.hasOwnProperty("tag")) {
         if (UsfmMarkers.isParagraphType(el.tag)) {
             return paragraphElement(el)
-        } else { // Character or Note marker
+        // } else if (el.tag != "ts-e") { // Character, Note, or Milestone marker
+        } else { // Character, Note, or Milestone marker
             return getDescendantTextNodes(el)
         }
     } else if (el.hasOwnProperty("text")) {
         return { text: removeNewlines(el.text) }
     } else {
-        console.warn("Unrecognized node")
+        console.warn("Unrecognized node: ", el)
     }
 }
 
@@ -117,11 +118,11 @@ function getDescendantTextNodes(tagNode) {
         textNodes.forEach(text => {
             // Note here that the tag is not a "node type" but rather a usfm character marker
             // that will be applied to the text as a mark.
-            const { baseMarker, number } = UsfmMarkers.destructureMarker(tagNode.tag)
-            text[`${baseMarker}${number}`] = true
+            const { withoutLeadingPlus } = UsfmMarkers.destructureMarker(tagNode.tag)
+            text[withoutLeadingPlus] = true
         })
     }
-    return textNodes
+    return textNodes.filter(t => ! Object.keys(t).includes("ts-e"))
 }
 
 function removeNewlines(text) {

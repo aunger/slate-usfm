@@ -106,8 +106,13 @@ function serializeTexts(children: Array<Text>): string {
 
         const addedMarks = setDiff(marks, [...markStack])
 
-        const markerWithNoEndMarker = addedMarks
-            .find(m => MarkerInfoMap.get(m).endMarker == null)
+        let markerWithNoEndMarker = null
+        try {
+            markerWithNoEndMarker = addedMarks
+                .find(m => MarkerInfoMap.get(m).endMarker == null)
+        } catch {
+            console.log("FOUND")
+        }
         // Sometimes an empty text and an adjacent text will have the same marker.
         // Forcing normalization would fix this, but for now we need to ensure that
         // the text field is non-empty.
@@ -153,12 +158,13 @@ function closeMarks(
         let popped = ""
         while (popped != mark) {
             popped = markStack.pop()
+            const endMarker = MarkerInfoMap.get(popped).endMarker
             // If there are still marks in the stack, 
             // this output tag should be nested, so add a "+"
             const plus = markStack.length > 0 
                 ? "+"
                 : ""
-            usfm += `\\${plus}${popped}*`
+            usfm += `\\${plus}${endMarker}*`
             toClose = toClose.filter(x => x != popped) // Remove from list
         }
     }
