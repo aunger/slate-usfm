@@ -6,14 +6,18 @@ import MarkerInfoMap from "../utils/MarkerInfoMap"
 
 export function slateToUsfm(value): string {
     const usfm = serializeRecursive(value)
-    return normalizeWhitespace(usfm)
+    const normalized = normalizeWhitespace(usfm)
+    // Convert the workaround for the pipe literal back to the pipe character
+    return normalized.replace(/&pipe;/g, "|")
 }
 
 function normalizeWhitespace(usfm: string): string {
     // Remove leading newline
     usfm = usfm.replace(/^\n/, '');
-    // Multiple adjacent newlines normalized to one
-    usfm = usfm.replace(/\n\s*\n/g, '\n');
+    // Any whitespace ending in a newline should just be a newline
+    usfm = usfm.replace(/(\s+?)\n/g, '\n');
+    // Remove space at the end of the document
+    usfm = usfm.replace(/(\s+)$/, '');
     return usfm
 }
 
@@ -66,10 +70,12 @@ function serializeVerseNumber(verseNumber: Element) {
 }
 
 function serializeElement(value: Element): string {
-    const tag = serializeMarker(value.type)
+    const marker = serializeMarker(value.type)
+    const space = marker.trim() ? " " : ""
     const content = serializeTexts(value.children)
     const endMarker = getEndMarker(value.type)
-    return tag
+    return marker
+        .concat(space)
         .concat(content)
         .concat(endMarker)
 }
@@ -78,7 +84,7 @@ function serializeMarker(type: string): string {
     if (type === NodeTypes.INLINE_CONTAINER) {
         return ""
     }
-    return `\n\\${type} `
+    return `\n\\${type}`
 }
 
 function getEndMarker(type: string): string {
@@ -111,7 +117,7 @@ function serializeTexts(children: Array<Text>): string {
             markerWithNoEndMarker = addedMarks
                 .find(m => MarkerInfoMap.get(m).endMarker == null)
         } catch {
-            console.log("FOUND")
+            console.log("FOUND: ", markerWithNoEndMarker)
         }
         // Sometimes an empty text and an adjacent text will have the same marker.
         // Forcing normalization would fix this, but for now we need to ensure that
@@ -164,7 +170,7 @@ function closeMarks(
             const plus = markStack.length > 0 
                 ? "+"
                 : ""
-            usfm += `\\${plus}${endMarker}*`
+            usfm += `\\${plus}${endMarker}`
             toClose = toClose.filter(x => x != popped) // Remove from list
         }
     }
@@ -183,12 +189,18 @@ function openMarks(
     for (let i = 0; i < toOpen.length; i++) {
         const mark = toOpen[i]
         markStack.push(mark)
+        // // Due to the way that usfm-js parses milestone markers, do not
+        // // add a space after these.
+        // const space = UsfmMarkers.isMilestoneMarker(mark) 
+        //     ? ""
+        //     : " "
+        const space = " "
         // If there are additional marks in the stack, 
         // this output tag should be nested, so add a "+"
         const plus = markStack.length > 1
             ? "+"
             : ""
-        usfm += `\\${plus}${mark} `
+        usfm += `\\${plus}${mark}` + space
     }
     return { usfm: usfm, stack: markStack }
 }

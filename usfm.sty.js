@@ -1815,7 +1815,6 @@ const usfmSty = `
 \\FirstLineIndent .125   # 1/8 inch first line indent
 
 \\Marker li
-\\Endmarker li*
 \\Name li - List Entry - Level 1
 \\Description A list entry, level 1 (if single level)
 \\OccursUnder c
