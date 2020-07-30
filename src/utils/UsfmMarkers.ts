@@ -107,10 +107,16 @@ export class UsfmMarkers {
     }
 
     static isParagraphType(marker: string): boolean {
-        if (marker === "s5") return true // Special case for horizontal rule
-        const info = MarkerInfoMap.get(marker)
-        return info &&
-            info.styleType === 'paragraph'
+        switch (marker) {
+            case "s5":
+            case "ts-s":
+            case "ts-e":
+                return true // Special cases
+            default:
+                const info = MarkerInfoMap.get(marker)
+                return info &&
+                    info.styleType === 'paragraph'
+        }
     }
 
     static isValid(marker: string): boolean {

@@ -189,18 +189,12 @@ function openMarks(
     for (let i = 0; i < toOpen.length; i++) {
         const mark = toOpen[i]
         markStack.push(mark)
-        // // Due to the way that usfm-js parses milestone markers, do not
-        // // add a space after these.
-        // const space = UsfmMarkers.isMilestoneMarker(mark) 
-        //     ? ""
-        //     : " "
-        const space = " "
         // If there are additional marks in the stack, 
         // this output tag should be nested, so add a "+"
         const plus = markStack.length > 1
             ? "+"
             : ""
-        usfm += `\\${plus}${mark}` + space
+        usfm += `\\${plus}${mark} `
     }
     return { usfm: usfm, stack: markStack }
 }

@@ -1,148 +1,15 @@
-import * as React from "react"
-import { UsfmEditor } from "../src/components/UsfmEditor";
-import { render, unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils"
-import MarkerInfoMap from '../src/utils/MarkerInfoMap';
-import { UsfmMarkers } from "../src/utils/UsfmMarkers";
 import { slateToUsfm } from "../src/transforms/slateToUsfm";
 import { usfmToSlate } from "../src/transforms/usfmToSlate";
-
-let container = null
-
-beforeEach(() => {
-    container = document.createElement("div")
-    document.body.appendChild(container)
-})
-
-afterEach(() => {
-    unmountComponentAtNode(container)
-    container.remove()
-    container = null
-})
-
-// it("should render tags correctly", async () => {
-//     console.log(UsfmMarkers)
-//     await act(() => {
-//         console.debug("running")
-//         fetch('../usfm.sty')
-//             .then(response => console.debug(response.text()))
-//         // render(<UsfmEditorTest readOnly={true} />, container)
-//     })
-//     // expect(ReactEditor.isReadOnly(editor)).toBe(true)
-// })
-
-let output = null
-const onChange = (o) => output = o
-
-const UsfmEditorTest = ({usfmString}) => {
-    return <UsfmEditor
-        readOnly={false}
-        usfmString={usfmString}
-        onChange={onChange}
-        identification={{}}
-        onIdentificationChange={jest.fn()}
-        onEditorChange={jest.fn()}
-    />
-}
-
-// function paragraphToUsfmRec(marker, occured) {
-//     const info = MarkerInfoMap.get(marker)
-//     const thisUsfm = paragraphToUsfm(marker)
-//     if (info.occursUnder.length == 0 ||
-//         info.occursUnder.some(m => occured.indexOf(m) >= 0)) {
-//         return paragraphToUsfm(marker)
-//     }
-//     const parent = info.occursUnder[0]
-//     return paragraphToUsfmRec(parent, occured) + 
-//         paragraphToUsfm(marker)
-// }
-
-function paragraphToUsfm(marker) {
-    switch (marker) {
-        case UsfmMarkers.CHAPTERS_AND_VERSES.c:
-            return `\\c 1`
-        case UsfmMarkers.CHAPTERS_AND_VERSES.v:
-            return `\\v 1 Verse 1`
-        default:
-            return `\\${marker}`
-    }
-}
-
-function characterOrNoteToUsfm(marker) {
-    const info = MarkerInfoMap.get(marker)
-    const parent = info.occursUnder[0]
-    return paragraphToUsfm(parent) + 
-        ' ' +
-        `Test \\${marker} ${marker}_content\\${info.endMarker} Test`
-}
-
-function markerToUsfm(marker) {
-    const info = MarkerInfoMap.get(marker)
-
-    if (info.styleType == 'character' ||
-        info.styleType == 'note'
-    ) {
-        return characterOrNoteToUsfm(marker)
-    }
-    return paragraphToUsfm(marker) + ` ${marker}_content`
-}
-
-// it("should render tags correctly", () => {
-
-//     let usfm = ''
-//     MarkerInfoMap.forEach( (value, key, map) => {
-//         usfm = usfm + markerToUsfm(key) + '\n'
-//     })
-//     usfm = usfm.trim()
-//     console.debug(usfm)
-
-//     act(() => {
-//         render(<UsfmEditorTest usfmString={usfm} />, container)
-//     })
-//     // while (!output) { }
-//     expect(output).toEqual(usfm)
-// })
-
-// it("generates test cases", () => {
-//     const cases = un.split('\n')
-
-//     let output = ''
-//     cases.forEach((value => {
-//         let marker = null
-//         if (value.includes("Test")) {
-//             const [, a, b, m] = value.match(/^\\(\S+)(.*?)\\(\S+)/)
-//             marker = m
-//             console.debug(marker)
-//         } else {
-//             try {
-//                 const [, m] = value.match(/^\\(\S+)/)
-//                 marker = m
-//             } catch {
-//                 // console.debug('***************************************', value)
-//             }
-//         }
-//         if (marker) {
-//             output = output + `it("preserves ${marker}", () => {\n`
-//             output = output + `    const usfm = \`\$\{chapter}\\n\` +\n`
-//             output = output + `        \`${value.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"")}\`\n`
-//             output = output + `    testUsfm(usfm)\n`
-//             // output = output + `    testUsfm("${value.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"")}")\n`
-//             // output = output + `    let output = null\niiia`
-//             // output = output + `    const usfm = "${value.replace(/\\/g, "\\\\").replace(/\"/g, "\\\"")}"\n`
-//             // output = output + `    act(() => {\n`
-//             // output = output + `        output = slateToUsfm(usfmToSlate(usfm))\n`
-//             // output = output + `    })\n`
-//             // output = output + `    expect(output).toEqual(usfm)\n`
-//             output = output + `})\n`
-//         }
-//     }))
-//     console.debug(output)
-// })
 
 const id = "\\id id"
 const chapterNoNewline = "\\c 1"
 const chapter = id + "\n" + chapterNoNewline + "\n"
 
+/**
+ * Transforms the input usfm to a slate tree, and then back to usfm.
+ * Then tests whether the output matches the original input.
+ */
 function testUsfm(usfm) {
     let output = null
     act(() => {
@@ -151,6 +18,21 @@ function testUsfm(usfm) {
     expect(output).toEqual(usfm)
 }
 
+/**
+ * This form of usfm preservation unit tests runs one test for each number in
+ * the input 'numbers' array. The number will replace any '#' character found in 
+ * the input usfm. Note that a '0' in the numbers array will simply remove all '#'
+ * characters in the usfm- effectively testing an unnumbered marker.
+ * 
+ * Example:
+ *      usfm = `\\imt# imt#_content`
+ *      numbers = [0,1,2]
+ * 
+ * This will test the following usfm strings:
+ *      \imt imt_content  (specified by the '0' in the 'numbers' array)
+ *      \imt1 imt1_content
+ *      \imt2 imt2_content
+ */
 function testUsfmWithNumbers(usfm, numbers = [0]) {
     if (usfm.match(/(\\.*?)(#)/)) {
         numbers.forEach(value => {
@@ -163,8 +45,10 @@ function testUsfmWithNumbers(usfm, numbers = [0]) {
             testUsfm(thisUsfm)
         })
     } else {
-        console.debug("testUsfmWithNumbers() called on usfm with no numbered marker")
-        console.debug("usfm: ", usfm)
+        console.debug(
+            "testUsfmWithNumbers() called on usfm with no numbered marker:",
+            usfm
+        )
         testUsfm(usfm)
     }
 }
@@ -452,8 +336,14 @@ it("preserves mr", () => {
 })
 it("preserves s", () => {
     const usfm = chapter +
-        `\\s# s_content`
+        `\\s# s#_content`
     testUsfmWithNumbers(usfm, [0,1,2,3,4])
+})
+// s5 is given special treatment since we render it as a horizontal rule.
+it("preserves s5", () => {
+    const usfm = chapter +
+        `\\s5`
+    testUsfm(usfm)
 })
 it("preserves sr", () => {
     const usfm = chapter +
@@ -740,6 +630,9 @@ it("preserves periph", () => {
         `\\periph periph_content`
     testUsfm(usfm)
 })
+/**
+ * Milestones are not yet preserved.
+ */
 // it("preserves qt-s", () => {
 //     const usfm = chapter +
 //         `\\v 17 Test \\qt-s qt-s_content \\qt-e`
