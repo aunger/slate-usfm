@@ -76,11 +76,16 @@ export function identificationToSlate(idJson: Object): Array<HasType> {
         })
     }
     return Object.entries(idJson)
-        .flatMap( ([marker, value]) => (
+        .flatMap(([marker, value]) => 
             Array.isArray(value)
                 ? value.map(text => idHeader(marker, text))
-                : idHeader(marker, value)
-        ))
+                : [idHeader(marker, value)]
+        )
+        .flatMap(header =>
+            isHasType(header)
+                ? [header as HasType]
+                : []
+        )
 }
 
 export function parseIdentificationFromUsfm(usfm: string): Object {
@@ -122,9 +127,12 @@ function isValidMarkerValuePair(marker: string, value: any): boolean {
     }
 }
 
-interface HasType extends Element {
+interface HasType {
     type: string
 }
+
+const isHasType = (x: any): x is HasType =>
+    "type" in x
 
 interface IdHeader {
     marker: string,
