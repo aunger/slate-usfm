@@ -1,12 +1,10 @@
 import * as React from "react";
-import { useContext } from "react";
 import "../components/UsfmEditor.css";
 import { Node } from "slate";
 import { VerseNumberWithVerseMenu } from "../components/VerseNumber"
 import { UsfmMarkers }from "../utils/UsfmMarkers";
 import NodeTypes from "../utils/NodeTypes";
-import { makeStyles } from "@material-ui/core";
-import { StyleContext } from "../StyleContext";
+import { useCustomStyles } from "../StyleContext";
 
 export function renderLeafByProps(props) {
     const type =
@@ -73,18 +71,16 @@ const unrenderedParagraphMarkers: Array<string> =
     Object.values(UsfmMarkers.IDENTIFICATION)
 
 const Paragraph = props => {
-    const useStyles = makeStyles({
-        indent: props => ({
+    const customStyles = useCustomStyles({
+        paragraphStyles: {
             //@ts-ignore
-            marginLeft: props.paragraphIndent
-        })
+            marginLeft: styleContext => styleContext.paragraphIndent
+        }
     })
-    const styleContext = useContext(StyleContext)
-    const classes = useStyles(styleContext)
     return ( 
         <span {...props.attributes}>
             <br className="ParagraphBreak" />
-            <span className={`${classes.indent}`}>
+            <span className={`${customStyles.paragraphStyles}`}>
                 {props.children}
             </span>
         </span>
@@ -111,18 +107,16 @@ const InlineContainer = props => {
 }
 
 const ChapterNumber = props => {
-    const useStyles = makeStyles({
-        size: props => ({
+    const customStyles = useCustomStyles({
+        chapterNumberStyles: {
             //@ts-ignore
-            fontSize: props.chapterNumberFontSize
-        })
+            fontSize: styleContext => styleContext.chapterNumberFontSize
+        }
     })
-    const styleContext = useContext(StyleContext)
-    const classes = useStyles(styleContext)
     return (
         <h1 {...props.attributes} 
             contentEditable={false} 
-            className={`ChapterNumber ${numberClassNames(props.element)} ${classes.size}`}
+            className={`ChapterNumber ${numberClassNames(props.element)} ${customStyles.chapterNumberStyles}`}
         >
             {props.children}
         </h1>

@@ -5,23 +5,20 @@ import { numberClassNames } from '../transforms/usfmRenderer';
 import { useSlate, ReactEditor } from 'slate-react'
 import { OptionsContext } from "../OptionsContext";
 import { Transforms } from "slate";
-import { StyleContext } from "../StyleContext";
-import { makeStyles } from "@material-ui/core";
+import { useCustomStyles } from "../StyleContext";
 
 export const VerseNumber = forwardRef(
     ({ ...props }, ref) => {
-        const useStyles = makeStyles({
-            size: props => ({
-                fontSize: props.verseNumberFontSize
-            })
+        const customStyles = useCustomStyles({
+            verseNumberStyles: {
+                fontSize: styleContext => styleContext.verseNumberFontSize
+            }
         })
-        const styleContext = useContext(StyleContext)
-        const classes = useStyles(styleContext)
         return <sup
             {...props}
             ref={ref}
             contentEditable={false}
-            className={`VerseNumber ${numberClassNames(props.element)} ${classes.size}`}
+            className={`VerseNumber ${numberClassNames(props.element)} ${customStyles.verseNumberStyles}`}
         >
             {props.children}
         </sup>

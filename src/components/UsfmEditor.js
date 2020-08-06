@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useContext } from "react";
 import { withReact, Slate, Editable } from "slate-react";
 import { createEditor } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
@@ -19,8 +18,7 @@ import { parseIdentificationFromUsfm,
 } from "../transforms/identificationTransforms";
 import { MyEditor } from "../plugins/helpers/MyEditor";
 import { PropTypes } from "prop-types" 
-import { makeStyles } from "@material-ui/core";
-import { StyleContext } from "../StyleContext";
+import { useCustomStyles } from "../StyleContext";
 
 /**
  * A WYSIWYG editor component for USFM
@@ -129,22 +127,19 @@ UsfmEditor.propTypes = {
     onIdentificationChange: PropTypes.func
 }
 
-const useStyles = makeStyles({
-    editorStyles: props => ({
-        backgroundColor: props.editorBackgroundColor,
-        fontSize: props.fontSize
-    })
-})
-
 const UsfmEditable = ({ readOnly, onKeyDown }) => {
-    const styleContext = useContext(StyleContext)
-    const classes = useStyles(styleContext)
+    const customStyles = useCustomStyles({
+        editorStyles: styleContext => ({
+            backgroundColor: styleContext.editorBackgroundColor,
+            fontSize: styleContext.fontSize
+        })
+    })
     return <Editable
         readOnly={readOnly}
         renderElement={renderElementByType}
         renderLeaf={renderLeafByProps}
         spellCheck={false}
         onKeyDown={onKeyDown}
-        className={`${classes.editorStyles}`}
+        className={`${customStyles.editorStyles}`}
     />
 }
