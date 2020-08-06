@@ -5,15 +5,16 @@ import { numberClassNames } from '../transforms/usfmRenderer';
 import { useSlate, ReactEditor } from 'slate-react'
 import { OptionsContext } from "../OptionsContext";
 import { Transforms } from "slate";
-import { useCustomStyles } from "../StyleContext";
+import { StyleContext } from "../StyleContext";
+import { makeStyles } from "@material-ui/core";
 
 export const VerseNumber = forwardRef(
     ({ ...props }, ref) => {
-        const customStyles = useCustomStyles({
+        const customStyles = makeStyles({
             verseNumberStyles: {
                 fontSize: styleContext => styleContext.verseNumberFontSize
             }
-        })
+        })(useContext(StyleContext))
         return <sup
             {...props}
             ref={ref}

@@ -1,10 +1,12 @@
 import * as React from "react";
+import { useContext } from "react";
 import "../components/UsfmEditor.css";
 import { Node } from "slate";
 import { VerseNumberWithVerseMenu } from "../components/VerseNumber"
 import { UsfmMarkers }from "../utils/UsfmMarkers";
 import NodeTypes from "../utils/NodeTypes";
-import { useCustomStyles } from "../StyleContext";
+import { StyleContext } from "../StyleContext";
+import { makeStyles } from "@material-ui/core";
 
 export function renderLeafByProps(props) {
     const type =
@@ -71,12 +73,12 @@ const unrenderedParagraphMarkers: Array<string> =
     Object.values(UsfmMarkers.IDENTIFICATION)
 
 const Paragraph = props => {
-    const customStyles = useCustomStyles({
+    const customStyles = makeStyles({
         paragraphStyles: {
             //@ts-ignore
             marginLeft: styleContext => styleContext.paragraphIndent
         }
-    })
+    })(useContext(StyleContext))
     return ( 
         <span {...props.attributes}>
             <br className="ParagraphBreak" />
@@ -107,12 +109,12 @@ const InlineContainer = props => {
 }
 
 const ChapterNumber = props => {
-    const customStyles = useCustomStyles({
+    const customStyles = makeStyles({
         chapterNumberStyles: {
             //@ts-ignore
             fontSize: styleContext => styleContext.chapterNumberFontSize
         }
-    })
+    })(useContext(StyleContext))
     return (
         <h1 {...props.attributes} 
             contentEditable={false} 
