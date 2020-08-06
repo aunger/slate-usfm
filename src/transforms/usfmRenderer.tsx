@@ -111,10 +111,18 @@ const InlineContainer = props => {
 }
 
 const ChapterNumber = props => {
+    const useStyles = makeStyles({
+        size: props => ({
+            //@ts-ignore
+            fontSize: props.chapterNumberFontSize
+        })
+    })
+    const styleContext = useContext(StyleContext)
+    const classes = useStyles(styleContext)
     return (
         <h1 {...props.attributes} 
             contentEditable={false} 
-            className={`ChapterNumber ${numberClassNames(props.element)}`}
+            className={`ChapterNumber ${numberClassNames(props.element)} ${classes.size}`}
         >
             {props.children}
         </h1>

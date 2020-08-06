@@ -130,8 +130,9 @@ UsfmEditor.propTypes = {
 }
 
 const useStyles = makeStyles({
-    bgColor: props => ({
-        backgroundColor: props.editorBackgroundColor
+    editorStyles: props => ({
+        backgroundColor: props.editorBackgroundColor,
+        fontSize: props.fontSize
     })
 })
 
@@ -144,6 +145,6 @@ const UsfmEditable = ({ readOnly, onKeyDown }) => {
         renderLeaf={renderLeafByProps}
         spellCheck={false}
         onKeyDown={onKeyDown}
-        className={`${classes.bgColor}`}
+        className={`${classes.editorStyles}`}
     />
 }
