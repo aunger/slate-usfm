@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 
 export const StyleContext = createContext({
-    editorBackgroundColor: "white"
+    editorBackgroundColor: "white",
+    paragraphIndent: "0em"
 })
