@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useContext } from "react";
 import { withReact, Slate, Editable } from "slate-react";
 import { createEditor } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
@@ -18,6 +19,8 @@ import { parseIdentificationFromUsfm,
 } from "../transforms/identificationTransforms";
 import { MyEditor } from "../plugins/helpers/MyEditor";
 import { PropTypes } from "prop-types" 
+import { makeStyles } from "@material-ui/core";
+import { StyleContext } from "../StyleContext";
 
 /**
  * A WYSIWYG editor component for USFM
@@ -109,11 +112,8 @@ export class UsfmEditor extends React.Component {
                 onChange={this.handleChange}
             >
                 <HoveringToolbar />
-                <Editable
+                <UsfmEditable
                     readOnly={this.props.readOnly}
-                    renderElement={renderElementByType}
-                    renderLeaf={renderLeafByProps}
-                    spellCheck={false}
                     onKeyDown={this.onKeyDown}
                 />
             </Slate>
@@ -127,4 +127,23 @@ UsfmEditor.propTypes = {
     readOnly: PropTypes.bool.isRequired,
     identification: PropTypes.object,
     onIdentificationChange: PropTypes.func
+}
+
+const useStyles = makeStyles({
+    bgColor: props => ({
+        backgroundColor: props.editorBackgroundColor
+    })
+})
+
+const UsfmEditable = ({ readOnly, onKeyDown }) => {
+    const styleContext = useContext(StyleContext)
+    const classes = useStyles(styleContext)
+    return <Editable
+        readOnly={readOnly}
+        renderElement={renderElementByType}
+        renderLeaf={renderLeafByProps}
+        spellCheck={false}
+        onKeyDown={onKeyDown}
+        className={`${classes.bgColor}`}
+    />
 }
