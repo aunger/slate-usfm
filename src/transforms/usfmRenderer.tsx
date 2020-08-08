@@ -12,7 +12,7 @@ export function renderLeafByProps(props) {
 
     const className =
         props.leaf[UsfmMarkers.SPECIAL_TEXT.nd]
-            ? "NomenDomini"
+            ? "nd-usfm"
             : ""
 
     return React.createElement(
@@ -52,7 +52,7 @@ export function renderElementByType(props) {
 }
 
 export function numberClassNames(node) {
-    if (Node.string(node) === "front") return "Front";
+    if (Node.string(node) === "front") return "front";
     return "";
 }
 
@@ -71,7 +71,7 @@ const unrenderedParagraphMarkers: Array<string> =
 const Paragraph = props => {
     return ( 
         <React.Fragment>
-            <br className="ParagraphBreak" />
+            <br className="paragraph-break" />
             <span {...props.attributes} className="p-usfm">
                 {props.children}
             </span>
@@ -88,7 +88,7 @@ const SimpleSpan = props => {
 
 const InlineContainer = props => {
     const cssClass = Node.string(props.element) === "" 
-        ? "EmptyInlineContainer" 
+        ? "empty-inline-container" 
         : ""
     return <span
         {...props.attributes}
@@ -102,7 +102,7 @@ const ChapterNumber = props => {
     return (
         <h1 {...props.attributes} 
             contentEditable={false} 
-            className={`ChapterNumber ${numberClassNames(props.element)}`}
+            className={`c-usfm ${numberClassNames(props.element)}`}
         >
             {props.children}
         </h1>
@@ -115,7 +115,7 @@ const SectionHeader = props => {
         // Some editors use \s5 as a chunk delimiter. Separate chunks by horizontal rules.
         return (
             <span contentEditable={false} 
-                className="HideFollowingLineBreak"
+                className="hide-following-line-break"
             >
                 <hr {...props.attributes} />
                 {props.children}
@@ -124,7 +124,7 @@ const SectionHeader = props => {
     } else {
         const HeadingTag = `h${number || 3}`;
         return (
-            <HeadingTag className="HideFollowingLineBreak" {...props.attributes}>
+            <HeadingTag className="hide-following-line-break" {...props.attributes}>
                 {props.children}
             </HeadingTag>
         );
