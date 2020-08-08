@@ -70,10 +70,12 @@ const unrenderedParagraphMarkers: Array<string> =
 
 const Paragraph = props => {
     return ( 
-        <span {...props.attributes}>
+        <React.Fragment>
             <br className="ParagraphBreak" />
-            {props.children}
-        </span>
+            <span {...props.attributes} className="p-usfm">
+                {props.children}
+            </span>
+        </React.Fragment>
     )
 }
 
