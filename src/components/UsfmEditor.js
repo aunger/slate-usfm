@@ -45,10 +45,14 @@ export class UsfmEditor extends React.Component {
 
         this.handleChange = value => {
             console.debug("after change", value)
-            if (MyEditor.isVerseOrChapterNumberSelected(this.editor)) {
-                Transforms.deselect(this.editor)
-                return
-            }
+            // console.debug("   selection: ", this.editor.selection)
+            // if (MyEditor.isVerseOrChapterNumberSelected(this.editor)) {
+            //     console.log("ABORTING")
+            //     console.log("selection: ", this.editor.selection)
+            //     return 
+            //     // Transforms.deselect(this.editor)
+            //     // return
+            // }
             this.setState({ value: value })
             this.scheduleOnChange(value)
         }
