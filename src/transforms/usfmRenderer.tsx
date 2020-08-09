@@ -5,15 +5,20 @@ import { UsfmMarkers }from "../utils/UsfmMarkers";
 import NodeTypes from "../utils/NodeTypes";
 
 export function renderLeafByProps(props) {
+    // Don't use font-style: italic for \bk since it would override other
+    // font styles if this is a nested marker
     const type =
         props.leaf[UsfmMarkers.SPECIAL_TEXT.bk]
             ? "cite"
             : "span"
 
-    const className =
-        props.leaf[UsfmMarkers.SPECIAL_TEXT.nd]
-            ? "nd-usfm"
-            : ""
+    const className = (() => {
+        if (props.leaf[UsfmMarkers.SPECIAL_TEXT.nd])
+            return "nd-usfm"
+        if (props.leaf[UsfmMarkers.SPECIAL_TEXT.bk])
+            return "bk-usfm"
+        return ""
+    })()
 
     return React.createElement(
         type,
@@ -25,12 +30,13 @@ export function renderLeafByProps(props) {
 export function renderElementByType(props) {
     switch (props.element.type) {
         case NodeTypes.CHAPTER:
+            return <Chapter {...props} />
         case NodeTypes.HEADERS:
             return <SimpleDiv {...props} />
         case NodeTypes.INLINE_CONTAINER:
             return <InlineContainer {...props} />
         case NodeTypes.VERSE:
-            return <SimpleSpan {...props} />
+            return <Verse {...props} />
         case UsfmMarkers.CHAPTERS_AND_VERSES.c:
             return <ChapterNumber {...props} />
         case UsfmMarkers.CHAPTERS_AND_VERSES.v:
@@ -39,13 +45,13 @@ export function renderElementByType(props) {
             // This element is derived from a Usfm Marker
             const { baseMarker } = UsfmMarkers.destructureMarker(props.element.type)
             switch (baseMarker) {
-                case 's':
+                case UsfmMarkers.TITLES_HEADINGS_LABELS.s:
                     return <SectionHeader {...props} />
                 default:
                     if (isRenderedParagraphMarker(props.element.type)) {
                         // Both supported and unsupported paragraph markers will
                         // be rendered like a normal paragraph.
-                        return <Paragraph {...props} />
+                        return <Paragraph {...props} cssClass={`${baseMarker}-usfm`} />
                     }
             }
     }
@@ -68,11 +74,17 @@ function isRenderedParagraphMarker(marker: string): boolean {
 const unrenderedParagraphMarkers: Array<string> =
     Object.values(UsfmMarkers.IDENTIFICATION)
 
-const Paragraph = props => {
+const Chapter = props => {
+    return <div {...props.attributes} className="chapter">
+        {props.children}
+    </div>
+}
+
+const Paragraph = ({ cssClass, ...props }) => {
     return ( 
         <React.Fragment>
             <br className="paragraph-break" />
-            <span {...props.attributes} className="p-usfm">
+            <span {...props.attributes} className={`${cssClass}`}>
                 {props.children}
             </span>
         </React.Fragment>
@@ -82,17 +94,19 @@ const Paragraph = props => {
 const SimpleDiv = props => {
     return <div {...props.attributes}>{props.children}</div>
 }
-const SimpleSpan = props => {
-    return <span {...props.attributes}>{props.children}</span>
+const Verse = props => {
+    return <span {...props.attributes} className="verse">
+        {props.children}
+    </span>
 }
 
 const InlineContainer = props => {
-    const cssClass = Node.string(props.element) === "" 
+    const empty = Node.string(props.element) === "" 
         ? "empty-inline-container" 
         : ""
     return <span
         {...props.attributes}
-        className={cssClass}
+        className={`inline-container ${empty}`}
     >
         {props.children}
     </span>
@@ -115,7 +129,7 @@ const SectionHeader = props => {
         // Some editors use \s5 as a chunk delimiter. Separate chunks by horizontal rules.
         return (
             <span contentEditable={false} 
-                className="hide-following-line-break"
+                className="s-usfm"
             >
                 <hr {...props.attributes} />
                 {props.children}
@@ -124,7 +138,7 @@ const SectionHeader = props => {
     } else {
         const HeadingTag = `h${number || 3}`;
         return (
-            <HeadingTag className="hide-following-line-break" {...props.attributes}>
+            <HeadingTag className="s-usfm" {...props.attributes}>
                 {props.children}
             </HeadingTag>
         );
