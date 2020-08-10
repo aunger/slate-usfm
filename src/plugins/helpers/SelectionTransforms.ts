@@ -1,4 +1,4 @@
-import { Transforms, Editor, Path, Range, Location } from "slate";
+import { Transforms, Editor, Path, Range, Location, Point } from "slate";
 import { ReactEditor } from 'slate-react'
 import { DOMNode } from "slate-react/dist/utils/dom";
 import { MyEditor } from "./MyEditor"
@@ -16,6 +16,49 @@ Transforms.select = (editor: Editor, target: Location) => {
         Range.isExpanded(target) &&
         isVerseOrChapterNumberInRange(editor, target)
     ) {
+        const [match] = Editor.nodes(editor, {
+            at: target,
+            match: n => n && n.type && UsfmMarkers.isVerseOrChapterNumber(n.type) 
+        })
+        const node = match[0]
+        const point = match[1]
+        const { selection } = editor
+        if (!selection) return
+        const { anchor, focus } = selection
+        if (!anchor || !focus || !point) return
+        console.log("   match: ", match)
+        console.log("   node: ", node)
+        console.log("   point: ", point)
+        console.log("   anchor: ", anchor)
+        console.log("   focus: ", focus)
+        // Anchor and focus can only be on one side of the verse/chapter number
+        // @ts-ignore
+        if (Point.isAfter({ path: point, offset: 0}, anchor)) {
+            // move the closer of [anchor, focus] to just BEFORE the verse/chapter number
+            console.log("   anchor: ", anchor)
+            console.log("   focus: ", focus)
+            if (Point.isAfter(anchor, focus)) {
+                Transforms.setSelection(editor, {
+                    'anchor': {
+                        path: Path.previous(point),
+                        offset: 3
+                    }
+                })
+            } else {
+                // move focus
+            }
+        } else {
+            // move the closer of [anchor, focus] to just AFTER the verse/chapter number
+            if (Point.isBefore(focus, anchor)) {
+                // move focus
+            } else {
+                // move anchor
+            }
+        }
+
+        console.log("   MATCH: ", point)
+        console.log("   selection: ", editor.selection)
+
         // Use most recent selection to determine what side of the verse
         // number should be selected, then select up to the verse number
         // console.log("FOUNDDDDDDDD")
