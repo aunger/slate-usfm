@@ -1,5 +1,6 @@
 import * as React from "react";
 import { withReact, Slate, Editable } from "slate-react";
+import { withHistory } from "slate-history";
 import { createEditor, Transforms } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
 import { usfmToSlate } from '../transforms/usfmToSlate';
@@ -34,6 +35,7 @@ export class UsfmEditor extends React.Component {
             withEnter,
             withNormalize,
             withReact,
+            withHistory,
             createEditor
         )()
         this.editor.isInline = element => {
@@ -46,7 +48,7 @@ export class UsfmEditor extends React.Component {
         this.handleChange = value => {
             console.debug("after change", value)
             if (MyEditor.isVerseOrChapterNumberSelected(this.editor)) {
-                Transforms.deselect(this.editor)
+                this.editor.undo()
                 return
             }
             this.setState({ value: value })
