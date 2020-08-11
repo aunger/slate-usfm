@@ -12,13 +12,10 @@ export function renderLeafByProps(props) {
             ? "cite"
             : "span"
 
-    const className = (() => {
-        if (props.leaf[UsfmMarkers.SPECIAL_TEXT.nd])
-            return "usfm-marker-nd"
-        if (props.leaf[UsfmMarkers.SPECIAL_TEXT.bk])
-            return "bk-usfm"
-        return ""
-    })()
+    const className =
+        props.leaf[UsfmMarkers.SPECIAL_TEXT.nd]
+            ? "usfm-marker-nd"
+            : ""
 
     return React.createElement(
         type,
