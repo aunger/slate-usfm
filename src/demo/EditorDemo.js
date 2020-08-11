@@ -7,6 +7,7 @@ import { OptionCheckbox } from "./OptionCheckbox";
 import { InputUsfm, OutputUsfm } from "./UsfmContainer";
 import { IdentificationSetter } from "./IdentificationSetter";
 import "./demo.css";
+import "./custom.css";
 
 function transformToOutput(usfm) {
     return slateToUsfm(usfmToSlate(usfm))
