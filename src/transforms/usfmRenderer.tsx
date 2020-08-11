@@ -16,7 +16,7 @@ export function renderLeafByProps(props) {
         if (props.leaf[UsfmMarkers.SPECIAL_TEXT.nd])
             return "usfm-marker-nd"
         if (props.leaf[UsfmMarkers.SPECIAL_TEXT.bk])
-            return "bk-usfm"
+            return "usfm-marker-bk"
         return ""
     })()
 
