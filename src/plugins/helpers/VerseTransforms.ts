@@ -153,11 +153,15 @@ function _insertLeadingSpaceIfNecessary(editor: Editor, versePath: Path) {
     }
 
     const [prevVerse, prevVersePath] = MyEditor.getPreviousVerse(editor, inlineContainerPath)
+    if (! Array.isArray(prevVerse.children)) {
+        return
+    }
     const [lastChildOfPreviousVerse, lcPath] = 
         Editor.node(
             editor,
             prevVersePath.concat(prevVerse.children.length - 1)
         )
+
     if (NodeRules.canMergeAIntoB(
         inlineContainer.type, 
         lastChildOfPreviousVerse.type
