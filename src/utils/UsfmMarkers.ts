@@ -1,4 +1,5 @@
 import MarkerInfoMap from "./MarkerInfoMap"
+import { Node } from "slate"
 
 export type StyleType = 'paragraph' | 'character' | 'note' | 'milestone'
 
@@ -97,13 +98,12 @@ export class UsfmMarkers {
         return sortA - sortB
     }
 
-    static isIdentification(marker: string): boolean {
-        return this.isOfCategory(marker, UsfmMarkers.IDENTIFICATION)
+    static isIdentification(markerOrNode: string | Node): boolean {
+        return this.isOfCategory(markerOrNode, UsfmMarkers.IDENTIFICATION)
     }
 
-    static isVerseOrChapterNumber(marker: string): boolean {
-        return marker == CHAPTERS_AND_VERSES.c ||
-            marker == CHAPTERS_AND_VERSES.v
+    static isVerseOrChapterNumber(markerOrNode: string | Node): boolean {
+        return this.isOfCategory(markerOrNode, UsfmMarkers.CHAPTERS_AND_VERSES)
     }
 
     static isParagraphType(marker: string): boolean {
@@ -160,9 +160,20 @@ export class UsfmMarkers {
         return baseOrder
     }
 
-    private static isOfCategory(marker: string, category: Object): boolean {
+    private static isOfCategory(markerOrNode: string | Node, category: Object): boolean {
+        const marker = UsfmMarkers.marker(markerOrNode)
         if (marker == null) return false
         const baseType = this.getBaseMarker(marker)
         return category.hasOwnProperty(baseType)
     }
+
+    private static marker(markerOrNode: string | Node): string {
+        if (isString(markerOrNode)) return markerOrNode
+        if (isString(markerOrNode.type)) return markerOrNode.type
+        return null
+    }
+}
+
+function isString(s: any): s is string {
+    return typeof s === "string"
 }

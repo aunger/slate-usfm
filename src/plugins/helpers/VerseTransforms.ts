@@ -162,10 +162,7 @@ function _insertLeadingSpaceIfNecessary(editor: Editor, versePath: Path) {
             prevVersePath.concat(prevVerse.children.length - 1)
         )
 
-    if (NodeRules.canMergeAIntoB(
-        inlineContainer.type, 
-        lastChildOfPreviousVerse.type
-    )) {
+    if (NodeRules.canMergeAIntoB(inlineContainer, lastChildOfPreviousVerse)) {
         _insertLeadingSpace(editor, inlineContainerPath)
     }
 }
