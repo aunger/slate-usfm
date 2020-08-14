@@ -162,18 +162,19 @@ export class UsfmMarkers {
 
     private static isOfCategory(markerOrNode: string | Node, category: Object): boolean {
         const marker = UsfmMarkers.marker(markerOrNode)
-        if (marker == null) return false
+        if (!marker) return false
         const baseType = this.getBaseMarker(marker)
         return category.hasOwnProperty(baseType)
     }
 
     private static marker(markerOrNode: string | Node): string {
-        if (isString(markerOrNode)) return markerOrNode
-        if (isString(markerOrNode.type)) return markerOrNode.type
+        if (isStringOrNil(markerOrNode)) return markerOrNode
+        if (isStringOrNil(markerOrNode.type)) return markerOrNode.type
         return null
     }
 }
 
-function isString(s: any): s is string {
-    return typeof s === "string"
+/** True iff string or null or undefined (which are all subtypes of string) */
+function isStringOrNil(s: any): s is string {
+    return s === null || s === undefined || typeof s === "string"
 }
