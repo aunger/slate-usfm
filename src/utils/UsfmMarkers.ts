@@ -82,8 +82,8 @@ export class UsfmMarkers {
     static CHAPTERS_AND_VERSES = CHAPTERS_AND_VERSES
 
     static compare(markerA: string, markerB: string): number {
-        const baseMarkerA = this.getBaseMarker(markerA)
-        const baseMarkerB = this.getBaseMarker(markerB)
+        const baseMarkerA = UsfmMarkers.getBaseMarker(markerA)
+        const baseMarkerB = UsfmMarkers.getBaseMarker(markerB)
         if (markerToCategoryMap.get(baseMarkerA) != 
             markerToCategoryMap.get(baseMarkerB)
         ) {
@@ -93,17 +93,17 @@ export class UsfmMarkers {
                 markerB
             )
         }
-        const sortA = this.getSortOrder(markerA)
-        const sortB = this.getSortOrder(markerB)
+        const sortA = UsfmMarkers.getSortOrder(markerA)
+        const sortB = UsfmMarkers.getSortOrder(markerB)
         return sortA - sortB
     }
 
     static isIdentification(markerOrNode: string | Node): boolean {
-        return this.isOfCategory(markerOrNode, UsfmMarkers.IDENTIFICATION)
+        return UsfmMarkers.isOfCategory(markerOrNode, UsfmMarkers.IDENTIFICATION)
     }
 
     static isVerseOrChapterNumber(markerOrNode: string | Node): boolean {
-        return this.isOfCategory(markerOrNode, UsfmMarkers.CHAPTERS_AND_VERSES)
+        return UsfmMarkers.isOfCategory(markerOrNode, UsfmMarkers.CHAPTERS_AND_VERSES)
     }
 
     static isParagraphType(marker: string): boolean {
@@ -137,7 +137,7 @@ export class UsfmMarkers {
     }
 
     static getBaseMarker(marker: string): string {
-        const { baseMarker } = this.destructureMarker(marker)
+        const { baseMarker } = UsfmMarkers.destructureMarker(marker)
         return baseMarker
     }
 
@@ -151,7 +151,7 @@ export class UsfmMarkers {
      * if applicable. For example, "toc1" should occur before "toc2".
      */
     private static getSortOrder(marker: string): number {
-        const { pluses, baseMarker, number } = this.destructureMarker(marker)
+        const { pluses, baseMarker, number } = UsfmMarkers.destructureMarker(marker)
         const markerCategory = markerToCategoryMap.get(baseMarker)
         const baseOrder = Object.keys(markerCategory).indexOf(baseMarker)
         if (parseInt(number)) {
@@ -163,7 +163,7 @@ export class UsfmMarkers {
     private static isOfCategory(markerOrNode: string | Node, category: Object): boolean {
         const marker = UsfmMarkers.marker(markerOrNode)
         if (!marker) return false
-        const baseType = this.getBaseMarker(marker)
+        const baseType = UsfmMarkers.getBaseMarker(marker)
         return category.hasOwnProperty(baseType)
     }
 
