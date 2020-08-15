@@ -1,9 +1,9 @@
 import * as React from "react"
 import { ReactEditor } from 'slate-react'
-import { UsfmEditor } from "../src/components/UsfmEditor";
+import { BasicUsfmEditor } from "../src/components/BasicUsfmEditor";
 import { render, unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils"
-import { EditorWrapper } from "../src/demo/EditorWrapper";
+import { UsfmEditor } from "../src/components/UsfmEditor";
 
 let container = null
 
@@ -27,7 +27,7 @@ it("should not be readonly", () => {
 })
 
 const UsfmEditorTest = React.forwardRef(({readOnly}, ref) => (
-    <UsfmEditor
+    <BasicUsfmEditor
         readOnly={readOnly}
         usfmString={'test'}
         onChange={jest.fn()}
@@ -38,9 +38,9 @@ const UsfmEditorTest = React.forwardRef(({readOnly}, ref) => (
 ))
 
 function testReadOnly(readOnly) {
-    const wrapper = new EditorWrapper()
+    const editor = new UsfmEditor()
     act(() => {
-        render(<UsfmEditorTest readOnly={readOnly} ref={wrapper.editorRef} />, container)
+        render(<UsfmEditorTest readOnly={readOnly} ref={editor.childEditorRef} />, container)
     })
-    expect(ReactEditor.isReadOnly(wrapper.editor())).toBe(readOnly)
+    expect(ReactEditor.isReadOnly(editor.baseEditor())).toBe(readOnly)
 }

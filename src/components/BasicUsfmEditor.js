@@ -30,10 +30,10 @@ export class BasicUsfmEditor extends UsfmEditor {
             value: usfmToSlate(props.usfmString) 
         }
 
-        /* Override UsfmEditor's default editor() function */
-        this.editor = () => this._editor
+        /* Override UsfmEditor's default baseEditor() function */
+        this.baseEditor = () => this.slateEditor
 
-        this._editor = flowRight(
+        this.slateEditor = flowRight(
             withBackspace,
             withDelete,
             withEnter,
@@ -41,14 +41,14 @@ export class BasicUsfmEditor extends UsfmEditor {
             withReact,
             createEditor
         )()
-        this._editor.isInline = element => {
+        this.slateEditor.isInline = element => {
             return false
         }
 
         this.handleChange = value => {
             console.debug("after change", value)
-            if (MyEditor.isVerseOrChapterNumberSelected(this._editor)) {
-                Transforms.deselect(this._editor)
+            if (MyEditor.isVerseOrChapterNumberSelected(this.slateEditor)) {
+                Transforms.deselect(this.slateEditor)
                 return
             }
             this.setState({ value: value })
@@ -61,16 +61,16 @@ export class BasicUsfmEditor extends UsfmEditor {
         }, 200)
 
         this.onKeyDown = event => {
-            handleKeyPress(event, this._editor)
+            handleKeyPress(event, this.slateEditor)
         }
 
         this.updateIdentificationFromProp = () => {
-            const current = MyEditor.identification(this._editor)
+            const current = MyEditor.identification(this.slateEditor)
             const validUpdates = this.filterAndNormalize(this.props.identification)
             const updated = mergeIdentification(current, validUpdates)
 
             if (! isEqual(updated, current)) {
-                MyTransforms.setIdentification(this._editor, updated)
+                MyTransforms.setIdentification(this.slateEditor, updated)
                 if (this.props.onIdentificationChange) {
                     this.props.onIdentificationChange(updated)
                 }
@@ -83,7 +83,7 @@ export class BasicUsfmEditor extends UsfmEditor {
             const validUpdates = this.filterAndNormalize(this.props.identification)
             const updated = mergeIdentification(validParsed, validUpdates)
 
-            MyTransforms.setIdentification(this._editor, updated)
+            MyTransforms.setIdentification(this.slateEditor, updated)
             if (this.props.onIdentificationChange) {
                 this.props.onIdentificationChange(updated)
             }
@@ -110,7 +110,7 @@ export class BasicUsfmEditor extends UsfmEditor {
     render() {
         return (
             <Slate
-                editor={this._editor}
+                editor={this.slateEditor}
                 value={this.state.value}
                 onChange={this.handleChange}
             >
