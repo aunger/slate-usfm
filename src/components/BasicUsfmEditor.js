@@ -18,19 +18,19 @@ import { parseIdentificationFromUsfm,
 import { MyEditor } from "../plugins/helpers/MyEditor";
 import { PropTypes } from "prop-types" 
 import "./default.css";
-import { EditorWrapper } from "../demo/EditorWrapper";
+import { UsfmEditor } from "./UsfmEditor";
 
 /**
  * A WYSIWYG editor component for USFM
  */
-export class UsfmEditor extends EditorWrapper {
+export class BasicUsfmEditor extends UsfmEditor {
     constructor(props) {
         super(props)
         this.state = {
             value: usfmToSlate(props.usfmString) 
         }
 
-        /* Override EditorWrapper's default editor() function */
+        /* Override UsfmEditor's default editor() function */
         this.editor = () => this._editor
 
         this._editor = flowRight(
@@ -128,7 +128,7 @@ export class UsfmEditor extends EditorWrapper {
     }
 }
 
-UsfmEditor.propTypes = {
+BasicUsfmEditor.propTypes = {
     usfmString: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,

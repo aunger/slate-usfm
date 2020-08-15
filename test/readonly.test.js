@@ -3,6 +3,7 @@ import { ReactEditor } from 'slate-react'
 import { UsfmEditor } from "../src/components/UsfmEditor";
 import { render, unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils"
+import { EditorWrapper } from "../src/demo/EditorWrapper";
 
 let container = null
 
@@ -37,9 +38,9 @@ const UsfmEditorTest = React.forwardRef(({readOnly}, ref) => (
 ))
 
 function testReadOnly(readOnly) {
-    const ref = React.createRef()
+    const wrapper = new EditorWrapper()
     act(() => {
-        render(<UsfmEditorTest readOnly={readOnly} ref={ref} />, container)
+        render(<UsfmEditorTest readOnly={readOnly} ref={wrapper.editorRef} />, container)
     })
-    expect(ReactEditor.isReadOnly(ref.current.editor)).toBe(readOnly)
+    expect(ReactEditor.isReadOnly(wrapper.editor())).toBe(readOnly)
 }
