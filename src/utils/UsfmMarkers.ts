@@ -182,11 +182,15 @@ export class UsfmMarkers {
         return baseOrder
     }
 
-    private static isOfCategory(markerOrNode: string | Node, category: Object): boolean {
+    private static isOfCategory(
+        markerOrNode: string | Node, 
+        category: Object | Array<string>
+    ): boolean {
         const marker = UsfmMarkers.marker(markerOrNode)
         if (!marker) return false
         const baseType = UsfmMarkers.getBaseMarker(marker)
-        return category.hasOwnProperty(baseType)
+        return category.hasOwnProperty(baseType) || 
+            Array.isArray(category) && category.includes(baseType)
     }
 
     private static marker(markerOrNode: string | Node): string {
