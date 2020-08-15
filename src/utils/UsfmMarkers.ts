@@ -58,6 +58,11 @@ enum CHAPTERS_AND_VERSES {
     v = "v",
 }
 
+const chapterAndVerseNumbers = [
+    CHAPTERS_AND_VERSES.c,
+    CHAPTERS_AND_VERSES.v
+]
+
 const markerToCategoryMap: Map<string, Object> = (() => {
     const categories = [
         IDENTIFICATION,
@@ -74,11 +79,28 @@ const markerToCategoryMap: Map<string, Object> = (() => {
 })()
 
 export class UsfmMarkers {
+    /** https://ubsicap.github.io/usfm/identification */
     static IDENTIFICATION = IDENTIFICATION
+
+    /** https://ubsicap.github.io/usfm/titles_headings */
     static TITLES_HEADINGS_LABELS = TITLES_HEADINGS_LABELS
+
+    /**
+     * Paragraph markers, including poetry-indentation.
+     * https://ubsicap.github.io/usfm/paragraphs
+     */
     static PARAGRAPHS = PARAGRAPHS
+
+    /**
+     * Character markers that have semantic meaning.
+     * https://ubsicap.github.io/usfm/characters#special-text
+     */
     static SPECIAL_TEXT = SPECIAL_TEXT
+
+    /** https://ubsicap.github.io/usfm/titles_headings */
     static SPECIAL_FEATURES = SPECIAL_FEATURES
+
+    /** https://ubsicap.github.io/usfm/chapters_verses */
     static CHAPTERS_AND_VERSES = CHAPTERS_AND_VERSES
 
     static compare(markerA: string, markerB: string): number {
@@ -103,7 +125,7 @@ export class UsfmMarkers {
     }
 
     static isVerseOrChapterNumber(markerOrNode: string | Node): boolean {
-        return UsfmMarkers.isOfCategory(markerOrNode, UsfmMarkers.CHAPTERS_AND_VERSES)
+        return UsfmMarkers.isOfCategory(markerOrNode, chapterAndVerseNumbers)
     }
 
     static isParagraphType(marker: string): boolean {
