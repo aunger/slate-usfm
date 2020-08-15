@@ -114,7 +114,7 @@ export class BasicUsfmEditor extends UsfmEditor {
                 value={this.state.value}
                 onChange={this.handleChange}
             >
-                <HoveringToolbar />
+                {/* <HoveringToolbar /> */}
                 <Editable
                     readOnly={this.props.readOnly}
                     renderElement={renderElementByType}

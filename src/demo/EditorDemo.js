@@ -7,6 +7,7 @@ import { OptionCheckbox } from "./OptionCheckbox";
 import { InputUsfm, OutputUsfm } from "./UsfmContainer";
 import { IdentificationSetter } from "./IdentificationSetter";
 import "./demo.css";
+import { ToolbarEditor } from "./ToolbarEditor";
 
 function transformToOutput(usfm) {
     return slateToUsfm(usfmToSlate(usfm))
@@ -86,7 +87,7 @@ export class EditorDemo extends React.Component {
                             idJson={JSON.stringify(this.state.identification)} 
                             onChange={this.onIdentificationChange} />
                         <h2>Editor</h2>
-                        <BasicUsfmEditor
+                        <ToolbarEditor
                             usfmString={this.state.usfmInput}
                             key={this.state.usfmInput}
                             onChange={this.handleEditorChange}
