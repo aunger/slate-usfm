@@ -27,7 +27,8 @@ export class EditorDemo extends React.Component {
             startingVerse: {}, // json with "chapter" and "verse" fields
             selectedVerse: {
                 chapter: "",
-                verse: ""
+                verse: "",
+                verseRangeEnd: ""
             }
         };
         this.handleInputChange =
@@ -39,7 +40,8 @@ export class EditorDemo extends React.Component {
                     startingVerse: {}, // json with "chapter" and "verse" fields
                     selectedVerse: {
                         chapter: "",
-                        verse: ""
+                        verse: "",
+                        verseRangeEnd: ""
                     }
                 }
             );
@@ -59,10 +61,11 @@ export class EditorDemo extends React.Component {
         this.onStartingVerseChange = (startingVerse) => 
             this.setState({ startingVerse: startingVerse })
 
-        this.onVerseChange = (chapter, verse) => {
+        this.onVerseChange = (chapter, verse, verseRangeEnd) => {
             const selectedVerseJson = { 
                 chapter: chapter,
-                verse: verse
+                verse: verse,
+                verseRangeEnd: verseRangeEnd
             }
             console.debug("onVerseChange called: ", selectedVerseJson)
             this.setState({ selectedVerse: selectedVerseJson })

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { withReact, Slate, Editable, ReactEditor } from "slate-react";
-import { createEditor, Transforms, Node } from 'slate';
+import { createEditor, Transforms, Node, Editor } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
 import { usfmToSlate } from '../transforms/usfmToSlate';
 import { withNormalize } from "../plugins/normalizeNode";
@@ -31,7 +31,7 @@ export class BasicUsfmEditor extends UsfmEditor {
             value: usfmToSlate(props.usfmString),
             selectedVerse: {
                 chapter: "",
-                verse: ""
+                verse: "" // the start verse of a range
             }
         }
 
@@ -108,26 +108,46 @@ export class BasicUsfmEditor extends UsfmEditor {
             if (versePath) {
                 SelectionTransforms.moveToEndOfLastLeaf(this.slateEditor, versePath)
                 ReactEditor.focus(this.slateEditor)
-                this.setState({ selectedVerse: this.props.startingVerse })
-                this.props.onVerseChange(chapter, verse)
+
+                const [verseNode, _] = Editor.node(this.slateEditor, versePath)
+                const verseNumOrRange = Node.string(verseNode.children[0])
+                const [start, endOrNull] = verseNumOrRange.split("-")
+                this.setState({ selectedVerse: {
+                    chapter: chapter,
+                    verse: start
+                }})
+                this.props.onVerseChange(
+                    chapter, 
+                    start, 
+                    endOrNull ? endOrNull : ""
+                )
             }
         }
 
         this.updateSelectedVerse = () => {
-            let newSelectedVerse = { chapter: "", verse: "" }
+            let newSelectedChapter = ""
+            let newSelectedVerse = ""
             if (this.slateEditor.selection) {
                 const verseResult = MyEditor.getVerse(this.slateEditor)
                 if (verseResult) {
                     const [verse, versePath] = verseResult
                     const [chapter, chapterPath] = MyEditor.getChapter(this.slateEditor)
-                    const chapterNumStr = Node.string(chapter.children[0])
-                    const verseNumStr = Node.string(verse.children[0])
-                    newSelectedVerse = { chapter: chapterNumStr, verse: verseNumStr }
+                    newSelectedChapter = Node.string(chapter.children[0])
+                    newSelectedVerse = Node.string(verse.children[0])
                 }
             }
-            if (!isEqual(newSelectedVerse, this.state.selectedVerse)) {
-                this.setState({ selectedVerse: newSelectedVerse })
-                this.props.onVerseChange(newSelectedVerse.chapter, newSelectedVerse.verse)
+            const [startVerse, endVerseOrNull] = newSelectedVerse.split("-")
+            const newSelectedChapterVerse = {
+                chapter: newSelectedChapter,
+                verse: startVerse
+            }
+            if (!isEqual(newSelectedChapterVerse, this.state.selectedVerse)) {
+                this.setState({ selectedVerse: newSelectedChapterVerse })
+                this.props.onVerseChange(
+                    newSelectedChapter, 
+                    startVerse, 
+                    endVerseOrNull ? endVerseOrNull : ""
+                )
             }
         }
     }

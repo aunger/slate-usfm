@@ -12,6 +12,7 @@ export const SelectedVerseTracker = ({ selectedVerse }) => {
             </div>
             Chapter: {selectedVerse.chapter}
             Verse: {selectedVerse.verse}
+            VerseRangeEnd: {selectedVerse.verseRangeEnd}
         </div>
     )
 }
