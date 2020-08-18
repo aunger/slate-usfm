@@ -1,6 +1,6 @@
 import * as React from "react";
-import { withReact, Slate, Editable } from "slate-react";
-import { createEditor, Transforms } from 'slate';
+import { withReact, Slate, Editable, ReactEditor } from "slate-react";
+import { createEditor, Transforms, Node } from 'slate';
 import { renderElementByType, renderLeafByProps } from '../transforms/usfmRenderer';
 import { usfmToSlate } from '../transforms/usfmToSlate';
 import { withNormalize } from "../plugins/normalizeNode";
@@ -19,6 +19,7 @@ import { MyEditor } from "../plugins/helpers/MyEditor";
 import { PropTypes } from "prop-types" 
 import "./default.css";
 import { UsfmEditor } from "./UsfmEditor";
+import { SelectionTransforms } from "../plugins/helpers/SelectionTransforms";
 
 /**
  * A WYSIWYG editor component for USFM
@@ -27,7 +28,11 @@ export class BasicUsfmEditor extends UsfmEditor {
     constructor(props) {
         super(props)
         this.state = {
-            value: usfmToSlate(props.usfmString) 
+            value: usfmToSlate(props.usfmString),
+            selectedVerse: {
+                chapter: "",
+                verse: ""
+            }
         }
 
         /* Override UsfmEditor's default baseEditor() function */
@@ -52,6 +57,7 @@ export class BasicUsfmEditor extends UsfmEditor {
                 return
             }
             this.setState({ value: value })
+            this.updateSelectedVerse()
             this.scheduleOnChange(value)
         }
 
@@ -93,10 +99,42 @@ export class BasicUsfmEditor extends UsfmEditor {
             const filtered = filterInvalidIdentification(idJson)
             return normalizeIdentificationValues(filtered)
         }
+
+        this.moveToEndOfStartingVerse = () => {
+            if (!this.props.startingVerse) return
+            const { chapter, verse } = this.props.startingVerse
+            if (!chapter || !verse) return
+            const versePath = MyEditor.findVersePath(this.slateEditor, chapter, verse)
+            if (versePath) {
+                SelectionTransforms.moveToEndOfLastLeaf(this.slateEditor, versePath)
+                ReactEditor.focus(this.slateEditor)
+                this.setState({ selectedVerse: this.props.startingVerse })
+                this.props.onVerseChange(chapter, verse)
+            }
+        }
+
+        this.updateSelectedVerse = () => {
+            let newSelectedVerse = { chapter: "", verse: "" }
+            if (this.slateEditor.selection) {
+                const verseResult = MyEditor.getVerse(this.slateEditor)
+                if (verseResult) {
+                    const [verse, versePath] = verseResult
+                    const [chapter, chapterPath] = MyEditor.getChapter(this.slateEditor)
+                    const chapterNumStr = Node.string(chapter.children[0])
+                    const verseNumStr = Node.string(verse.children[0])
+                    newSelectedVerse = { chapter: chapterNumStr, verse: verseNumStr }
+                }
+            }
+            if (!isEqual(newSelectedVerse, this.state.selectedVerse)) {
+                this.setState({ selectedVerse: newSelectedVerse })
+                this.props.onVerseChange(newSelectedVerse.chapter, newSelectedVerse.verse)
+            }
+        }
     }
 
     componentDidMount() {
         this.updateIdentificationFromUsfmAndProp()
+        this.moveToEndOfStartingVerse()
     }
     
     componentDidUpdate(prevProps) {
@@ -104,6 +142,10 @@ export class BasicUsfmEditor extends UsfmEditor {
             this.updateIdentificationFromUsfmAndProp()
         } else if (prevProps.identification != this.props.identification) {
             this.updateIdentificationFromProp()
+        }
+
+        if (!isEqual(prevProps.startingVerse, this.props.startingVerse)) {
+            this.moveToEndOfStartingVerse()
         }
     }
 
