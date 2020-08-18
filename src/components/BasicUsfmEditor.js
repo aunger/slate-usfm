@@ -29,7 +29,7 @@ export class BasicUsfmEditor extends UsfmEditor {
         super(props)
         this.state = {
             value: usfmToSlate(props.usfmString),
-            selectedVerse: {
+            selectedChapterAndVerse: {
                 chapter: "",
                 verse: "" // the start verse of a range
             }
@@ -57,7 +57,7 @@ export class BasicUsfmEditor extends UsfmEditor {
                 return
             }
             this.setState({ value: value })
-            this.updateSelectedVerse()
+            this.updateSelectedChapterAndVerse()
             this.scheduleOnChange(value)
         }
 
@@ -100,7 +100,7 @@ export class BasicUsfmEditor extends UsfmEditor {
             return normalizeIdentificationValues(filtered)
         }
 
-        this.moveToEndOfStartingVerse = () => {
+        this.moveToEndOfStartingVerseProp = () => {
             if (!this.props.startingVerse) return
             const { chapter, verse } = this.props.startingVerse
             if (!chapter || !verse) return
@@ -111,41 +111,41 @@ export class BasicUsfmEditor extends UsfmEditor {
 
                 const [verseNode, _] = Editor.node(this.slateEditor, versePath)
                 const verseNumOrRange = Node.string(verseNode.children[0])
-                const [start, endOrNull] = verseNumOrRange.split("-")
-                this.setState({ selectedVerse: {
+                const [startVerse, endVerseOrNull] = verseNumOrRange.split("-")
+                this.setState({ selectedChapterAndVerse: {
                     chapter: chapter,
-                    verse: start
+                    verse: startVerse
                 }})
                 this.props.onVerseChange(
                     chapter, 
-                    start, 
-                    endOrNull ? endOrNull : ""
+                    startVerse, 
+                    endVerseOrNull ? endVerseOrNull : ""
                 )
             }
         }
 
-        this.updateSelectedVerse = () => {
+        this.updateSelectedChapterAndVerse = () => {
             let newSelectedChapter = ""
             let newSelectedVerse = ""
             if (this.slateEditor.selection) {
-                const verseResult = MyEditor.getVerse(this.slateEditor)
-                if (verseResult) {
-                    const [verse, versePath] = verseResult
+                const verseNodeEntry = MyEditor.getVerse(this.slateEditor)
+                if (verseNodeEntry) {
+                    const [verseNode, versePath] = verseNodeEntry
                     const [chapter, chapterPath] = MyEditor.getChapter(this.slateEditor)
                     newSelectedChapter = Node.string(chapter.children[0])
-                    newSelectedVerse = Node.string(verse.children[0])
+                    newSelectedVerse = Node.string(verseNode.children[0])
                 }
             }
             const [startVerse, endVerseOrNull] = newSelectedVerse.split("-")
-            const newSelectedChapterVerse = {
+            const newSelectedChapterAndVerse = {
                 chapter: newSelectedChapter,
                 verse: startVerse
             }
-            if (!isEqual(newSelectedChapterVerse, this.state.selectedVerse)) {
-                this.setState({ selectedVerse: newSelectedChapterVerse })
+            if (!isEqual(newSelectedChapterAndVerse, this.state.selectedChapterAndVerse)) {
+                this.setState({ selectedChapterAndVerse: newSelectedChapterAndVerse })
                 this.props.onVerseChange(
-                    newSelectedChapter, 
-                    startVerse, 
+                    newSelectedChapter,
+                    startVerse,
                     endVerseOrNull ? endVerseOrNull : ""
                 )
             }
@@ -154,7 +154,7 @@ export class BasicUsfmEditor extends UsfmEditor {
 
     componentDidMount() {
         this.updateIdentificationFromUsfmAndProp()
-        this.moveToEndOfStartingVerse()
+        this.moveToEndOfStartingVerseProp()
     }
     
     componentDidUpdate(prevProps) {
@@ -165,7 +165,7 @@ export class BasicUsfmEditor extends UsfmEditor {
         }
 
         if (!isEqual(prevProps.startingVerse, this.props.startingVerse)) {
-            this.moveToEndOfStartingVerse()
+            this.moveToEndOfStartingVerseProp()
         }
     }
 
