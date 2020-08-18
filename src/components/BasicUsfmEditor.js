@@ -111,40 +111,36 @@ export class BasicUsfmEditor extends UsfmEditor {
 
                 const [verseNode, _] = Editor.node(this.slateEditor, versePath)
                 const verseNumOrRange = Node.string(verseNode.children[0])
-                const [startVerse, endVerseOrNull] = verseNumOrRange.split("-")
-                this.setState({ selectedChapterAndVerse: {
-                    chapter: chapter,
-                    verse: startVerse
-                }})
-                this.props.onVerseChange(
-                    chapter, 
-                    startVerse, 
-                    endVerseOrNull ? endVerseOrNull : ""
-                )
+
+                this.updateSelectedChapterAndVerseIfChangeOccured(chapter, verseNumOrRange)
             }
         }
 
         this.updateSelectedChapterAndVerse = () => {
-            let newSelectedChapter = ""
-            let newSelectedVerse = ""
+            let chapterStr = ""
+            let verseNumOrRangeStr = ""
             if (this.slateEditor.selection) {
                 const verseNodeEntry = MyEditor.getVerse(this.slateEditor)
                 if (verseNodeEntry) {
                     const [verseNode, versePath] = verseNodeEntry
                     const [chapter, chapterPath] = MyEditor.getChapter(this.slateEditor)
-                    newSelectedChapter = Node.string(chapter.children[0])
-                    newSelectedVerse = Node.string(verseNode.children[0])
+                    chapterStr = Node.string(chapter.children[0])
+                    verseNumOrRangeStr = Node.string(verseNode.children[0])
                 }
             }
-            const [startVerse, endVerseOrNull] = newSelectedVerse.split("-")
+            this.updateSelectedChapterAndVerseIfChangeOccured(chapterStr, verseNumOrRangeStr)
+        }
+
+        this.updateSelectedChapterAndVerseIfChangeOccured = (chapter, verseNumOrRange) => {
+            const [startVerse, endVerseOrNull] = verseNumOrRange.split("-")
             const newSelectedChapterAndVerse = {
-                chapter: newSelectedChapter,
+                chapter: chapter,
                 verse: startVerse
             }
             if (!isEqual(newSelectedChapterAndVerse, this.state.selectedChapterAndVerse)) {
                 this.setState({ selectedChapterAndVerse: newSelectedChapterAndVerse })
                 this.props.onVerseChange(
-                    newSelectedChapter,
+                    chapter,
                     startVerse,
                     endVerseOrNull ? endVerseOrNull : ""
                 )
