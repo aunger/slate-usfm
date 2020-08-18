@@ -1,0 +1,27 @@
+.editor {
+    /* background-color: red; */
+}
+
+.c-usfm {
+    font-size: 200%;
+}
+
+.v-usfm {
+    /* font-size: 300%; */
+}
+
+.p-usfm {
+    margin-left: 2em;
+}
+
+.chapter{ }
+
+.verse{ }
+
+.inline-container{ }
+
+.s-usfm { }
+
+.nd-usfm { }
+
+.bk-usfm { }

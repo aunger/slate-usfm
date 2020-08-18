@@ -1,20 +1,41 @@
 import * as React from "react";
-import { BasicUsfmEditor } from "../components/BasicUsfmEditor";
+import { createBasicUsfmEditor } from "../components/BasicUsfmEditor";
 import { InputSelector } from "./InputSelector";
 import { usfmToSlate } from "../transforms/usfmToSlate.js";
-import { slateToUsfm } from "../transforms/slateToUsfm.ts";
+import { slateToUsfm } from "../transforms/slateToUsfm";
 import { OptionCheckbox } from "./OptionCheckbox";
 import { InputUsfm, OutputUsfm } from "./UsfmContainer";
 import { IdentificationSetter } from "./IdentificationSetter";
 import "./demo.css";
-import { ToolbarEditor } from "./ToolbarEditor";
+import { StartingVerseSelector } from "./StartingVerseSelector";
+import { SelectedVerseTracker } from "./SelectedVerseTracker";
+import { StartingVerse } from "../components/UsfmEditor";
+import { withToolbar } from "./ToolbarEditor";
+import { withChapterPaging } from "./ChapterPagingEditor";
+import { flowRight } from "lodash"
 
 function transformToOutput(usfm) {
     return slateToUsfm(usfmToSlate(usfm))
 }
 
-export class EditorDemo extends React.Component {
-    constructor(props) {
+type SelectedVerse = {chapter: string, verse: string, verseRangeEnd: string}
+
+type DemoProps = {
+    usfmStrings: string[]
+}
+
+type State = {
+    usfmInput: string,
+    usfmOutput: string,
+    showInputUsfm: boolean,
+    readOnly: boolean,
+    startingVerse: StartingVerse,
+    selectedVerse: SelectedVerse,
+    identification: Object
+}
+
+export class EditorDemo extends React.Component<DemoProps, State> {
+    constructor(props: DemoProps) {
         super(props);
         // Get the first usfm string in the dropdown menu
         const initialUsfm = props.usfmStrings.values().next().value
@@ -22,30 +43,65 @@ export class EditorDemo extends React.Component {
             usfmInput: initialUsfm,
             usfmOutput: transformToOutput(initialUsfm),
             showInputUsfm: false,
-            readOnly: false
+            readOnly: false,
+            startingVerse: undefined,
+            selectedVerse: {
+                chapter: "",
+                verse: "",
+                verseRangeEnd: ""
+            },
+            identification: null
         };
-        this.handleInputChange =
-            input => this.setState(
-                { 
-                    usfmInput: input,
-                    usfmOutput: transformToOutput(input),
-                    identification: null
-                }
-            );
-        this.handleEditorChange = (usfm) => this.setState({ usfmOutput: usfm });
-        this.handleShowInputChange = () => {
-            this.setState({ showInputUsfm: !this.state.showInputUsfm});
-        }
-        this.handleReadOnlyChange = () => {
-            this.setState({ readOnly: !this.state.readOnly});
-        }
-        this.onIdentificationChange = (id) => {
-            if (typeof id == "string") {
-                id = JSON.parse(id)
-            }
-            this.setState({ identification: id })
-        }
     }
+
+    handleInputChange =
+        (input: string) => this.setState(
+            { 
+                usfmInput: input,
+                usfmOutput: transformToOutput(input),
+                identification: null,
+                startingVerse: undefined,
+                selectedVerse: {
+                    chapter: "",
+                    verse: "",
+                    verseRangeEnd: ""
+                }
+            }
+        )
+
+    handleEditorChange = (usfm: string) => this.setState({ usfmOutput: usfm });
+    handleShowInputChange = () => {
+        this.setState({ showInputUsfm: !this.state.showInputUsfm});
+    }
+    handleReadOnlyChange = () => {
+        this.setState({ readOnly: !this.state.readOnly});
+    }
+    onIdentificationChange = (id: Object) => {
+        if (typeof id == "string") {
+            id = JSON.parse(id)
+        }
+        this.setState({ identification: id })
+    }
+    onStartingVerseChange = (startingVerse: StartingVerse) => 
+        this.setState({ startingVerse: startingVerse })
+
+    onVerseChange = (chapter: string, verse: string, verseRangeEnd: string) => {
+        const selectedVerseJson = { 
+            chapter: chapter,
+            verse: verse,
+            verseRangeEnd: verseRangeEnd
+        }
+        console.debug("onVerseChange called: ", selectedVerseJson)
+        this.setState({ selectedVerse: selectedVerseJson })
+    }
+
+    // This editor can be given a ref of type UsfmEditor
+    // to have access to the editor API (use React.createRef<UsfmEditor>)
+    Editor = flowRight(
+        withChapterPaging,
+        withToolbar,
+        createBasicUsfmEditor
+    )()
 
     render() {
         return (
@@ -63,7 +119,7 @@ export class EditorDemo extends React.Component {
                                 id={"show-input-checkbox"}
                                 text={"Show Input"}
                                 onChange={this.handleShowInputChange}
-                                checked={this.state.showInput}
+                                checked={this.state.showInputUsfm}
                             />
                             <OptionCheckbox
                                 id={"read-only-checkbox"}
@@ -86,14 +142,20 @@ export class EditorDemo extends React.Component {
                         <IdentificationSetter 
                             idJson={JSON.stringify(this.state.identification)} 
                             onChange={this.onIdentificationChange} />
+                        <StartingVerseSelector
+                            onChange={this.onStartingVerseChange} />
+                        <SelectedVerseTracker
+                            selectedVerse={this.state.selectedVerse} />
                         <h2>Editor</h2>
-                        <ToolbarEditor
+                        <this.Editor 
                             usfmString={this.state.usfmInput}
                             key={this.state.usfmInput}
                             onChange={this.handleEditorChange}
                             readOnly={this.state.readOnly}
                             identification={this.state.identification}
                             onIdentificationChange={this.onIdentificationChange}
+                            startingVerse={this.state.startingVerse}
+                            onVerseChange={this.onVerseChange}
                         />
                     </div>
                     <div className="column column-right">
