@@ -32,6 +32,7 @@
   "dependencies": {
     "@material-ui/core": "4.10.2",
     "@material-ui/icons": "4.9.1",
+    "@types/jest": "26.0.14",
     "core-js": "3.6.5",
     "debounce": "1.2.0",
     "emotion": "10.0.17",
@@ -63,6 +64,7 @@
     "react-docgen-typescript": "1.16.2",
     "source-map-loader": "0.2.4",
     "style-loader": "0.23.1",
+    "ts-jest": "26.4.0",
     "ts-loader": "6.2.1",
     "typescript": "3.7.5",
     "webpack": "4.31.0"
