@@ -3,35 +3,35 @@ import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { UsfmEditor, UsfmEditorProps, IUsfmEditor, ForwardRefUsfmEditor } from "../components/UsfmEditor";
 
-export function withChapterPaging(Editor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
+export function withChapterPaging(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
     class ChapterPagingEditor extends React.Component<UsfmEditorProps> implements IUsfmEditor {
 
         constructor(props: UsfmEditorProps) {
             super(props)
         }
 
-        childEditorRef = React.createRef<UsfmEditor>()
-        childEditor: () => UsfmEditor | undefined = () => this.childEditorRef.current
+        wrappedEditorRef = React.createRef<UsfmEditor>()
+        wrappedEditorInstance: () => UsfmEditor | undefined = () => this.wrappedEditorRef.current
 
         getMarksAtCursor = () =>
-            this.childEditor() ? this.childEditor().getMarksAtCursor() : []
+            this.wrappedEditorInstance() ? this.wrappedEditorInstance().getMarksAtCursor() : []
 
         addMarkAtCursor = (mark: string) =>
-            this.childEditor() ? this.childEditor().addMarkAtCursor(mark) : {}
+            this.wrappedEditorInstance() ? this.wrappedEditorInstance().addMarkAtCursor(mark) : {}
 
         removeMarkAtCursor = (mark: string) =>
-            this.childEditor() ? this.childEditor().removeMarkAtCursor(mark) : {}
+            this.wrappedEditorInstance() ? this.wrappedEditorInstance().removeMarkAtCursor(mark) : {}
 
         getParagraphTypesAtCursor = () =>
-            this.childEditor() ? this.childEditor().getParagraphTypesAtCursor() : []
+            this.wrappedEditorInstance() ? this.wrappedEditorInstance().getParagraphTypesAtCursor() : []
 
         setParagraphTypeAtCursor = (marker: string) =>
-            this.childEditor() ? this.childEditor().setParagraphTypeAtCursor(marker) : {}
+            this.wrappedEditorInstance() ? this.wrappedEditorInstance().setParagraphTypeAtCursor(marker) : {}
 
         render() {
             return (
                 <React.Fragment>
-                    <Editor {...this.props} ref={this.childEditorRef} />
+                    <WrappedEditor {...this.props} ref={this.wrappedEditorRef} />
                     <MarkButton mark={UsfmMarkers.SPECIAL_TEXT.nd} text="nd" editor={this} />
                 </React.Fragment>
             )

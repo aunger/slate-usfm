@@ -2,6 +2,12 @@ export type UsfmEditor = React.Component<UsfmEditorProps> & IUsfmEditor
 
 export type ForwardRefUsfmEditor = React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<UsfmEditor>>
 
+interface HasWrappedEditor {
+    wrappedEditor: ForwardRefUsfmEditor
+}
+
+export type HOCEditorProps = UsfmEditorProps & HasWrappedEditor
+
 export interface IUsfmEditor {
     getMarksAtCursor: () => string[] | Record<string, any>
     addMarkAtCursor: (mark: string) => void

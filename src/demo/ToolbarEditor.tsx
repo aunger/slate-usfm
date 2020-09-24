@@ -2,49 +2,49 @@ import * as React from "react";
 import { cx, css } from "emotion";
 import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
-import { UsfmEditor, UsfmEditorProps, IUsfmEditor, ForwardRefUsfmEditor } from "../components/UsfmEditor";
+import { UsfmEditor, IUsfmEditor, ForwardRefUsfmEditor, HOCEditorProps } from "../components/UsfmEditor";
 
-export function withToolbar(Editor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
-    class ToolbarEditor extends React.Component<UsfmEditorProps> implements IUsfmEditor {
-
-        constructor(props: UsfmEditorProps) {
-            super(props)
-        }
-
-        childEditorRef = React.createRef<UsfmEditor>()
-        childEditor: () => UsfmEditor | undefined = () => this.childEditorRef.current
-
-        getMarksAtCursor = () =>
-            this.childEditor() ? this.childEditor().getMarksAtCursor() : []
-
-        addMarkAtCursor = (mark: string) =>
-            this.childEditor() ? this.childEditor().addMarkAtCursor(mark) : {}
-
-        removeMarkAtCursor = (mark: string) =>
-            this.childEditor() ? this.childEditor().removeMarkAtCursor(mark) : {}
-
-        getParagraphTypesAtCursor = () =>
-            this.childEditor() ? this.childEditor().getParagraphTypesAtCursor() : []
-
-        setParagraphTypeAtCursor = (marker: string) =>
-            this.childEditor() ? this.childEditor().setParagraphTypeAtCursor(marker) : {}
-
-        render() {
-            return (
-                <React.Fragment>
-                    <UsfmToolbar editor={this} />
-                    <Editor {...this.props} ref={this.childEditorRef} />
-                </React.Fragment>
-            )
-        }
-    }
-
-    return React.forwardRef<ToolbarEditor, UsfmEditorProps>(({ ...props }, ref) =>
+export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
+    return React.forwardRef<ToolbarEditor, HOCEditorProps>(({ ...props }, ref) =>
         <ToolbarEditor
             {...props}
-            ref={ref}
+            wrappedEditor={WrappedEditor}
+            ref={ref} // used to access the ToolbarEditor and its API
         />
     )
+}
+
+class ToolbarEditor extends React.Component<HOCEditorProps> implements IUsfmEditor {
+    constructor(props: HOCEditorProps) {
+        super(props)
+    }
+
+    wrappedEditorRef = React.createRef<UsfmEditor>()
+    wrappedEditorInstance: () => UsfmEditor | undefined = () => this.wrappedEditorRef.current
+
+    getMarksAtCursor = () =>
+        this.wrappedEditorInstance() ? this.wrappedEditorInstance().getMarksAtCursor() : []
+
+    addMarkAtCursor = (mark: string) =>
+        this.wrappedEditorInstance() ? this.wrappedEditorInstance().addMarkAtCursor(mark) : {}
+
+    removeMarkAtCursor = (mark: string) =>
+        this.wrappedEditorInstance() ? this.wrappedEditorInstance().removeMarkAtCursor(mark) : {}
+
+    getParagraphTypesAtCursor = () =>
+        this.wrappedEditorInstance() ? this.wrappedEditorInstance().getParagraphTypesAtCursor() : []
+
+    setParagraphTypeAtCursor = (marker: string) =>
+        this.wrappedEditorInstance() ? this.wrappedEditorInstance().setParagraphTypeAtCursor(marker) : {}
+
+    render() {
+        return (
+            <React.Fragment>
+                <UsfmToolbar editor={this} />
+                <this.props.wrappedEditor {...this.props} ref={this.wrappedEditorRef} />
+            </React.Fragment>
+        )
+    }
 }
 
 const UsfmToolbar = ({editor}) => {
