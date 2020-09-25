@@ -18,7 +18,7 @@ import { MyEditor } from "../plugins/helpers/MyEditor";
 //@ts-ignore
 import { PropTypes } from "prop-types" 
 import "./default.css";
-import { IUsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor } from "./UsfmEditor";
+import { IUsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor, HasUsfmEditorAPI } from "./UsfmEditor";
 import NodeRules from "../utils/NodeRules";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { SelectionTransforms } from "../plugins/helpers/SelectionTransforms";
@@ -36,36 +36,11 @@ export const createBasicUsfmEditor: () => ForwardRefUsfmEditor =
         />
     )
 
-/**
- * A WYSIWYG editor component for USFM
- */
-export class BasicUsfmEditor extends React.Component<UsfmEditorProps, State> implements IUsfmEditor {
+class APIImp implements IUsfmEditor {
     slateEditor: ReactEditor
-
-    constructor(props: UsfmEditorProps) {
-        super(props)
-        this.state = {
-            value: usfmToSlate(props.usfmString),
-            selectedChapterAndVerse: {
-                chapter: "",
-                verse: "" // the start verse of a range
-            }
-        }
-
-        this.slateEditor = flowRight(
-            withBackspace,
-            withDelete,
-            withEnter,
-            withNormalize,
-            withReact,
-            createEditor
-        )()
-        this.slateEditor.isInline = element => {
-            return false
-        }
+    constructor(slateEditor: ReactEditor) {
+        this.slateEditor = slateEditor
     }
-    
-    /** UsfmEditor interface functions */
 
     getMarksAtCursor: () => string[] | Record<string, any> = () => {
         if (!this.slateEditor.selection) return []
@@ -108,7 +83,40 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, State> imp
             { match: NodeRules.isFormattableBlockType }
         )
     }
+}
 
+/**
+ * A WYSIWYG editor component for USFM
+ */
+export class BasicUsfmEditor extends React.Component<UsfmEditorProps, State> implements HasUsfmEditorAPI {
+    slateEditor: ReactEditor
+    API: IUsfmEditor
+
+    constructor(props: UsfmEditorProps) {
+        super(props)
+        this.state = {
+            value: usfmToSlate(props.usfmString),
+            selectedChapterAndVerse: {
+                chapter: "",
+                verse: "" // the start verse of a range
+            }
+        }
+
+        this.slateEditor = flowRight(
+            withBackspace,
+            withDelete,
+            withEnter,
+            withNormalize,
+            withReact,
+            createEditor
+        )()
+        this.slateEditor.isInline = element => {
+            return false
+        }
+
+        this.API = new APIImp(this.slateEditor)
+    }
+    
     /** BasicUsfmEditor functions */
 
     handleChange: (value: Node[]) => void = value => {

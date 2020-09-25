@@ -2,7 +2,7 @@ import * as React from "react";
 import { cx, css } from "emotion";
 import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
-import { UsfmEditor, IUsfmEditor, ForwardRefUsfmEditor, HOCEditorProps } from "../components/UsfmEditor";
+import { UsfmEditor, IUsfmEditor, ForwardRefUsfmEditor, HOCEditorProps, HasUsfmEditorAPI } from "../components/UsfmEditor";
 
 export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
     return React.forwardRef<ToolbarEditor, HOCEditorProps>(({ ...props }, ref) =>
@@ -14,28 +14,17 @@ export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfm
     )
 }
 
-class ToolbarEditor extends React.Component<HOCEditorProps> implements IUsfmEditor {
+class ToolbarEditor extends React.Component<HOCEditorProps> implements HasUsfmEditorAPI {
     constructor(props: HOCEditorProps) {
         super(props)
     }
 
-    wrappedEditorRef = React.createRef<UsfmEditor>()
-    wrappedEditorInstance: () => UsfmEditor | undefined = () => this.wrappedEditorRef.current
+    API: IUsfmEditor
+    wrappedEditorRef = React.createRef<HasUsfmEditorAPI>()
 
-    getMarksAtCursor = () =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().getMarksAtCursor() : []
-
-    addMarkAtCursor = (mark: string) =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().addMarkAtCursor(mark) : {}
-
-    removeMarkAtCursor = (mark: string) =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().removeMarkAtCursor(mark) : {}
-
-    getParagraphTypesAtCursor = () =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().getParagraphTypesAtCursor() : []
-
-    setParagraphTypeAtCursor = (marker: string) =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().setParagraphTypeAtCursor(marker) : {}
+    componentDidMount() {
+        this.API = this.wrappedEditorRef.current.API
+    }
 
     render() {
         return (

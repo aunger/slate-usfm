@@ -3,7 +3,8 @@ export type UsfmEditor = React.Component<UsfmEditorProps> & IUsfmEditor
 export type ForwardRefUsfmEditor = React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<UsfmEditor>>
 
 interface HasWrappedEditor {
-    wrappedEditor: ForwardRefUsfmEditor
+    wrappedEditor: React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<HasUsfmEditorAPI>>
+    // wrappedEditor: ForwardRefUsfmEditor
 }
 
 export type HOCEditorProps = UsfmEditorProps & HasWrappedEditor
@@ -14,6 +15,10 @@ export interface IUsfmEditor {
     removeMarkAtCursor: (mark: string) => void
     getParagraphTypesAtCursor: () => string[]
     setParagraphTypeAtCursor: (marker: string) => void
+}
+
+export interface HasUsfmEditorAPI {
+    API: IUsfmEditor
 }
 
 export interface UsfmEditorProps {
