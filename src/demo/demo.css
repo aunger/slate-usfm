@@ -69,3 +69,13 @@
     width: 20%;
     float: right;
 }
+
+.verse-selector-input {
+    width: 2em;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.verse-tracker-text {
+    margin-right: 5px;
+}

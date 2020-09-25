@@ -16,9 +16,10 @@ import { parseIdentificationFromUsfm,
 } from "../transforms/identificationTransforms";
 import { MyEditor } from "../plugins/helpers/MyEditor";
 import "./default.css";
-import { UsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor, usfmEditorPropTypes, usfmEditorDefaultProps } from "../UsfmEditor";
+import { UsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor, usfmEditorPropTypes, usfmEditorDefaultProps, ChapterAndVerse } from "../UsfmEditor";
 import NodeRules from "../utils/NodeRules";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
+import { SelectionTransforms } from "../plugins/helpers/SelectionTransforms";
 
 export const createBasicUsfmEditor: () => ForwardRefUsfmEditor =
     () => React.forwardRef<BasicUsfmEditor, UsfmEditorProps>(({ ...props }, ref) => 
@@ -40,7 +41,8 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
     constructor(props: UsfmEditorProps) {
         super(props)
         this.state = {
-            value: usfmToSlate(props.usfmString)
+            value: usfmToSlate(props.usfmString),
+            selectedChapterAndVerse: { chapter: "", verse: "" }
         }
 
         this.slateEditor = flowRight(
@@ -110,6 +112,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
             return
         }
         this.setState({ value: value })
+        this.updateSelectedChapterAndVerseAfterEditorChange()
         this.scheduleOnChange(value)
     }
 
@@ -152,8 +155,56 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         return normalizeIdentificationValues(filtered)
     }
 
+    moveToEndOfStartingVerseProp = () => {
+        if (!this.props.startingVerse) return
+        const { chapter, verse } = this.props.startingVerse
+        if (!chapter || !verse) return
+        const versePath = MyEditor.findVersePath(this.slateEditor, chapter, verse)
+        if (versePath) {
+            SelectionTransforms.moveToEndOfLastLeaf(this.slateEditor, versePath)
+            ReactEditor.focus(this.slateEditor)
+
+            const [verseNode, _] = Editor.node(this.slateEditor, versePath)
+            const verseNumOrRange = Node.string(verseNode.children[0])
+
+            this.updateSelectedChapterAndVerseIfChangeOccured(chapter, verseNumOrRange)
+        }
+    }
+
+    updateSelectedChapterAndVerseAfterEditorChange = () => {
+        let chapterStr = ""
+        let verseNumOrRangeStr = ""
+        if (this.slateEditor.selection) {
+            const verseNodeEntry = MyEditor.getVerse(this.slateEditor)
+            if (verseNodeEntry) {
+                const [verseNode, versePath] = verseNodeEntry
+                const [chapter, chapterPath] = MyEditor.getChapter(this.slateEditor)
+                chapterStr = Node.string(chapter.children[0])
+                verseNumOrRangeStr = Node.string(verseNode.children[0])
+            }
+        }
+        this.updateSelectedChapterAndVerseIfChangeOccured(chapterStr, verseNumOrRangeStr)
+    }
+
+    updateSelectedChapterAndVerseIfChangeOccured = (chapter: string, verseNumOrRange: string) => {
+        const [startVerse, endVerseOrUndefined] = verseNumOrRange.split("-")
+        const newSelectedChapterAndVerse = {
+            chapter: chapter,
+            verse: startVerse
+        }
+        if (!isEqual(newSelectedChapterAndVerse, this.state.selectedChapterAndVerse)) {
+            this.setState({ selectedChapterAndVerse: newSelectedChapterAndVerse })
+            this.props.onVerseChange(
+                chapter,
+                startVerse,
+                endVerseOrUndefined
+            )
+        }
+    }
+
     componentDidMount() {
         this.updateIdentificationFromUsfmAndProp()
+        this.moveToEndOfStartingVerseProp()
     }
     
     componentDidUpdate(prevProps) {
@@ -161,6 +212,10 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
             this.updateIdentificationFromUsfmAndProp()
         } else if (prevProps.identification != this.props.identification) {
             this.updateIdentificationFromProp()
+        }
+
+        if (!isEqual(prevProps.startingVerse, this.props.startingVerse)) {
+            this.moveToEndOfStartingVerseProp()
         }
     }
 
@@ -186,4 +241,5 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
 
 interface BasicUsfmEditorState {
     value: any,
+    selectedChapterAndVerse: ChapterAndVerse
 }

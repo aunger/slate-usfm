@@ -22,7 +22,8 @@ export const MyEditor = {
     getLastVerse,
     getLastVerseNumberOrRange,
     getPathFromDOMNode,
-    identification
+    identification,
+    findVersePath
 }
 
 function isMatchingNodeSelected(
@@ -123,13 +124,17 @@ function getNearbyBlock(
 /**
  * Get the verse corresponding to the given path.
  * The verse node must be above the given path in the slate tree.
+ * If no path is given, the verse above the current selection will be returned.
  */
-function getVerse(editor: Editor, path: Path): NodeEntry {
+function getVerse(editor: Editor, path?: Path): NodeEntry {
+    const pathOption = path
+        ? { at: path }
+        : {}
     return Editor.above(
         editor,
         {
             match: (node) => node.type == NodeTypes.VERSE,
-            at: path
+            ...pathOption
         }
     )
 }
@@ -163,16 +168,20 @@ function getPreviousVerse(
 /**
  * Get the chapter corresponding to the given path.
  * The chapter node must be above the given path in the slate tree.
+ * If no path is given, the chapter above the current selection will be returned.
  */
 function getChapter(
     editor: Editor,
-    path: Path
+    path?: Path
 ): NodeEntry {
+    const pathOption = path
+        ? { at: path }
+        : {}
     return Editor.above(
         editor,
         {
             match: (node) => node.type == NodeTypes.CHAPTER,
-            at: path
+            ...pathOption
         }
     )
 }
@@ -224,4 +233,64 @@ function getPathFromDOMNode(
  */
 function identification(editor: Editor): Object { 
     return parseIdentificationFromSlateTree(editor)
+}
+
+/**
+ * Finds the path of a verse that matches the given chapter and
+ * verse numbers 
+ */
+function findVersePath(
+    editor: Editor,
+    chapterNum: string | number,
+    verseNum: string | number
+): Path {
+    const chapterNumMatch = (node: Node) => 
+        Array.isArray(node.children) &&
+        node.children.find(
+            chapterNumNode =>
+                chapterNumNode.type == UsfmMarkers.CHAPTERS_AND_VERSES.c &&
+                Node.string(chapterNumNode) == chapterNum.toString()
+        )
+    const verseNumMatch = (node: Node) => 
+        Array.isArray(node.children) &&
+        node.children.find(
+            verseNumNode => 
+                verseNumNode.type == UsfmMarkers.CHAPTERS_AND_VERSES.v &&
+                _isVerseNumInRange(verseNum.toString(), Node.string(verseNumNode))
+        )
+    const chapter = editor.children.find(chapterNumMatch)
+    const chapterChildren = chapter && Array.isArray(chapter.children)
+        ? chapter.children
+        : null
+    if (!chapterChildren) return null
+
+    const verse = chapterChildren.find(verseNumMatch)
+    if (!verse) return null
+
+    const chapterIdx = editor.children.indexOf(chapter)
+    const verseIdx = chapterChildren.indexOf(verse)
+
+    return [chapterIdx, verseIdx]
+}
+
+/**
+ * Determines whether the target verse number or range is fully contained
+ * by the "containing" verse number or range
+ */
+function _isVerseNumInRange(
+    targetVerseNumOrRangeStr: string, 
+    containingVerseNumOrRangeStr: string
+): boolean {
+    if (targetVerseNumOrRangeStr.includes("-"))
+        return targetVerseNumOrRangeStr == containingVerseNumOrRangeStr
+
+    const [startStr, endStrOrNull] = containingVerseNumOrRangeStr.split("-")
+    if (!endStrOrNull) 
+        return targetVerseNumOrRangeStr == containingVerseNumOrRangeStr
+
+    const start = parseInt(startStr)
+    const end = parseInt(endStrOrNull)
+    const searchNum = parseInt(targetVerseNumOrRangeStr)
+    return searchNum >= start &&
+        searchNum <= end
 }

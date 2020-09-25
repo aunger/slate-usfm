@@ -13,7 +13,11 @@ export interface UsfmEditorProps {
     onChange?: (usfm: string) => void,
     readOnly?: boolean,
     identification?: Object,
-    onIdentificationChange?: (identification: Object) => void
+    onIdentificationChange?: (identification: Object) => void,
+    startingVerse?: ChapterAndVerse,
+    // If the verse is a range, "verse" will be the start of the range and
+    // "verseRangeEnd" will have a value.
+    onVerseChange?: (chapter: string, verse: string, verseRangeEnd?: string) => void
 }
 
 export const usfmEditorPropTypes = {
@@ -22,14 +26,21 @@ export const usfmEditorPropTypes = {
     readOnly: PropTypes.bool,
     identification: PropTypes.object,
     onIdentificationChange: PropTypes.func,
+    startingVerse: PropTypes.object,
+    onVerseChange: PropTypes.func
 }
 
 export const usfmEditorDefaultProps = {
     onChange: () => {},
     readOnly: false,
     identification: {},
-    onIdentificationChange: () => {}
+    onIdentificationChange: () => {},
+    startingVerse: undefined,
+    onVerseChange: () => {}
 }
+
+// If the verse is a range, "verse" will be the start of the range.
+export type ChapterAndVerse = {chapter: string, verse: string}
 
 export type ForwardRefUsfmEditor = React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<UsfmEditor>>
 
