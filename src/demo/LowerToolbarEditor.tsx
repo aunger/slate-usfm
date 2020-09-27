@@ -4,8 +4,8 @@ import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { UsfmEditorProps, UsfmEditor, ForwardRefUsfmEditor } from "../UsfmEditor";
 import { css, cx } from "emotion";
 
-export function withASecondToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
-    class SecondToolbarEditor extends React.Component<UsfmEditorProps> implements UsfmEditor {
+export function withLowerToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
+    class LowerToolbarEditor extends React.Component<UsfmEditorProps> implements UsfmEditor {
 
         constructor(props: UsfmEditorProps) {
             super(props)
@@ -39,8 +39,8 @@ export function withASecondToolbar(WrappedEditor: ForwardRefUsfmEditor): Forward
         }
     }
 
-    return React.forwardRef<SecondToolbarEditor, UsfmEditorProps>(({ ...props }, ref) => 
-        <SecondToolbarEditor
+    return React.forwardRef<LowerToolbarEditor, UsfmEditorProps>(({ ...props }, ref) => 
+        <LowerToolbarEditor
             {...props}
             ref={ref}
         />
