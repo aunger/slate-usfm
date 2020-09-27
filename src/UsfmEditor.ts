@@ -17,7 +17,7 @@ export interface UsfmEditorProps {
 export type ForwardRefUsfmEditor = React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<UsfmEditor>>
 
 // "Higher order component" Usfm Editor Props, for an editor that will wrap another editor
-export type HOCUsfmEditorProps = UsfmEditorProps & HasWrappedEditor
+export type HocUsfmEditorProps = UsfmEditorProps & HasWrappedEditor
 
 interface HasWrappedEditor {
     wrappedEditor: ForwardRefUsfmEditor

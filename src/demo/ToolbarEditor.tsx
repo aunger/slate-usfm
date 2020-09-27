@@ -2,10 +2,10 @@ import * as React from "react";
 import { cx, css } from "emotion";
 import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
-import { UsfmEditor, ForwardRefUsfmEditor, HOCUsfmEditorProps } from "../UsfmEditor";
+import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps } from "../UsfmEditor";
 
 export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
-    return React.forwardRef<ToolbarEditor, HOCUsfmEditorProps>(({ ...props }, ref) =>
+    return React.forwardRef<ToolbarEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
         <ToolbarEditor
             {...props}
             wrappedEditor={WrappedEditor}
@@ -14,28 +14,28 @@ export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfm
     )
 }
 
-class ToolbarEditor extends React.Component<HOCUsfmEditorProps> implements UsfmEditor {
-    constructor(props: HOCUsfmEditorProps) {
+class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmEditor {
+    constructor(props: HocUsfmEditorProps) {
         super(props)
     }
 
     wrappedEditorRef = React.createRef<UsfmEditor>()
-    wrappedEditorInstance: () => UsfmEditor | undefined = () => this.wrappedEditorRef.current
+    wrappedEditorInstance: () => UsfmEditor | null = () => this.wrappedEditorRef.current
 
     getMarksAtCursor = () =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().getMarksAtCursor() : []
+        this.wrappedEditorInstance()?.getMarksAtCursor() ?? []
 
     addMarkAtCursor = (mark: string) =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().addMarkAtCursor(mark) : {}
+        this.wrappedEditorInstance().addMarkAtCursor(mark)
 
     removeMarkAtCursor = (mark: string) =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().removeMarkAtCursor(mark) : {}
+        this.wrappedEditorInstance().removeMarkAtCursor(mark)
 
     getParagraphTypesAtCursor = () =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().getParagraphTypesAtCursor() : []
+        this.wrappedEditorInstance()?.getParagraphTypesAtCursor() ?? []
 
     setParagraphTypeAtCursor = (marker: string) =>
-        this.wrappedEditorInstance() ? this.wrappedEditorInstance().setParagraphTypeAtCursor(marker) : {}
+        this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
     render() {
         return (

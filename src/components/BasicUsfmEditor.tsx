@@ -55,7 +55,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
     }
     
-    /** UsfmEditor interface functions */
+    /* UsfmEditor interface functions */
 
     getMarksAtCursor: () => string[] | Record<string, any> = () => {
         if (!this.slateEditor.selection) return []
@@ -98,7 +98,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         )
     }
 
-    /** BasicUsfmEditor functions */
+    /* BasicUsfmEditor functions */
 
     handleChange: (value: Node[]) => void = value => {
         console.debug("after change", value)

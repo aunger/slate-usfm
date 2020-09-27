@@ -32,7 +32,6 @@
   "dependencies": {
     "@material-ui/core": "4.10.2",
     "@material-ui/icons": "4.9.1",
-    "@types/jest": "26.0.14",
     "core-js": "3.6.5",
     "debounce": "1.2.0",
     "emotion": "10.0.17",
@@ -55,6 +54,7 @@
     "@babel/preset-env": "7.10.4",
     "@babel/preset-react": "7.0.0",
     "@babel/preset-typescript": "7.10.4",
+    "@types/jest": "26.0.14",
     "babel-jest": "26.1.0",
     "css-loader": "3.0.0",
     "enzyme": "3.11.0",

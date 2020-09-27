@@ -12,22 +12,22 @@ export function withASecondToolbar(WrappedEditor: ForwardRefUsfmEditor): Forward
         }
 
         wrappedEditorRef = React.createRef<UsfmEditor>()
-        wrappedEditorInstance: () => UsfmEditor | undefined = () => this.wrappedEditorRef.current
+        wrappedEditorInstance: () => UsfmEditor | null = () => this.wrappedEditorRef.current
 
         getMarksAtCursor = () =>
-            this.wrappedEditorInstance() ? this.wrappedEditorInstance().getMarksAtCursor() : []
+            this.wrappedEditorInstance()?.getMarksAtCursor() ?? []
 
         addMarkAtCursor = (mark: string) =>
-            this.wrappedEditorInstance() ? this.wrappedEditorInstance().addMarkAtCursor(mark) : {}
+            this.wrappedEditorInstance().addMarkAtCursor(mark)
 
         removeMarkAtCursor = (mark: string) =>
-            this.wrappedEditorInstance() ? this.wrappedEditorInstance().removeMarkAtCursor(mark) : {}
+            this.wrappedEditorInstance().removeMarkAtCursor(mark)
 
         getParagraphTypesAtCursor = () =>
-            this.wrappedEditorInstance() ? this.wrappedEditorInstance().getParagraphTypesAtCursor() : []
+            this.wrappedEditorInstance()?.getParagraphTypesAtCursor() ?? []
 
         setParagraphTypeAtCursor = (marker: string) =>
-            this.wrappedEditorInstance() ? this.wrappedEditorInstance().setParagraphTypeAtCursor(marker) : {}
+            this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
         render() {
             return (
