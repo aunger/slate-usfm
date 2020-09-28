@@ -25,5 +25,6 @@ module.exports = {
     },
     optimization: {
         minimize: false
-    }
+    },
+    devtool: "eval-cheap-module-source-map"
 };
