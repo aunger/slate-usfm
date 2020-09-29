@@ -24,7 +24,7 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
     }
 
     wrappedEditorRef = React.createRef<UsfmEditor>()
-    wrappedEditorInstance: () => UsfmEditor | null = () => 
+    wrappedEditorInstance: () => UsfmEditor = () => 
         this.wrappedEditorRef.current ?? new NoopUsfmEditor()
 
     getMarksAtCursor = () =>
