@@ -36,9 +36,6 @@ export class CompositionDemo extends React.Component<CompositionDemoProps, Compo
                         usfmString={this.state.usfmInput}
                         key={this.state.usfmInput}
                         onChange={this.handleEditorChange}
-                        readOnly={false}
-                        identification={({})}
-                        onIdentificationChange={_ => { }}
                     />
                 </div>
                 <div className="column column-right">

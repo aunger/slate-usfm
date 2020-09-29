@@ -15,10 +15,8 @@ import { parseIdentificationFromUsfm,
          normalizeIdentificationValues
 } from "../transforms/identificationTransforms";
 import { MyEditor } from "../plugins/helpers/MyEditor";
-//@ts-ignore
-import { PropTypes } from "prop-types" 
 import "./default.css";
-import { UsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor } from "../UsfmEditor";
+import { UsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor, usfmEditorPropTypes, usfmEditorDefaultProps } from "../UsfmEditor";
 import NodeRules from "../utils/NodeRules";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 
@@ -34,6 +32,9 @@ export const createBasicUsfmEditor: () => ForwardRefUsfmEditor =
  * A WYSIWYG editor component for USFM
  */
 export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmEditorState> implements UsfmEditor {
+    public static propTypes = usfmEditorPropTypes
+    public static defaultProps = usfmEditorDefaultProps
+
     slateEditor: ReactEditor
 
     constructor(props: UsfmEditorProps) {
@@ -183,13 +184,4 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
 
 interface BasicUsfmEditorState {
     value: any,
-}
-
-//@ts-ignore
-BasicUsfmEditor.propTypes = {
-    usfmString: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool.isRequired,
-    identification: PropTypes.object,
-    onIdentificationChange: PropTypes.func,
 }

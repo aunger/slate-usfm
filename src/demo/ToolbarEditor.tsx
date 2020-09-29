@@ -2,7 +2,7 @@ import * as React from "react";
 import { cx, css } from "emotion";
 import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
-import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps } from "../UsfmEditor";
+import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps } from "../UsfmEditor";
 
 export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
     return React.forwardRef<ToolbarEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
@@ -15,6 +15,9 @@ export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfm
 }
 
 class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmEditor {
+    public static propTypes = usfmEditorPropTypes
+    public static defaultProps = usfmEditorDefaultProps
+
     constructor(props: HocUsfmEditorProps) {
         super(props)
     }
