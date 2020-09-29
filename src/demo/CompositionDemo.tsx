@@ -6,7 +6,6 @@ import { OutputUsfm } from "./UsfmContainer";
 import "./demo.css";
 import { flowRight } from "lodash";
 import { withToolbar } from "./ToolbarEditor";
-import { withLowerToolbar } from "./LowerToolbarEditor";
 
 export class CompositionDemo extends React.Component<CompositionDemoProps, CompositionDemoState> {
     constructor(props: CompositionDemoProps) {
@@ -23,7 +22,7 @@ export class CompositionDemo extends React.Component<CompositionDemoProps, Compo
     // This editor can be given a ref of type UsfmEditor
     // to have access to the editor API (use React.createRef<UsfmEditor>)
     Editor = flowRight(
-        withLowerToolbar,
+        withToolbar,
         withToolbar,
         createBasicUsfmEditor
     )()
