@@ -3,6 +3,7 @@ import { cx, css } from "emotion";
 import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps } from "../UsfmEditor";
+import { NoopUsfmEditor } from "../NoopUsfmEditor";
 
 export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
     return React.forwardRef<ToolbarEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
@@ -23,10 +24,11 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
     }
 
     wrappedEditorRef = React.createRef<UsfmEditor>()
-    wrappedEditorInstance: () => UsfmEditor | null = () => this.wrappedEditorRef.current
+    wrappedEditorInstance: () => UsfmEditor | null = () => 
+        this.wrappedEditorRef.current ?? new NoopUsfmEditor()
 
     getMarksAtCursor = () =>
-        this.wrappedEditorInstance()?.getMarksAtCursor() ?? []
+        this.wrappedEditorInstance().getMarksAtCursor()
 
     addMarkAtCursor = (mark: string) =>
         this.wrappedEditorInstance().addMarkAtCursor(mark)
@@ -35,7 +37,7 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
         this.wrappedEditorInstance().removeMarkAtCursor(mark)
 
     getParagraphTypesAtCursor = () =>
-        this.wrappedEditorInstance()?.getParagraphTypesAtCursor() ?? []
+        this.wrappedEditorInstance().getParagraphTypesAtCursor()
 
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
