@@ -7,7 +7,8 @@ import "./demo.css";
 import { flowRight } from "lodash";
 import { withToolbar } from "./ToolbarEditor";
 
-/** This CompositionDemo implements a simple toolbar HOC wrapper (which itself implements 
+/**
+ * This CompositionDemo implements a simple toolbar HOC wrapper (which itself implements 
  * the UsfmEditor interface, following the Decorator Pattern). It then wraps a basic editor
  * with the toolbar wrapper, and then wraps all that inside another toolbar wrapper instance. 
  * So, we can see two toolbars, and each of them works upon the basic editor. This demonstrates
