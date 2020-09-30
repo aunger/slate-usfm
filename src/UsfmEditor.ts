@@ -6,6 +6,13 @@ export interface UsfmEditor {
     removeMarkAtCursor: (mark: string) => void
     getParagraphTypesAtCursor: () => string[]
     setParagraphTypeAtCursor: (marker: string) => void
+
+    addVerseToEnd: (chapter: bigint) => void
+    removeLastVerse: (chapter: bigint) => void
+    joinVerseWithPrevious: (chapter: bigint, verse: bigint) => void
+    unjoinVerseRange: (chapter: bigint, verse: bigint) => void
+    addChapterToEnd(): () => void
+    removeLastChapter(): () => void
 }
 
 export interface UsfmEditorProps {
@@ -14,7 +21,12 @@ export interface UsfmEditorProps {
     readOnly?: boolean,
     identification?: Object,
     onIdentificationChange?: (identification: Object) => void
+
+    goToReference?: ChapterVerse
+    onReferenceChanged?: (r: ChapterVerse) => void
 }
+
+export type ChapterVerse = [bigint, bigint]
 
 export const usfmEditorPropTypes = {
     usfmString: PropTypes.string.isRequired,
