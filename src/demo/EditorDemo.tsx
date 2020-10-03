@@ -7,9 +7,6 @@ import { OptionCheckbox } from "./OptionCheckbox";
 import { InputUsfm, OutputUsfm } from "./UsfmContainer";
 import { IdentificationSetter } from "./IdentificationSetter";
 import "./demo.css";
-import { StartingVerseSelector } from "./StartingVerseSelector";
-import { SelectedVerseTracker } from "./SelectedVerseTracker";
-import { ChapterAndVerse } from "../UsfmEditor";
 
 export class EditorDemo extends React.Component<DemoProps, DemoState> {
     constructor(props: DemoProps) {
@@ -21,12 +18,6 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
             usfmOutput: transformToOutput(initialUsfm),
             showInputUsfm: false,
             readOnly: false,
-            startingVerse: undefined,
-            selectedVerse: {
-                chapter: "",
-                verse: "",
-                verseRangeEnd: ""
-            },
             identification: null
         };
     }
@@ -37,12 +28,6 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
                 usfmInput: input,
                 usfmOutput: transformToOutput(input),
                 identification: null,
-                startingVerse: undefined,
-                selectedVerse: {
-                    chapter: "",
-                    verse: "",
-                    verseRangeEnd: ""
-                }
             }
         )
 
@@ -58,17 +43,6 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
             id = JSON.parse(id)
         }
         this.setState({ identification: id })
-    }
-    onStartingVerseChange = (startingVerse: ChapterAndVerse) => 
-        this.setState({ startingVerse: startingVerse })
-
-    onVerseChange = (chapter: string, verse: string, verseRangeEnd?: string) => {
-        const selectedVerseJson = {
-            chapter: chapter,
-            verse: verse,
-            verseRangeEnd: verseRangeEnd
-        }
-        this.setState({ selectedVerse: selectedVerseJson })
     }
 
     // This editor can be given a ref of type UsfmEditor
@@ -113,10 +87,6 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
                         <IdentificationSetter 
                             idJson={JSON.stringify(this.state.identification)} 
                             onChange={this.onIdentificationChange} />
-                        <StartingVerseSelector
-                            onChange={this.onStartingVerseChange} />
-                        <SelectedVerseTracker
-                            selectedVerse={this.state.selectedVerse} />
                         <h2>Editor</h2>
                         <this.Editor 
                             usfmString={this.state.usfmInput}
@@ -125,8 +95,6 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
                             readOnly={this.state.readOnly}
                             identification={this.state.identification}
                             onIdentificationChange={this.onIdentificationChange}
-                            startingVerse={this.state.startingVerse}
-                            onVerseChange={this.onVerseChange}
                         />
                     </div>
                     <div className="column column-right">
@@ -145,8 +113,6 @@ function transformToOutput(usfm) {
     return slateToUsfm(usfmToSlate(usfm))
 }
 
-type ChapterVerseAndRangeEnd = {chapter: string, verse: string, verseRangeEnd: string}
-
 type DemoProps = {
     usfmStrings: string[]
 }
@@ -156,7 +122,5 @@ type DemoState = {
     usfmOutput: string,
     showInputUsfm: boolean,
     readOnly: boolean,
-    startingVerse: ChapterAndVerse,
-    selectedVerse: ChapterVerseAndRangeEnd,
     identification: Object
 }

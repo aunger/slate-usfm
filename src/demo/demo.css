@@ -79,3 +79,12 @@
 .verse-tracker-text {
     margin-right: 5px;
 }
+
+.no-margin-top {
+    margin-top: 0px;
+}
+
+.hr-separator {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
