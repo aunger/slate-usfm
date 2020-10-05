@@ -237,13 +237,19 @@ function identification(editor: Editor): Object {
 
 /**
  * Finds the path of a verse that matches the given chapter and
- * verse numbers 
+ * verse numbers. If the verse number is not supplied, the default is
+ * the first verse of the chapter (even if it is front matter)
  */
 function findVersePath(
     editor: Editor,
     chapterNum: string | number,
-    verseNum: string | number
+    verseNum?: string | number
 ): Path {
+
+    const [start, endOrNull] = verseNum?.toString().split("-") ?? [null, null]
+    const verseStart = parseInt(start)
+    const verseEnd = parseInt(endOrNull ?? start)
+
     const chapterNumMatch = (node: Node) => 
         Array.isArray(node.children) &&
         node.children.find(
@@ -254,9 +260,22 @@ function findVersePath(
     const verseNumMatch = (node: Node) => 
         Array.isArray(node.children) &&
         node.children.find(
-            verseNumNode => 
-                verseNumNode.type == UsfmMarkers.CHAPTERS_AND_VERSES.v &&
-                _isVerseNumInRange(verseNum.toString(), Node.string(verseNumNode))
+            verseNumNode => {
+                if (verseNumNode.type != UsfmMarkers.CHAPTERS_AND_VERSES.v)
+                    return false
+                // Return the first verse if the verseNum param was null (note, this could be "front")
+                if (!verseNum)
+                    return true
+                const thisVerseNumStr = Node.string(verseNumNode)
+                // This also handles the case where verseNum is "front" or some other string
+                if (thisVerseNumStr == verseNum.toString())
+                    return true
+
+                const [thisStart, thisEndOrNull] = thisVerseNumStr.split("-")
+                const thisEnd = thisEndOrNull ?? thisStart
+                return verseStart >= parseInt(thisStart) && 
+                    verseEnd <= parseInt(thisEnd)
+            }
         )
     const chapter = editor.children.find(chapterNumMatch)
     const chapterChildren = chapter && Array.isArray(chapter.children)
@@ -271,26 +290,4 @@ function findVersePath(
     const verseIdx = chapterChildren.indexOf(verse)
 
     return [chapterIdx, verseIdx]
-}
-
-/**
- * Determines whether the target verse number or range is fully contained
- * by the "containing" verse number or range
- */
-function _isVerseNumInRange(
-    targetVerseNumOrRangeStr: string, 
-    containingVerseNumOrRangeStr: string
-): boolean {
-    if (targetVerseNumOrRangeStr.includes("-"))
-        return targetVerseNumOrRangeStr == containingVerseNumOrRangeStr
-
-    const [startStr, endStrOrNull] = containingVerseNumOrRangeStr.split("-")
-    if (!endStrOrNull) 
-        return targetVerseNumOrRangeStr == containingVerseNumOrRangeStr
-
-    const start = parseInt(startStr)
-    const end = parseInt(endStrOrNull)
-    const searchNum = parseInt(targetVerseNumOrRangeStr)
-    return searchNum >= start &&
-        searchNum <= end
 }
