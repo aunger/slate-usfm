@@ -49,10 +49,16 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
+    focusEditor = () => {
+        this.wrappedEditorInstance().focusEditor()
+    }
+
     /* End UsfmEditor API */
 
-    onStartingVerseChange = (startingVerse: ChapterAndVerse) => 
+    onStartingVerseChange = (startingVerse: ChapterAndVerse) => {
         this.setState({ startingVerse: startingVerse })
+        this.focusEditor()
+    }
 
     onVerseChange = (chapter: string, verse: string, verseRangeEnd?: string) => {
         const selectedVerse = {

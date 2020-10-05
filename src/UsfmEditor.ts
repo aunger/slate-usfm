@@ -6,6 +6,7 @@ export interface UsfmEditor {
     removeMarkAtCursor: (mark: string) => void
     getParagraphTypesAtCursor: () => string[]
     setParagraphTypeAtCursor: (marker: string) => void
+    focusEditor: () => void
 }
 
 export interface UsfmEditorProps {

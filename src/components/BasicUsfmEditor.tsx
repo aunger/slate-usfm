@@ -103,6 +103,10 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         )
     }
 
+    focusEditor: () => void = () => {
+        ReactEditor.focus(this.slateEditor)
+    }
+
     /* BasicUsfmEditor functions */
 
     handleChange: (value: Node[]) => void = value => {

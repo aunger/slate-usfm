@@ -42,6 +42,10 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
+    focusEditor = () => {
+        this.wrappedEditorInstance().focusEditor()
+    }
+
     render() {
         return (
             <React.Fragment>
