@@ -116,7 +116,9 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
             return
         }
         this.setState({ value: value })
-        this.updateSelectedChapterAndVerseAfterEditorChange()
+        if (this.props.onVerseChange) {
+            this.updateSelectedChapterAndVerseAfterEditorChange()
+        }
         this.scheduleOnChange(value)
     }
 
@@ -193,6 +195,8 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
     }
 
     updateSelectedChapterAndVerseIfChangeOccured = (chapter: string, verseNumOrRange: string) => {
+        if (!this.props.onVerseChange) return
+
         const [startVerse, endVerseOrUndefined] = verseNumOrRange.split("-")
         const newSelectedChapterAndVerse = {
             chapter: chapter,

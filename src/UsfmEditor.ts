@@ -37,7 +37,7 @@ export const usfmEditorDefaultProps = {
     identification: {},
     onIdentificationChange: () => {},
     startingVerse: undefined,
-    onVerseChange: () => {}
+    onVerseChange: undefined
 }
 
 // If the verse is a range, "verse" will be the start of the range.
