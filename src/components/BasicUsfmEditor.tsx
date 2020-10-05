@@ -165,8 +165,10 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         if (!chapter || !verse) return
         const versePath = MyEditor.findVersePath(this.slateEditor, chapter, verse)
         if (versePath) {
-            SelectionTransforms.moveToEndOfLastLeaf(this.slateEditor, versePath)
-            ReactEditor.focus(this.slateEditor)
+            if (! isEqual(this.state.selectedChapterAndVerse, this.props.startingVerse)) {
+                SelectionTransforms.moveToEndOfLastLeaf(this.slateEditor, versePath)
+                ReactEditor.focus(this.slateEditor)
+            }
 
             const [verseNode, _] = Editor.node(this.slateEditor, versePath)
             const verseNumOrRange = Node.string(verseNode.children[0])

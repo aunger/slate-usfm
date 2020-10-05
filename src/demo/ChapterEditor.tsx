@@ -66,7 +66,12 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
             verse: verse,
             verseRangeEnd: verseRangeEnd
         }
+        const startingVerse = {
+            chapter: chapter,
+            verse: verse
+        }
         this.setState({ selectedVerse: selectedVerse })
+        this.setState({ startingVerse: startingVerse })
     }
 
     render() {
@@ -103,7 +108,7 @@ const StartingVerseSelector = ({ onChange }) => {
             <div className="row">
                 <div className="column">
                     <h4 className="demo-header no-margin-top">
-                        Starting Verse
+                        Set startingVerse prop here:
                     </h4>
                 </div>
             </div>
@@ -135,7 +140,7 @@ const SelectedVerseTracker = ({ selectedVerse }) => {
             <div className="row">
                 <div className="column">
                     <h4 className="demo-header">
-                        Selected Verse Tracker
+                        Populated by onVerseChange:
                     </h4>
                 </div>
             </div>
