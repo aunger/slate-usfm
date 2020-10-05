@@ -55,12 +55,12 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
         this.setState({ startingVerse: startingVerse })
 
     onVerseChange = (chapter: string, verse: string, verseRangeEnd?: string) => {
-        const selectedVerseJson = {
+        const selectedVerse = {
             chapter: chapter,
             verse: verse,
             verseRangeEnd: verseRangeEnd
         }
-        this.setState({ selectedVerse: selectedVerseJson })
+        this.setState({ selectedVerse: selectedVerse })
     }
 
     render() {
