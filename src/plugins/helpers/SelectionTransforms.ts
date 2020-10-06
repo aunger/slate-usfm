@@ -6,6 +6,7 @@ import { MyEditor } from "./MyEditor"
 export const SelectionTransforms = {
     selectDOMNodeStart,
     selectNextSiblingNonEmptyText,
+    moveToStartOfFirstLeaf,
     moveToEndOfLastLeaf
 }
 
@@ -48,11 +49,29 @@ function selectNextSiblingNonEmptyText(editor: Editor) {
     }
 }
 
+function moveToStartOfFirstLeaf(
+    editor: Editor,
+    path: Path
+) {
+    const [leaf, leafPath] = Editor.leaf(
+        editor,
+        path,
+        { edge: "start" }
+    )
+    Transforms.select(
+        editor,
+        {
+            path: leafPath,
+            offset: 0
+        }
+    )
+}
+
 function moveToEndOfLastLeaf(
     editor: Editor,
     path: Path
 ) {
-    const [lastLeaf, lastLeafPath] = Editor.leaf(
+    const [leaf, leafPath] = Editor.leaf(
         editor,
         path,
         { edge: "end" }
@@ -60,8 +79,8 @@ function moveToEndOfLastLeaf(
     Transforms.select(
         editor,
         {
-            path: lastLeafPath,
-            offset: lastLeaf.text.length
+            path: leafPath,
+            offset: leaf.text.length
         }
     )
 }

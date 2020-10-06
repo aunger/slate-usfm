@@ -163,7 +163,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         return normalizeIdentificationValues(filtered)
     }
 
-    moveToEndOfStartingVerseProp = () => {
+    moveToStartOfStartingVerseProp = () => {
         if (!this.props.startingVerse?.chapter && !this.props.startingVerse?.verse) return
 
         // default to current chapter
@@ -180,7 +180,8 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
 
         if (!this.didSelectedChapterAndVerseChange(chapter, verseNumOrRange)) return
 
-        SelectionTransforms.moveToEndOfLastLeaf(this.slateEditor, versePath)
+        const inlineContainerPath = versePath.concat(1)
+        SelectionTransforms.moveToStartOfFirstLeaf(this.slateEditor, inlineContainerPath)
         ReactEditor.focus(this.slateEditor)
 
         // No need to keep track of selected chapter and verse if onVerseChange is not given
@@ -233,7 +234,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
 
     componentDidMount() {
         this.updateIdentificationFromUsfmAndProp()
-        this.moveToEndOfStartingVerseProp()
+        this.moveToStartOfStartingVerseProp()
     }
     
     componentDidUpdate(prevProps) {
@@ -244,7 +245,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
 
         if (! isEqual(prevProps.startingVerse, this.props.startingVerse)) {
-            this.moveToEndOfStartingVerseProp()
+            this.moveToStartOfStartingVerseProp()
         }
     }
 
