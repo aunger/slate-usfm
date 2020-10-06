@@ -21,9 +21,9 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
         this.state = {
             startingVerse: undefined,
             selectedVerse: {
-                chapter: "",
-                verse: "",
-                verseRangeEnd: ""
+                chapter: null,
+                verse: null,
+                verseRangeEnd: null
             }
         }
     }
@@ -60,7 +60,7 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
         this.focusEditor()
     }
 
-    onVerseChange = (chapter: string, verse: string, verseRangeEnd?: string) => {
+    onVerseChange = (chapter: number, verse: number, verseRangeEnd?: number) => {
         const selectedVerse = {
             chapter: chapter,
             verse: verse,
@@ -93,14 +93,15 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     }
 }
 
-type ChapterVerseAndRangeEnd = {chapter: string, verse: string, verseRangeEnd: string}
+type ChapterVerseAndRangeEnd = {chapter: number, verse: number, verseRangeEnd: number}
 
 type ChapterEditorState = {
     startingVerse: ChapterAndVerse,
     selectedVerse: ChapterVerseAndRangeEnd
 }
 
-const StartingVerseSelector = ({ onChange }) => {
+
+const StartingVerseSelector: React.FunctionComponent<StartingVerseSelectorProps> = ({ onChange }) => {
     const chapterInputRef = React.createRef<HTMLInputElement>()
     const verseInputRef = React.createRef<HTMLInputElement>()
     return (
@@ -116,25 +117,31 @@ const StartingVerseSelector = ({ onChange }) => {
             <input 
                 className="verse-selector-input"
                 type="text" 
+                onKeyPress={allowOnlyNumbers}
                 ref={chapterInputRef} 
             />
             Verse:
             <input 
                 className="verse-selector-input"
                 type="text" 
+                onKeyPress={allowOnlyNumbers}
                 ref={verseInputRef} 
             />
             <button onClick={event => 
                 onChange({ 
-                    chapter: chapterInputRef.current.value,
-                    verse: verseInputRef.current.value
+                    chapter: parseInt(chapterInputRef.current.value),
+                    verse: parseInt(verseInputRef.current.value)
                 })
             }>Set</button>
         </div>
     )
 }
 
-const SelectedVerseTracker = ({ selectedVerse }) => {
+interface StartingVerseSelectorProps {
+    onChange: (startingVerse: ChapterAndVerse) => void
+}
+
+const SelectedVerseTracker: React.FunctionComponent<SelectedVerseTrackerProps> = ({ selectedVerse }) => {
     return (
         <div>
             <div className="row">
@@ -155,4 +162,15 @@ const SelectedVerseTracker = ({ selectedVerse }) => {
             </span>
         </div>
     )
+}
+
+interface SelectedVerseTrackerProps {
+    selectedVerse: ChapterVerseAndRangeEnd
+}
+
+const allowOnlyNumbers = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.charCode < 48 || event.charCode > 57) // allow only 0-9
+    {
+        event.preventDefault();
+    }
 }

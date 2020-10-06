@@ -18,7 +18,7 @@ export interface UsfmEditorProps {
     startingVerse?: ChapterAndVerse,
     // If the verse is a range, "verse" will be the start of the range and
     // "verseRangeEnd" will have a value.
-    onVerseChange?: (chapter: string, verse: string, verseRangeEnd?: string) => void
+    onVerseChange?: (chapter: number, verse: number, verseRangeEnd?: number) => void
 }
 
 export const usfmEditorPropTypes = {
@@ -41,7 +41,7 @@ export const usfmEditorDefaultProps = {
 }
 
 // If the verse is a range, "verse" will be the start of the range.
-export type ChapterAndVerse = {chapter: string, verse: string}
+export type ChapterAndVerse = {chapter: number, verse: number}
 
 export type ForwardRefUsfmEditor = React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<UsfmEditor>>
 
