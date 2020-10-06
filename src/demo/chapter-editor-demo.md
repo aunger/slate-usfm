@@ -9,6 +9,7 @@ up to date with the current value of the startingVerse property.
 const usfmString = `
 \\id GEN
 \\c 1
+\\p
 \\v 1 the first verse
 \\v 2 the second verse
 \\c 2
