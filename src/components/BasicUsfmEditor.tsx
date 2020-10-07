@@ -123,10 +123,6 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         this.updateSelectedVerse(chapter, verseNumOrRange)
     }
 
-    focusEditor: () => void = () => {
-        ReactEditor.focus(this.slateEditor)
-    }
-
     /* BasicUsfmEditor functions */
 
     handleChange: (value: Node[]) => void = value => {

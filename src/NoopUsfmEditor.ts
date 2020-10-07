@@ -23,8 +23,4 @@ export class NoopUsfmEditor implements UsfmEditor {
     goToVerse = () => {
         console.error("Editor not initialized before goToVerse called")
     }
-
-    focusEditor = () => {
-        console.debug("Editor not initialized before focusEditor called")
-    }
 }

@@ -45,10 +45,6 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
     goToVerse = (verse: Verse) =>
         this.wrappedEditorInstance().goToVerse(verse)
 
-    focusEditor = () => {
-        this.wrappedEditorInstance().focusEditor()
-    }
-
     render() {
         return (
             <React.Fragment>

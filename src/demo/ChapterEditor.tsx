@@ -48,10 +48,6 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     goToVerse = (verse: Verse) =>
         this.wrappedEditorInstance().goToVerse(verse)
 
-    focusEditor = () => {
-        this.wrappedEditorInstance().focusEditor()
-    }
-
     /* End UsfmEditor API */
 
     callGoToVerse = (chapterStr: string, verseStr: string) => {
