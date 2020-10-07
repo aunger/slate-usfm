@@ -274,8 +274,11 @@ interface VerseStartAndEnd {
 }
     
 function getVerseStartAndEnd(verseNumOrRange: string): VerseStartAndEnd {
-    const [startVerseStr, endVerseStr] = verseNumOrRange?.split("-") ?? [null, null]
-    const verseStart = parseInt(startVerseStr) || null // parseInt(null) returns NaN
-    const verseEnd = parseInt(endVerseStr) || verseStart
+    if (verseNumOrRange == "front")
+        return { verseStart: 0, verseEnd: 0 }
+
+    const [startVerseStr, endVerseStrOrNull] = verseNumOrRange.split("-")
+    const verseStart = parseInt(startVerseStr)
+    const verseEnd = parseInt(endVerseStrOrNull) || verseStart
     return { verseStart, verseEnd }
 }

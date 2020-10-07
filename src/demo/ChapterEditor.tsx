@@ -55,9 +55,9 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     /* End UsfmEditor API */
 
     callGoToVerse = (chapterStr: string, verseStr: string) => {
-        const chapter = parseInt(chapterStr) || null
-        const verse = parseInt(verseStr) || null
-        if (chapter && verse) {
+        const chapter = parseInt(chapterStr)
+        const verse = parseInt(verseStr)
+        if (chapter >= 0 && verse >= 0) {
             this.wrappedEditorInstance().goToVerse({
                 chapter: chapter,
                 verse: verse
@@ -66,9 +66,9 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     }
 
     setGoToVerseProp = (chapterStr: string, verseStr: string) => {
-        const chapter = parseInt(chapterStr) || null
-        const verse = parseInt(verseStr) || null
-        if (chapter && verse) {
+        const chapter = parseInt(chapterStr)
+        const verse = parseInt(verseStr)
+        if (chapter >= 0 && verse >= 0) {
             this.setState({ 
                 goToVerse: {
                     chapter: chapter,

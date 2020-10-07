@@ -237,18 +237,21 @@ function identification(editor: Editor): Object {
 
 /**
  * Finds the path of a verse that matches the given chapter and
- * verse numbers. If the verse number is not supplied, the default is
- * the first verse of the chapter (even if it is front matter)
+ * verse numbers. A value of "0" indicates "front".
  */
 function findVersePath(
     editor: Editor,
-    chapterNum: string | number,
-    verseNum?: string | number
+    chapterNum: number,
+    verseNum: number
 ): Path {
+    if (chapterNum == 0) {
+        console.warn("Book front matter navigation not implemented yet")
+        return null
+    }
 
-    const [start, endOrNull] = verseNum?.toString().split("-") ?? [null, null]
-    const verseStart = parseInt(start)
-    const verseEnd = parseInt(endOrNull ?? start)
+    const verseStr = verseNum == 0
+        ? "front"
+        : verseNum.toString()
 
     const chapterNumMatch = (node: Node) => 
         Array.isArray(node.children) &&
@@ -263,18 +266,13 @@ function findVersePath(
             verseNumNode => {
                 if (verseNumNode.type != UsfmMarkers.CHAPTERS_AND_VERSES.v)
                     return false
-                // Return the first verse if the verseNum param was null (note, this could be "front")
-                if (!verseNum)
-                    return true
                 const thisVerseNumStr = Node.string(verseNumNode)
-                // This also handles the case where verseNum is "front" or some other string
-                if (thisVerseNumStr == verseNum.toString())
+                if (thisVerseNumStr == verseStr)
                     return true
-
                 const [thisStart, thisEndOrNull] = thisVerseNumStr.split("-")
                 const thisEnd = thisEndOrNull ?? thisStart
-                return verseStart >= parseInt(thisStart) && 
-                    verseEnd <= parseInt(thisEnd)
+                return verseNum >= parseInt(thisStart) && 
+                    verseNum <= parseInt(thisEnd)
             }
         )
     const chapter = editor.children.find(chapterNumMatch)
