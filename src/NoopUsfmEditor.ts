@@ -20,6 +20,9 @@ export class NoopUsfmEditor implements UsfmEditor {
     setParagraphTypeAtCursor = () => {
         console.error("Editor not initialized before setParagraphTypeAtCursor called")
     }
+    goToVerse = () => {
+        console.error("Editor not initialized before goToVerse called")
+    }
 
     focusEditor = () => {
         console.debug("Editor not initialized before focusEditor called")

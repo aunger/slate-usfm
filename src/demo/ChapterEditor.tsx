@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, ChapterAndVerse } from "../UsfmEditor";
+import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse } from "../UsfmEditor";
 import { NoopUsfmEditor } from "../NoopUsfmEditor";
 
 export function withChapterPaging(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
@@ -18,13 +18,9 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
 
     constructor(props: HocUsfmEditorProps) {
         super(props)
-        this.state = {
-            startingVerse: undefined,
-            selectedVerse: {
-                chapter: null,
-                verse: null,
-                verseRangeEnd: null
-            }
+        this.state = { 
+            selectedVerse: null,
+            goToVerse: null
         }
     }
 
@@ -49,43 +45,64 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
+    goToVerse = (verse: Verse) =>
+        this.wrappedEditorInstance().goToVerse(verse)
+
     focusEditor = () => {
         this.wrappedEditorInstance().focusEditor()
     }
 
     /* End UsfmEditor API */
 
-    onStartingVerseChange = (startingVerse: ChapterAndVerse) => {
-        this.setState({ startingVerse: startingVerse })
-        this.focusEditor()
+    callGoToVerse = (chapterStr: string, verseStr: string) => {
+        const chapter = parseInt(chapterStr) || null
+        const verse = parseInt(verseStr) || null
+        if (chapter && verse) {
+            this.wrappedEditorInstance().goToVerse({
+                chapter: chapter,
+                verse: verse
+            })
+        }
     }
 
-    onVerseChange = (chapter: number, verse: number, verseRangeEnd?: number) => {
-        const selectedVerse = {
-            chapter: chapter,
-            verse: verse,
-            verseRangeEnd: verseRangeEnd
+    setGoToVerseProp = (chapterStr: string, verseStr: string) => {
+        const chapter = parseInt(chapterStr) || null
+        const verse = parseInt(verseStr) || null
+        if (chapter && verse) {
+            this.setState({ 
+                goToVerse: {
+                    chapter: chapter,
+                    verse: verse
+                }
+            })
         }
-        const startingVerse = {
+    }
+
+    onVerseChange = (chapter: number, verseStart: number, verseEnd: number) => {
+        const selectedVerse: ChapterAndVerseStartAndEnd = {
             chapter: chapter,
-            verse: verse
+            verseStart: verseStart,
+            verseEnd: verseEnd
         }
         this.setState({ selectedVerse: selectedVerse })
-        this.setState({ startingVerse: startingVerse })
     }
 
     render() {
         return (
             <React.Fragment>
-                <StartingVerseSelector
-                    onChange={this.onStartingVerseChange} />
+                <VerseSelector
+                    text="Call goToVerse() API function:"
+                    onChange={this.callGoToVerse} />
+                <VerseSelector
+                    text="Set goToVerse Prop:"
+                    onChange={this.setGoToVerseProp} />
                 <SelectedVerseTracker
                     selectedVerse={this.state.selectedVerse} />
                 <hr className="hr-separator"/>
                 <this.props.wrappedEditor 
                     {...this.props} 
                     ref={this.wrappedEditorRef} 
-                    startingVerse={this.state.startingVerse}
+                    goToVerse={this.state.goToVerse}
                     onVerseChange={this.onVerseChange}
                 />
             </React.Fragment>
@@ -93,23 +110,23 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     }
 }
 
-type ChapterVerseAndRangeEnd = {chapter: number, verse: number, verseRangeEnd: number}
+type ChapterAndVerseStartAndEnd = {chapter: number, verseStart: number, verseEnd: number}
 
 type ChapterEditorState = {
-    startingVerse: ChapterAndVerse,
-    selectedVerse: ChapterVerseAndRangeEnd
+    selectedVerse: ChapterAndVerseStartAndEnd,
+    goToVerse: Verse
 }
 
 
-const StartingVerseSelector: React.FunctionComponent<StartingVerseSelectorProps> = ({ onChange }) => {
+const VerseSelector: React.FunctionComponent<VerseSelectorProps> = ({ text, onChange }) => {
     const chapterInputRef = React.createRef<HTMLInputElement>()
     const verseInputRef = React.createRef<HTMLInputElement>()
     return (
-        <div>
+        <div className="verse-selector">
             <div className="row">
                 <div className="column">
                     <h4 className="demo-header no-margin-top">
-                        Set startingVerse prop here:
+                        {text}
                     </h4>
                 </div>
             </div>
@@ -128,17 +145,18 @@ const StartingVerseSelector: React.FunctionComponent<StartingVerseSelectorProps>
                 ref={verseInputRef} 
             />
             <button onClick={event => 
-                onChange({ 
-                    chapter: parseInt(chapterInputRef.current.value),
-                    verse: parseInt(verseInputRef.current.value)
-                })
+                onChange(
+                    chapterInputRef.current.value,
+                    verseInputRef.current.value
+                )
             }>Set</button>
         </div>
     )
 }
 
-interface StartingVerseSelectorProps {
-    onChange: (startingVerse: ChapterAndVerse) => void
+interface VerseSelectorProps {
+    text: string,
+    onChange: (chapterStr: string, verseStr: string) => void
 }
 
 const SelectedVerseTracker: React.FunctionComponent<SelectedVerseTrackerProps> = ({ selectedVerse }) => {
@@ -146,26 +164,26 @@ const SelectedVerseTracker: React.FunctionComponent<SelectedVerseTrackerProps> =
         <div>
             <div className="row">
                 <div className="column">
-                    <h4 className="demo-header">
+                    <h4 className="demo-header no-margin-top">
                         Populated by onVerseChange:
                     </h4>
                 </div>
             </div>
             <span className="verse-tracker-text">
-                Chapter: {selectedVerse.chapter}
+                Chapter: {selectedVerse?.chapter ?? ""}
             </span>
             <span className="verse-tracker-text">
-                Verse: {selectedVerse.verse}
+                Verse: {selectedVerse?.verseStart ?? ""}
             </span>
             <span className="verse-tracker-text">
-                VerseRangeEnd: {selectedVerse.verseRangeEnd}
+                VerseRangeEnd: {selectedVerse?.verseEnd ?? ""}
             </span>
         </div>
     )
 }
 
 interface SelectedVerseTrackerProps {
-    selectedVerse: ChapterVerseAndRangeEnd
+    selectedVerse: ChapterAndVerseStartAndEnd
 }
 
 const allowOnlyNumbers = (event: React.KeyboardEvent<HTMLInputElement>) => {

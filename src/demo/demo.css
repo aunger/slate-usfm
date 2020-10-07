@@ -32,10 +32,6 @@
     clear: both;
 }
 
-.margin-below-15px {
-    margin-bottom: 15px;
-}
-
 .usfm-container {
     border: ridge;
     white-space: pre-wrap;
@@ -68,6 +64,10 @@
 .identification-button {
     width: 20%;
     float: right;
+}
+
+.verse-selector {
+    margin-bottom: 15px;
 }
 
 .verse-selector-input {

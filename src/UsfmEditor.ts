@@ -6,6 +6,7 @@ export interface UsfmEditor {
     removeMarkAtCursor: (mark: string) => void
     getParagraphTypesAtCursor: () => string[]
     setParagraphTypeAtCursor: (marker: string) => void
+    goToVerse: (verse: Verse) => void
     focusEditor: () => void
 }
 
@@ -15,10 +16,8 @@ export interface UsfmEditorProps {
     readOnly?: boolean,
     identification?: Object,
     onIdentificationChange?: (identification: Object) => void,
-    startingVerse?: ChapterAndVerse,
-    // If the verse is a range, "verse" will be the start of the range and
-    // "verseRangeEnd" will have a value.
-    onVerseChange?: (chapter: number, verse: number, verseRangeEnd?: number) => void
+    goToVerse?: Verse,
+    onVerseChange?: (chapter: number, verseStart: number, verseEnd: number) => void
 }
 
 export const usfmEditorPropTypes = {
@@ -27,7 +26,7 @@ export const usfmEditorPropTypes = {
     readOnly: PropTypes.bool,
     identification: PropTypes.object,
     onIdentificationChange: PropTypes.func,
-    startingVerse: PropTypes.object,
+    goToVerse: PropTypes.object,
     onVerseChange: PropTypes.func
 }
 
@@ -36,12 +35,11 @@ export const usfmEditorDefaultProps = {
     readOnly: false,
     identification: {},
     onIdentificationChange: () => {},
-    startingVerse: undefined,
+    goToVerse: undefined,
     onVerseChange: undefined
 }
 
-// If the verse is a range, "verse" will be the start of the range.
-export type ChapterAndVerse = {chapter: number, verse: number}
+export type Verse = {chapter: number, verse: number}
 
 export type ForwardRefUsfmEditor = React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<UsfmEditor>>
 

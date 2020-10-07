@@ -16,7 +16,7 @@ import { parseIdentificationFromUsfm,
 } from "../transforms/identificationTransforms";
 import { MyEditor } from "../plugins/helpers/MyEditor";
 import "./default.css";
-import { UsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor, usfmEditorPropTypes, usfmEditorDefaultProps, ChapterAndVerse } from "../UsfmEditor";
+import { UsfmEditor, UsfmEditorProps, ForwardRefUsfmEditor, usfmEditorPropTypes, usfmEditorDefaultProps, Verse } from "../UsfmEditor";
 import NodeRules from "../utils/NodeRules";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { SelectionTransforms } from "../plugins/helpers/SelectionTransforms";
@@ -42,7 +42,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         super(props)
         this.state = {
             value: usfmToSlate(props.usfmString),
-            selectedChapterAndVerse: { chapter: null, verse: null }
+            selectedVerse: { chapter: null, verse: null }
         }
 
         this.slateEditor = flowRight(
@@ -103,6 +103,26 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         )
     }
 
+    goToVerse = (verse: Verse) => {
+        const chapter = verse.chapter
+
+        const versePath = MyEditor.findVersePath(this.slateEditor, chapter, verse.verse)
+        if (!versePath) return
+
+        const [verseNode, _] = Editor.node(this.slateEditor, versePath)
+        const verseNumOrRange = Node.string(verseNode.children[0])
+
+        const inlineContainerPath = versePath.concat(1)
+        SelectionTransforms.moveToStartOfFirstLeaf(this.slateEditor, inlineContainerPath)
+        ReactEditor.focus(this.slateEditor)
+
+        if (!this.props.onVerseChange ||
+            !this.didSelectedVerseChange(chapter, verseNumOrRange)
+        ) { return }
+
+        this.updateSelectedVerse(chapter, verseNumOrRange)
+    }
+
     focusEditor: () => void = () => {
         ReactEditor.focus(this.slateEditor)
     }
@@ -119,7 +139,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         if (this.props.onVerseChange) {
             // No need to keep track of selected chapter and verse if onVerseChange
             // is not given
-            this.updateSelectedChapterAndVerseAfterEditorChange()
+            this.updateSelectedVerseAfterEditorChange()
         }
         this.scheduleOnChange(value)
     }
@@ -163,89 +183,63 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         return normalizeIdentificationValues(filtered)
     }
 
-    moveToStartOfStartingVerseProp = () => {
-        if (!this.props.startingVerse?.chapter && !this.props.startingVerse?.verse) return
+    updateSelectedVerseAfterEditorChange = () => {
+        if (!this.slateEditor.selection) return
 
-        // default to current chapter
-        const chapter: number = this.props.startingVerse.chapter || this.state.selectedChapterAndVerse.chapter
-        if (!chapter) return
+        const verseNodeEntry = MyEditor.getVerseNode(this.slateEditor)
+        if (!verseNodeEntry) return
 
-        const verse = this.props.startingVerse.verse
-        // verse could be null, but findVersePath defaults to the first verse (including front)
-        const versePath = MyEditor.findVersePath(this.slateEditor, chapter, verse)
-        if (!versePath) return
+        const [verseNode, versePath] = verseNodeEntry
+        const [chapterNode, chapterPath] = MyEditor.getChapterNode(this.slateEditor)
+        const chapterNum = parseInt(Node.string(chapterNode.children[0]))
+        const verseNumOrRangeStr = Node.string(verseNode.children[0])
 
-        const [verseNode, _] = Editor.node(this.slateEditor, versePath)
-        const verseNumOrRange = Node.string(verseNode.children[0])
-
-        if (!this.didSelectedChapterAndVerseChange(chapter, verseNumOrRange)) return
-
-        const inlineContainerPath = versePath.concat(1)
-        SelectionTransforms.moveToStartOfFirstLeaf(this.slateEditor, inlineContainerPath)
-        ReactEditor.focus(this.slateEditor)
-
-        // No need to keep track of selected chapter and verse if onVerseChange is not given
-        if (!this.props.onVerseChange) return
-
-        this.updateSelectedChapterAndVerse(chapter, verseNumOrRange)
-    }
-
-    updateSelectedChapterAndVerseAfterEditorChange = () => {
-        let chapterNum: number = null
-        let verseNumOrRangeStr: string = null
-        if (this.slateEditor.selection) {
-            const verseNodeEntry = MyEditor.getVerse(this.slateEditor)
-            if (verseNodeEntry) {
-                const [verseNode, versePath] = verseNodeEntry
-                const [chapter, chapterPath] = MyEditor.getChapter(this.slateEditor)
-                chapterNum = parseInt(Node.string(chapter.children[0]))
-                verseNumOrRangeStr = Node.string(verseNode.children[0])
-            }
-        }
-        if (this.didSelectedChapterAndVerseChange(chapterNum, verseNumOrRangeStr)) {
-            this.updateSelectedChapterAndVerse(chapterNum, verseNumOrRangeStr)
+        if (this.didSelectedVerseChange(chapterNum, verseNumOrRangeStr)) {
+            this.updateSelectedVerse(chapterNum, verseNumOrRangeStr)
         }
     }
 
-    updateSelectedChapterAndVerse(chapter: number, verseNumOrRange: string) {
-        const { startVerse, endVerse } = getStartAndEndVerse(verseNumOrRange)
-        const newSelectedChapterAndVerse = {
+    updateSelectedVerse(chapter: number, verseNumOrRange: string) {
+        const { verseStart, verseEnd } = getVerseStartAndEnd(verseNumOrRange)
+        const newSelectedVerse = {
             chapter: chapter,
-            verse: startVerse
+            verse: verseStart
         }
-        this.setState({ selectedChapterAndVerse: newSelectedChapterAndVerse })
+        this.setState({ selectedVerse: newSelectedVerse })
 
         if (!this.props.onVerseChange) return
         this.props.onVerseChange(
             chapter,
-            startVerse,
-            endVerse
+            verseStart,
+            verseEnd
         )
     }
 
-    didSelectedChapterAndVerseChange(chapter: number, verseNumOrRange: string) {
-        const { startVerse, endVerse } = getStartAndEndVerse(verseNumOrRange)
-        const newSelectedChapterAndVerse = {
+    didSelectedVerseChange(chapter: number, verseNumOrRange: string) {
+        const { verseStart, verseEnd } = getVerseStartAndEnd(verseNumOrRange)
+        const newSelectedVerse = {
             chapter: chapter,
-            verse: startVerse
+            verse: verseStart
         }
-        return ! isEqual(newSelectedChapterAndVerse, this.state.selectedChapterAndVerse)
+        return ! isEqual(newSelectedVerse, this.state.selectedVerse)
     }
 
     componentDidMount() {
         this.updateIdentificationFromUsfmAndProp()
-        this.moveToStartOfStartingVerseProp()
+        if (this.props.goToVerse) {
+            this.goToVerse(this.props.goToVerse)
+        }
     }
     
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: UsfmEditorProps) {
         if (prevProps.usfmString != this.props.usfmString) {
             this.updateIdentificationFromUsfmAndProp()
         } else if (prevProps.identification != this.props.identification) {
             this.updateIdentificationFromProp()
         }
 
-        if (! isEqual(prevProps.startingVerse, this.props.startingVerse)) {
-            this.moveToStartOfStartingVerseProp()
+        if (! isEqual(prevProps.goToVerse, this.props.goToVerse)) {
+            this.goToVerse(this.props.goToVerse)
         }
     }
 
@@ -271,17 +265,17 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
 
 interface BasicUsfmEditorState {
     value: any,
-    selectedChapterAndVerse: ChapterAndVerse
+    selectedVerse: Verse
 }
 
-interface StartAndEndVerse {
-    startVerse: number,
-    endVerse: number
+interface VerseStartAndEnd {
+    verseStart: number,
+    verseEnd: number
 }
     
-function getStartAndEndVerse(verseNumOrRange: string): StartAndEndVerse {
+function getVerseStartAndEnd(verseNumOrRange: string): VerseStartAndEnd {
     const [startVerseStr, endVerseStr] = verseNumOrRange?.split("-") ?? [null, null]
-    const startVerse = parseInt(startVerseStr) || null // parseInt(null) returns NaN
-    const endVerse = parseInt(endVerseStr) || null
-    return { startVerse, endVerse }
+    const verseStart = parseInt(startVerseStr) || null // parseInt(null) returns NaN
+    const verseEnd = parseInt(endVerseStr) || verseStart
+    return { verseStart, verseEnd }
 }

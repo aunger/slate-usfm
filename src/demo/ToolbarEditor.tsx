@@ -2,7 +2,7 @@ import * as React from "react";
 import { cx, css } from "emotion";
 import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
-import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps } from "../UsfmEditor";
+import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse } from "../UsfmEditor";
 import { NoopUsfmEditor } from "../NoopUsfmEditor";
 
 export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
@@ -41,6 +41,9 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
 
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
+
+    goToVerse = (verse: Verse) =>
+        this.wrappedEditorInstance().goToVerse(verse)
 
     focusEditor = () => {
         this.wrappedEditorInstance().focusEditor()

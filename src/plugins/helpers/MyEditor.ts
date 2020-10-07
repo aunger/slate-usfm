@@ -16,9 +16,9 @@ export const MyEditor = {
     getPreviousBlock,
     getCurrentBlock,
     getNextBlock,
-    getVerse,
+    getVerseNode,
     getPreviousVerse,
-    getChapter,
+    getChapterNode,
     getLastVerse,
     getLastVerseNumberOrRange,
     getPathFromDOMNode,
@@ -126,7 +126,7 @@ function getNearbyBlock(
  * The verse node must be above the given path in the slate tree.
  * If no path is given, the verse above the current selection will be returned.
  */
-function getVerse(editor: Editor, path?: Path): NodeEntry {
+function getVerseNode(editor: Editor, path?: Path): NodeEntry {
     const pathOption = path
         ? { at: path }
         : {}
@@ -152,7 +152,7 @@ function getPreviousVerse(
     const [node, _] = Editor.node(editor, path)
     const thisVersePath: Path = node.type == NodeTypes.VERSE
         ? path
-        : MyEditor.getVerse(editor, path)[1]
+        : MyEditor.getVerseNode(editor, path)[1]
     
     const prevNode = Editor.node(editor, Path.previous(thisVersePath))
     const prevVerse = prevNode[0].type == NodeTypes.VERSE
@@ -170,7 +170,7 @@ function getPreviousVerse(
  * The chapter node must be above the given path in the slate tree.
  * If no path is given, the chapter above the current selection will be returned.
  */
-function getChapter(
+function getChapterNode(
     editor: Editor,
     path?: Path
 ): NodeEntry {
@@ -193,7 +193,7 @@ function getLastVerse(
     editor: Editor,
     path: Path
 ): NodeEntry {
-    const [chapter, chapterPath] = MyEditor.getChapter(editor, path)
+    const [chapter, chapterPath] = MyEditor.getChapterNode(editor, path)
     const children = Node.children(
         chapter,
         [],
