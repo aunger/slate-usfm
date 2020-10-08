@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse } from "../UsfmEditor";
+import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse, VerseRange } from "../UsfmEditor";
 import { NoopUsfmEditor } from "../NoopUsfmEditor";
 
 export function withChapterPaging(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
@@ -20,7 +20,7 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
         super(props)
         this.state = { 
             selectedVerse: null,
-            goToVerse: null
+            goToVersePropValue: null
         }
     }
 
@@ -66,7 +66,7 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
         const verse = parseInt(verseStr)
         if (chapter >= 0 && verse >= 0) {
             this.setState({ 
-                goToVerse: {
+                goToVersePropValue: {
                     chapter: chapter,
                     verse: verse
                 }
@@ -74,13 +74,14 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
         }
     }
 
-    onVerseChange = (chapter: number, verseStart: number, verseEnd: number) => {
-        const selectedVerse: ChapterAndVerseStartAndEnd = {
-            chapter: chapter,
-            verseStart: verseStart,
-            verseEnd: verseEnd
-        }
-        this.setState({ selectedVerse: selectedVerse })
+    onVerseChange = (verseRange: VerseRange) => {
+        this.setState({ 
+            selectedVerse: {
+                chapter: verseRange.chapter,
+                verseStart: verseRange.verseStart,
+                verseEnd: verseRange.verseEnd
+            } 
+        })
     }
 
     render() {
@@ -98,7 +99,7 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
                 <this.props.wrappedEditor 
                     {...this.props} 
                     ref={this.wrappedEditorRef} 
-                    goToVerse={this.state.goToVerse}
+                    goToVerse={this.state.goToVersePropValue}
                     onVerseChange={this.onVerseChange}
                 />
             </React.Fragment>
@@ -106,11 +107,9 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
     }
 }
 
-type ChapterAndVerseStartAndEnd = {chapter: number, verseStart: number, verseEnd: number}
-
 type ChapterEditorState = {
-    selectedVerse: ChapterAndVerseStartAndEnd,
-    goToVerse: Verse
+    selectedVerse: VerseRange,
+    goToVersePropValue: Verse
 }
 
 
@@ -179,7 +178,7 @@ const SelectedVerseTracker: React.FunctionComponent<SelectedVerseTrackerProps> =
 }
 
 interface SelectedVerseTrackerProps {
-    selectedVerse: ChapterAndVerseStartAndEnd
+    selectedVerse: VerseRange
 }
 
 const allowOnlyNumbers = (event: React.KeyboardEvent<HTMLInputElement>) => {

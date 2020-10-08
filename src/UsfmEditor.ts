@@ -16,7 +16,7 @@ export interface UsfmEditorProps {
     identification?: Object,
     onIdentificationChange?: (identification: Object) => void,
     goToVerse?: Verse,
-    onVerseChange?: (chapter: number, verseStart: number, verseEnd: number) => void
+    onVerseChange?: (verseRange: VerseRange) => void
 }
 
 export const usfmEditorPropTypes = {
@@ -39,6 +39,10 @@ export const usfmEditorDefaultProps = {
 }
 
 export type Verse = {chapter: number, verse: number}
+
+// VerseRange is essentially a superset of Verse, because it can specify a singular verse if
+// verseEnd = verseStart.
+export type VerseRange = {chapter: number, verseStart: number, verseEnd: number}
 
 export type ForwardRefUsfmEditor = React.ForwardRefExoticComponent<UsfmEditorProps & React.RefAttributes<UsfmEditor>>
 

@@ -204,11 +204,11 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         this.setState({ selectedVerse: newSelectedVerse })
 
         if (!this.props.onVerseChange) return
-        this.props.onVerseChange(
+        this.props.onVerseChange({
             chapter,
             verseStart,
             verseEnd
-        )
+        })
     }
 
     didSelectedVerseChange(chapter: number, verseNumOrRange: string) {
