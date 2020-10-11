@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse, VerseRange } from "../UsfmEditor";
+import { UsfmEditorRef, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse, VerseRange } from "../UsfmEditor";
 import { NoopUsfmEditor } from "../NoopUsfmEditor";
 
 export function withChapterPaging(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
@@ -12,7 +12,7 @@ export function withChapterPaging(WrappedEditor: ForwardRefUsfmEditor): ForwardR
     )
 }
 
-class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorState> implements UsfmEditor {
+class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorState> implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes
     public static defaultProps = usfmEditorDefaultProps
 
@@ -24,8 +24,8 @@ class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorSta
         }
     }
 
-    wrappedEditorRef = React.createRef<UsfmEditor>()
-    wrappedEditorInstance: () => UsfmEditor = () => 
+    wrappedEditorRef = React.createRef<UsfmEditorRef>()
+    wrappedEditorInstance: () => UsfmEditorRef = () => 
         this.wrappedEditorRef.current ?? new NoopUsfmEditor()
     
     /* UsfmEditor API */

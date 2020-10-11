@@ -1,9 +1,10 @@
 import * as React from "react";
 import { cx, css } from "emotion";
-import { Button } from "../components/menu/menuComponents";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
-import { UsfmEditor, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse } from "../UsfmEditor";
+import { UsfmEditorRef, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorPropTypes, usfmEditorDefaultProps, Verse } from "../UsfmEditor";
 import { NoopUsfmEditor } from "../NoopUsfmEditor";
+import { MarkButton } from "../components/menu/MarkButton";
+import { BlockButton } from "../components/menu/BlockButton";
 
 export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
     return React.forwardRef<ToolbarEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
@@ -15,7 +16,7 @@ export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfm
     )
 }
 
-class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmEditor {
+class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes
     public static defaultProps = usfmEditorDefaultProps
 
@@ -23,8 +24,8 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
         super(props)
     }
 
-    wrappedEditorRef = React.createRef<UsfmEditor>()
-    wrappedEditorInstance: () => UsfmEditor = () => 
+    wrappedEditorRef = React.createRef<UsfmEditorRef>()
+    wrappedEditorInstance: () => UsfmEditorRef = () => 
         this.wrappedEditorRef.current ?? new NoopUsfmEditor()
 
     getMarksAtCursor = () =>
@@ -106,61 +107,3 @@ const Toolbar = React.forwardRef(({ className, ...props }, ref) => (
       )}
     />
   ))
-
-export const MarkButton = ({ mark, text, editor }) => {
-    return (
-        //@ts-ignore
-        <Button
-            active={isMarkActive(editor, mark)}
-            onMouseDown={event => {
-                event.preventDefault()
-                toggleMark(editor, mark)
-            }}
-        >
-            {text}
-        </Button>
-    )
-}
-
-const isMarkActive = (editor: UsfmEditor, mark: string) => {
-    const marks = editor.getMarksAtCursor()
-    return marks.includes(mark)
-}
-
-const toggleMark = (editor: UsfmEditor, mark: string) => {
-    const isActive = isMarkActive(editor, mark)
-    if (isActive) {
-        editor.removeMarkAtCursor(mark)
-    } else {
-        editor.addMarkAtCursor(mark)
-    }
-}
-
-export const BlockButton = ({ marker, text, editor }) => {
-    return (
-        //@ts-ignore
-        <Button
-            active={isBlockActive(editor, marker)}
-            onMouseDown={event => {
-                event.preventDefault()
-                toggleBlock(editor, marker)
-            }}
-        >
-            {text}
-        </Button>
-    )
-}
-
-const isBlockActive = (editor: UsfmEditor, marker: string) => {
-    const types = editor.getParagraphTypesAtCursor()
-    return types.includes(marker)
-}
-
-const toggleBlock = (editor: UsfmEditor, marker: string) => {
-    const isActive = isBlockActive(editor, marker)
-    if (isActive) {
-        editor.setParagraphTypeAtCursor(UsfmMarkers.PARAGRAPHS.p)
-    } else {
-        editor.setParagraphTypeAtCursor(marker)
-    }
-}
