@@ -155,7 +155,7 @@ function getVerseNode(editor: Editor, path?: Path): NodeEntry {
 function getPreviousVerse(
     editor: Editor,
     path: Path,
-    includeFront: boolean = false
+    includeFront = false
 ): NodeEntry {
 
     const [node, _] = Editor.node(editor, path)
@@ -208,7 +208,7 @@ function getLastVerse(
         [],
         { reverse: true }
     )
-    for (let child of children) {
+    for (const child of children) {
         if (child[0].type == NodeTypes.VERSE) {
             return child
         }
