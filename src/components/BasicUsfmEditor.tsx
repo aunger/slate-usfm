@@ -204,7 +204,8 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
     updateIdentificationFromUsfmAndProp = () => {
         const parsedIdentification = parseIdentificationFromUsfm(this.props.usfmString)
         const validParsed = this.filterAndNormalize(parsedIdentification)
-        const validUpdates = this.filterAndNormalize(this.props.identification)
+        const updateIdentification = this.props.identification ?? {};
+        const validUpdates = this.filterAndNormalize(updateIdentification)
         const updated = mergeIdentification(validParsed, validUpdates)
 
         MyTransforms.setIdentification(this.slateEditor, updated)
