@@ -1,3 +1,6 @@
+/* eslint-disable jest/no-disabled-tests */
+/* eslint-disable jest/expect-expect */
+
 import { act } from "react-dom/test-utils"
 import { slateToUsfm } from "../src/transforms/slateToUsfm";
 import { usfmToSlate } from "../src/transforms/usfmToSlate";
@@ -629,12 +632,12 @@ it("preserves pb", () => {
         `\\pb`
     testUsfm(usfm)
 })
-it("preserves v", () => {
+it("preserves v //", () => {
     const usfm = chapter +
         `\\v 15 Space // between`
     testUsfm(usfm)
 })
-it("preserves v", () => {
+it("preserves v ~", () => {
     const usfm = chapter +
         `\\v 16 Space~nbsp`
     testUsfm(usfm)
