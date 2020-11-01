@@ -4,6 +4,7 @@ import { ReactEditor } from 'slate-react'
 import { DOMNode } from 'slate-react/dist/utils/dom'
 import { parseIdentificationFromSlateTree } from '../../transforms/identificationTransforms'
 import { UsfmMarkers }from '../../utils/UsfmMarkers'
+import { IdentificationHeaders } from '../../UsfmEditor'
 
 export const MyEditor = {
     ...Editor,
@@ -240,7 +241,7 @@ function getPathFromDOMNode(
 /**
  * Gets the identification headers in json format
  */
-function identification(editor: Editor): Object { 
+function identification(editor: Editor): IdentificationHeaders { 
     return parseIdentificationFromSlateTree(editor)
 }
 

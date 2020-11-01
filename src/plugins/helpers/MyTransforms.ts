@@ -5,6 +5,7 @@ import { textNode } from "../../transforms/basicSlateNodeFactory";
 import { UsfmMarkers } from "../../utils/UsfmMarkers";
 import { SelectionTransforms } from "./SelectionTransforms";
 import { identificationToSlate } from "../../transforms/identificationTransforms";
+import { IdentificationHeaders } from "../../UsfmEditor";
 
 export const MyTransforms = {
     ...Transforms,
@@ -100,7 +101,7 @@ function replaceText(
  */
 function setIdentification(
     editor: Editor, 
-    identification: Object, 
+    identification: IdentificationHeaders 
 ) {
     const slateHeaders = identificationToSlate(identification)
 

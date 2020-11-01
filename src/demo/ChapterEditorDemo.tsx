@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createBasicUsfmEditor } from "../components/BasicUsfmEditor";
-import { usfmToSlate } from "../transforms/usfmToSlate.js";
+import { usfmToSlate } from "../transforms/usfmToSlate";
 import { slateToUsfm } from "../transforms/slateToUsfm";
 import { OutputUsfm } from "./UsfmContainer";
 import "./demo.css";

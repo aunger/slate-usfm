@@ -24,19 +24,24 @@ import {
     ForwardRefUsfmEditor,
     usfmEditorPropTypes,
     usfmEditorDefaultProps,
-    Verse
+    Verse,
+    IdentificationHeaders
 } from "../UsfmEditor";
 import NodeRules from "../utils/NodeRules";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { HoveringToolbar } from "./HoveringToolbar";
 
 export const createBasicUsfmEditor: () => ForwardRefUsfmEditor =
-    () => React.forwardRef<BasicUsfmEditor, UsfmEditorProps>(({ ...props }, ref) => 
-        <BasicUsfmEditor
-            {...props}
-            ref={ref}
-        />
-    )
+    () => {
+        const e = React.forwardRef<BasicUsfmEditor, UsfmEditorProps>(({ ...props }, ref) =>
+            <BasicUsfmEditor
+                {...props}
+                ref={ref}
+            />
+        )
+        e.displayName = "BasicUsfmEditor"
+        return e;
+}
 
 /**
  * A WYSIWYG editor component for USFM
@@ -62,9 +67,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
             withReact,
             createEditor
         )()
-        this.slateEditor.isInline = element => {
-            return false
-        }
+        this.slateEditor.isInline = () => false
     }
     
     /* UsfmEditor interface functions */
@@ -210,8 +213,8 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
     }
 
-    filterAndNormalize = (idJson: Object) => {
-        const filtered = filterInvalidIdentification(idJson)
+    filterAndNormalize = (ids: IdentificationHeaders) => {
+        const filtered = filterInvalidIdentification(ids)
         return normalizeIdentificationValues(filtered)
     }
 

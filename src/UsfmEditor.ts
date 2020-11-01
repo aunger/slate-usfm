@@ -1,5 +1,7 @@
 import PropTypes from "prop-types" 
 
+export type IdentificationHeaders = Record<string, string | string[]>
+
 export interface UsfmEditorRef {
     getMarksAtCursor: () => string[]
     addMarkAtCursor: (mark: string) => void
@@ -13,8 +15,8 @@ export interface UsfmEditorProps {
     usfmString: string,
     onChange?: (usfm: string) => void,
     readOnly?: boolean,
-    identification?: Object,
-    onIdentificationChange?: (identification: Object) => void,
+    identification?: IdentificationHeaders,
+    onIdentificationChange?: (identification: IdentificationHeaders) => void,
     goToVerse?: Verse,
     onVerseChange?: (verseRange: VerseRange) => void
 }

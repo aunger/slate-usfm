@@ -1,12 +1,15 @@
 import * as usfmjs from "usfm-js";
-import { objectToArrayRules, nextCharRules } from "../transforms/usfmjsStructureRules";
+import { objectToArrayRules, nextCharRules } from "./usfmjsStructureRules";
 import { transform } from "json-transforms";
 import { jsx } from "slate-hyperscript";
 import NodeTypes from "../utils/NodeTypes";
 import { emptyInlineContainer, verseNumber, verseWithChildren } from "./basicSlateNodeFactory";
 import { UsfmMarkers }from "../utils/UsfmMarkers";
+import { Descendant, Element, Text } from "slate";
 
-export function usfmToSlate(usfm) {
+type JsxValue = Text | Element | Descendant[]
+
+export function usfmToSlate(usfm: string): JsxValue {
     const usfmJsDoc = usfmjs.toJSON(usfm);
     console.log("parsed from usfm-js", usfmJsDoc)
 
@@ -20,7 +23,7 @@ export function usfmToSlate(usfm) {
     return slateTree
 }
 
-export function transformToSlate(el) {
+export function transformToSlate(el: Record<string, unknown>): JsxValue {
     if (el.hasOwnProperty("chapters")) {
         return fragment(el)
     } else if (el.hasOwnProperty("chapterNumber")) {
@@ -28,7 +31,7 @@ export function transformToSlate(el) {
     } else if (el.hasOwnProperty("verseNumber")) {
         return verse(el)
     } else if (el.hasOwnProperty("tag")) {
-        if (UsfmMarkers.isParagraphType(el.tag)) {
+        if (typeof(el.tag) === "string" && UsfmMarkers.isParagraphType(el.tag)) {
             return paragraphElement(el)
         } else { // Character or Note marker
             return getDescendantTextNodes(el)

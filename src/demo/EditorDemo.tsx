@@ -1,12 +1,13 @@
 import * as React from "react";
 import { createBasicUsfmEditor } from "../components/BasicUsfmEditor";
 import { InputSelector } from "./InputSelector";
-import { usfmToSlate } from "../transforms/usfmToSlate.js";
+import { usfmToSlate } from "../transforms/usfmToSlate";
 import { slateToUsfm } from "../transforms/slateToUsfm";
 import { OptionCheckbox } from "./OptionCheckbox";
 import { InputUsfm, OutputUsfm } from "./UsfmContainer";
 import { IdentificationSetter } from "./IdentificationSetter";
 import "./demo.css";
+import { IdentificationHeaders } from "../UsfmEditor";
 
 export class EditorDemo extends React.Component<DemoProps, DemoState> {
     constructor(props: DemoProps) {
@@ -38,7 +39,7 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
     handleReadOnlyChange = () => {
         this.setState({ readOnly: !this.state.readOnly});
     }
-    onIdentificationChange = (id: Object) => {
+    onIdentificationChange = (id: IdentificationHeaders) => {
         if (typeof id == "string") {
             id = JSON.parse(id)
         }
@@ -123,5 +124,5 @@ type DemoState = {
     usfmOutput: string,
     showInputUsfm: boolean,
     readOnly: boolean,
-    identification: Object
+    identification: IdentificationHeaders
 }
