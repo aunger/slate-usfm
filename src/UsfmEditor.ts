@@ -1,3 +1,4 @@
+import { noop } from "lodash"
 import PropTypes from "prop-types" 
 
 export type IdentificationHeaders = Record<string, string | string[]>
@@ -32,10 +33,10 @@ export const usfmEditorPropTypes = {
 }
 
 export const usfmEditorDefaultProps = {
-    onChange: () => {},
+    onChange: noop,
     readOnly: false,
     identification: {},
-    onIdentificationChange: () => {},
+    onIdentificationChange: noop,
     goToVerse: undefined,
     onVerseChange: undefined
 }
