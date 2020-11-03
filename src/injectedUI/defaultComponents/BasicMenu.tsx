@@ -14,4 +14,7 @@ export const BasicMenu: ForwardRefExoticComponent<any> = React.forwardRef(
         </Paper>
     )
 )
+
+BasicMenu.displayName = "BasicMenu"
+
 export default BasicMenu

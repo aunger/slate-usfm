@@ -7,13 +7,15 @@ import { MarkButton } from "../components/menu/MarkButton";
 import { BlockButton } from "../components/menu/BlockButton";
 
 export function withToolbar(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
-    return React.forwardRef<ToolbarEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
+    const fc = React.forwardRef<ToolbarEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
         <ToolbarEditor
             {...props}
             wrappedEditor={WrappedEditor}
             ref={ref} // used to access the ToolbarEditor and its API
         />
     )
+    fc.displayName = (WrappedEditor.displayName ?? "") + "WithToolbar"
+    return fc
 }
 
 class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmEditorRef {
@@ -69,41 +71,42 @@ const UsfmToolbar = ({editor}) => {
 
 //@ts-ignore
 const Toolbar = React.forwardRef(({ className, ...props }, ref) => (
-    <Menu
-      {...props}
-      ref={ref}
-      //@ts-ignore
-        className={cx(
-        className,
-        css`
-          position: relative;
-          padding: 1px 18px 17px;
-          margin: 0 -20px;
-          border-bottom: 2px solid #eee;
-          margin-bottom: 20px;
-          background-color: blue;
-        `
-      )}
-    />
-  ))
+  <Menu
+    {...props}
+    ref={ref}
+    //@ts-ignore
+    className={cx(
+      className,
+      css`
+        position: relative;
+        padding: 1px 18px 17px;
+        margin: 0 -20px;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 20px;
+        background-color: blue;
+      `
+    )}
+  />
+))
+Toolbar.displayName = "Toolbar"
 
-  //@ts-ignore
-  export const Menu = React.forwardRef(({ className, ...props }, ref) => (
-    <div
-      {...props}
-      //@ts-ignore
-      ref={ref}
-      className={cx(
-        className,
-        css`
+//@ts-ignore
+export const Menu = React.forwardRef(({ className, ...props }, ref) => (
+  <div
+    {...props}
+    //@ts-ignore
+    ref={ref}
+    className={cx(
+      className,
+      css`
           & > * {
             display: inline-block;
           }
-  
           & > * + * {
             margin-left: 15px;
           }
         `
-      )}
-    />
-  ))
+    )}
+  />
+))
+Menu.displayName = "Menu"

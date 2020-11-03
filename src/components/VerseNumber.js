@@ -23,8 +23,10 @@ export const VerseNumber = forwardRef(
     )
 )
 
+VerseNumber.displayName = "VerseNumber"
+
 function withVerseMenu(VerseNumber) {
-    return function (props) {
+    const fc = function (props) {
         const { useVerseAddRemove } = useContext(OptionsContext)
         const verseNumberRef = useRef(null)
         const editor = useSlate()
@@ -92,6 +94,8 @@ function withVerseMenu(VerseNumber) {
             </React.Fragment>
         )
     }
+    fc.displayName = (VerseNumber.displayName ?? "") + "WithVerseMenu"
+    return fc
 }
 
 export const VerseNumberWithVerseMenu = withVerseMenu(VerseNumber)

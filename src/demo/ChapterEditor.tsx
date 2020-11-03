@@ -3,13 +3,15 @@ import { UsfmEditorRef, ForwardRefUsfmEditor, HocUsfmEditorProps, usfmEditorProp
 import { NoopUsfmEditor } from "../NoopUsfmEditor";
 
 export function withChapterPaging(WrappedEditor: ForwardRefUsfmEditor): ForwardRefUsfmEditor {
-    return React.forwardRef<ChapterEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
+    const fc = React.forwardRef<ChapterEditor, HocUsfmEditorProps>(({ ...props }, ref) =>
         <ChapterEditor
             {...props}
             wrappedEditor={WrappedEditor}
             ref={ref} // used to access the ChapterEditor and its API
         />
     )
+    fc.displayName = (WrappedEditor.displayName ?? "") + "WithChapterPaging"
+    return fc
 }
 
 class ChapterEditor extends React.Component<HocUsfmEditorProps, ChapterEditorState> implements UsfmEditorRef {
