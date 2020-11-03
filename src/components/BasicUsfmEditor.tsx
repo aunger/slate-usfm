@@ -115,7 +115,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         )
     }
 
-    goToVerse = (verse: Verse) => {
+    goToVerse = (verse: Verse): void => {
         const chapter = verse.chapter
 
         const versePath = MyEditor.findVersePath(this.slateEditor, chapter, verse.verse)
@@ -154,11 +154,11 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         this.props.onChange(usfm)
     }, 200)
 
-    onKeyDown = event => {
+    onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
         handleKeyPress(event, this.slateEditor)
     }
 
-    fixSelectionOnChapterOrVerseNumber() {
+    fixSelectionOnChapterOrVerseNumber(): void {
         const editor = this.slateEditor
         if (! MyEditor.isVerseOrChapterNumberSelected(editor)) return
 
@@ -188,7 +188,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
     }
 
-    updateIdentificationFromProp = () => {
+    updateIdentificationFromProp = (): void => {
         const current = MyEditor.identification(this.slateEditor)
         const validUpdates = this.filterAndNormalize(this.props.identification)
         const updated = mergeIdentification(current, validUpdates)
@@ -201,7 +201,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
     }
 
-    updateIdentificationFromUsfmAndProp = () => {
+    updateIdentificationFromUsfmAndProp = (): void => {
         const parsedIdentification = parseIdentificationFromUsfm(this.props.usfmString)
         const validParsed = this.filterAndNormalize(parsedIdentification)
         const updateIdentification = this.props.identification ?? {};
@@ -214,12 +214,12 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
     }
 
-    filterAndNormalize = (ids: IdentificationHeaders) => {
+    filterAndNormalize = (ids: IdentificationHeaders): IdentificationHeaders => {
         const filtered = filterInvalidIdentification(ids)
         return normalizeIdentificationValues(filtered)
     }
 
-    updateSelectedVerseAfterEditorChange = () => {
+    updateSelectedVerseAfterEditorChange = (): void => {
         if (!this.slateEditor.selection) return
 
         const verseNodeEntry = MyEditor.getVerseNode(this.slateEditor)
@@ -235,7 +235,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
     }
 
-    updateSelectedVerse(chapter: number, verseNumOrRange: string) {
+    updateSelectedVerse(chapter: number, verseNumOrRange: string): void {
         const { verseStart, verseEnd } = getVerseStartAndEnd(verseNumOrRange)
         const newSelectedVerse = {
             chapter: chapter,
@@ -251,7 +251,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         })
     }
 
-    didSelectedVerseChange(chapter: number, verseNumOrRange: string) {
+    didSelectedVerseChange(chapter: number, verseNumOrRange: string): boolean {
         const { verseStart, verseEnd } = getVerseStartAndEnd(verseNumOrRange)
         const newSelectedVerse = {
             chapter: chapter,
@@ -260,14 +260,14 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         return ! isEqual(newSelectedVerse, this.state.selectedVerse)
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.updateIdentificationFromUsfmAndProp()
         if (this.props.goToVerse) {
             this.goToVerse(this.props.goToVerse)
         }
     }
     
-    componentDidUpdate(prevProps: UsfmEditorProps) {
+    componentDidUpdate(prevProps: UsfmEditorProps): void {
         if (prevProps.usfmString != this.props.usfmString) {
             this.updateIdentificationFromUsfmAndProp()
         } else if (prevProps.identification != this.props.identification) {
@@ -279,7 +279,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         }
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <Slate
                 editor={this.slateEditor}
