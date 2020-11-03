@@ -16,7 +16,7 @@ export const withNormalize = (editor: Editor) => {
 }
 
 const customNormalizeNode = (editor: Editor, entry: NodeEntry) => {
-    const [node, path] = entry
+    const [node] = entry
     if (node.type === NodeTypes.VERSE) {
         const modified = addInlineContainerIfMissing(editor, entry)
         if (modified) return
@@ -55,7 +55,7 @@ function transformExcessInlineContainers(
 }
 
 function mergeAndAssumePreviousNodeType(editor: Editor, path: Path) {
-    const [prevChild, prevPath] = Editor.node(editor, Path.previous(path))
+    const [prevChild] = Editor.node(editor, Path.previous(path))
     Editor.withoutNormalizing(editor, () => {
         Transforms.mergeNodes(
             editor,

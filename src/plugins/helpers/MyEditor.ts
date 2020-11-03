@@ -54,7 +54,7 @@ function isNearbyBlockAnInlineContainer(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
 ) {
-    const [block, blockPath] = getNearbyBlock(editor, direction)
+    const [block] = getNearbyBlock(editor, direction)
     return block &&
         block.type == NodeTypes.INLINE_CONTAINER
 }
@@ -63,7 +63,7 @@ function isNearbyBlockAnEmptyInlineContainer(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
 ) {
-    const [block, blockPath] = getNearbyBlock(editor, direction)
+    const [block] = getNearbyBlock(editor, direction)
     return block &&
         block.type == NodeTypes.INLINE_CONTAINER &&
         Node.string(block) === ""
@@ -73,7 +73,7 @@ function isNearbyBlockAVerseNumber(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
 ) {
-    const [block, blockPath] = getNearbyBlock(editor, direction)
+    const [block] = getNearbyBlock(editor, direction)
     return block && block.type == UsfmMarkers.CHAPTERS_AND_VERSES.v
 }
 
@@ -81,7 +81,7 @@ function isNearbyBlockAVerseOrChapterNumberOrNull(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
 ) {
-    const [block, blockPath] = getNearbyBlock(editor, direction)
+    const [block] = getNearbyBlock(editor, direction)
     return !block ||
         UsfmMarkers.isVerseOrChapterNumber(block)
 }
@@ -121,7 +121,7 @@ function getNearbyBlock(
     direction: 'previous' | 'current' | 'next' = 'current'
 ): NodeEntry {
     const { selection } = editor
-    const [node, path] = Editor.node(editor, selection.anchor)
+    const [_, path] = Editor.node(editor, selection.anchor)
     const [parent, parentPath] = Editor.parent(editor, path)
 
     return direction === 'current'
@@ -159,7 +159,7 @@ function getPreviousVerse(
     includeFront = false
 ): NodeEntry {
 
-    const [node, _] = Editor.node(editor, path)
+    const [node] = Editor.node(editor, path)
     const thisVersePath: Path = node.type == NodeTypes.VERSE
         ? path
         : MyEditor.getVerseNode(editor, path)[1]
@@ -203,7 +203,7 @@ function getLastVerse(
     editor: Editor,
     path: Path
 ): NodeEntry {
-    const [chapter, chapterPath] = MyEditor.getChapterNode(editor, path)
+    const [chapter] = MyEditor.getChapterNode(editor, path)
     const children = Node.children(
         chapter,
         [],
@@ -223,7 +223,7 @@ function getLastVerseNumberOrRange(
     editor: Editor,
     path: Path
 ): string {
-    const [lastVerse, lastVersePath] = MyEditor.getLastVerse(editor, path)
+    const [lastVerse] = MyEditor.getLastVerse(editor, path)
     return Node.string(lastVerse.children[0])
 }
 

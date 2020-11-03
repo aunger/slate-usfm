@@ -63,7 +63,7 @@ export function willVerseMenuDisplay(
     // This will find the verse path. We need the verse number path, so concatenate a zero.
     const verseNumberPath = MyEditor.getPathFromDOMNode(editor, verseNumberEl)
         .concat(0)
-    const [verseNumberNode, path] = MyEditor.node(editor, verseNumberPath)
+    const [verseNumberNode] = MyEditor.node(editor, verseNumberPath)
     const verseNumberString = Node.string(verseNumberNode)
 
     const isVerseRange = verseNumberString.includes('-')
@@ -82,7 +82,7 @@ export function willVerseMenuDisplay(
 class VerseSubmenu extends React.Component {
     getVerseNumberString() {
         const { editor, verseNumberPath } = this.props
-        const [verseNumberNode, path] = MyEditor.node(editor, verseNumberPath)
+        const [verseNumberNode] = MyEditor.node(editor, verseNumberPath)
         return Node.string(verseNumberNode)
     }
 }

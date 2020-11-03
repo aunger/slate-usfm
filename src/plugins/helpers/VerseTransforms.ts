@@ -26,7 +26,7 @@ function joinWithPreviousVerse(
     const prevNumOrRange = Node.string(prevVerse.children[0])
     const [thisStart, thisEndOrNull] = thisNumOrRange.split("-")
     const thisEnd = thisEndOrNull ? thisEndOrNull : thisStart
-    const [prevStart, prevEnd] = prevNumOrRange.split("-")
+    const [prevStart, _prevEnd] = prevNumOrRange.split("-")
 
     _insertLeadingSpaceIfNecessary(editor, thisVersePath)
     Transforms.removeNodes(
@@ -52,7 +52,7 @@ function removeVerseAndConcatenateContentsWithPrevious(
     editor: Editor,
     path: Path
 ) {
-    const [thisVerse, thisVersePath] = MyEditor.getVerseNode(editor, path)
+    const [_thisVerse, thisVersePath] = MyEditor.getVerseNode(editor, path)
     const thisVerseNumPath = thisVersePath.concat(0)
 
     _insertLeadingSpaceIfNecessary(editor, thisVersePath)
@@ -146,7 +146,7 @@ function addVerse(
  */
 function _insertLeadingSpaceIfNecessary(editor: Editor, versePath: Path) {
     const inlineContainerPath = versePath.concat(1)
-    const [inlineContainer, icPath] = Editor.node(editor, inlineContainerPath)
+    const [inlineContainer, _icPath] = Editor.node(editor, inlineContainerPath)
     const inlineContainerText = Node.string(inlineContainer)
     if (!inlineContainerText.trim()) {
         return
@@ -156,7 +156,7 @@ function _insertLeadingSpaceIfNecessary(editor: Editor, versePath: Path) {
     if (! Array.isArray(prevVerse.children)) {
         return
     }
-    const [lastChildOfPreviousVerse, lcPath] = 
+    const [lastChildOfPreviousVerse, _lcPath] =
         Editor.node(
             editor,
             prevVersePath.concat(prevVerse.children.length - 1)

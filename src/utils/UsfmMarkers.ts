@@ -175,7 +175,7 @@ export class UsfmMarkers {
      * if applicable. For example, "toc1" should occur before "toc2".
      */
     private static getSortOrder(marker: string): number {
-        const { pluses, baseMarker, number } = UsfmMarkers.destructureMarker(marker)
+        const { baseMarker, number } = UsfmMarkers.destructureMarker(marker)
         const markerCategory = markerToCategoryMap.get(baseMarker)
         const baseOrder = Object.keys(markerCategory).indexOf(baseMarker)
         if (parseInt(number)) {

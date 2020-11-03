@@ -28,10 +28,10 @@ function selectNextSiblingNonEmptyText(editor: Editor) {
     if (!Range.isCollapsed(editor.selection)) {
         return
     }
-    const [textNode, path] = Editor.node(editor, editor.selection)
+    const [textNode, _path] = Editor.node(editor, editor.selection)
     if (textNode.text == "") {
         const thisPath = editor.selection.anchor.path
-        const [nextNode, nextPath] = Editor.next(editor) || [null, null]
+        const [_nextNode, nextPath] = Editor.next(editor) || [null, null]
         if (nextPath && 
             Path.equals(
                 Path.parent(thisPath), 
@@ -54,7 +54,7 @@ function moveToStartOfFirstLeaf(
     path: Path,
     options?: { edge: "focus" | "anchor" } | undefined
 ) {
-    const [leaf, leafPath] = Editor.leaf(
+    const [_leaf, leafPath] = Editor.leaf(
         editor,
         path,
         { edge: "start" }

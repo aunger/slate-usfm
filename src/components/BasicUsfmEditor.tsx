@@ -121,7 +121,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         const versePath = MyEditor.findVersePath(this.slateEditor, chapter, verse.verse)
         if (!versePath) return
 
-        const [verseNode, _] = Editor.node(this.slateEditor, versePath)
+        const [verseNode] = Editor.node(this.slateEditor, versePath)
         const verseNumOrRange = Node.string(verseNode.children[0])
 
         const inlineContainerPath = versePath.concat(1)
@@ -149,7 +149,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         this.scheduleOnChange(value)
     }
 
-    scheduleOnChange: (value: Node[]) => void = debounce(function(newValue) {
+    scheduleOnChange: (value: Node[]) => void = debounce(function(newValue: Node[]) {
         const usfm = slateToUsfm(newValue)
         this.props.onChange(usfm)
     }, 200)
@@ -225,8 +225,8 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
         const verseNodeEntry = MyEditor.getVerseNode(this.slateEditor)
         if (!verseNodeEntry) return
 
-        const [verseNode, versePath] = verseNodeEntry
-        const [chapterNode, chapterPath] = MyEditor.getChapterNode(this.slateEditor)
+        const [verseNode] = verseNodeEntry
+        const [chapterNode] = MyEditor.getChapterNode(this.slateEditor)
         const chapterNum = parseInt(Node.string(chapterNode.children[0]))
         const verseNumOrRangeStr = Node.string(verseNode.children[0])
 
@@ -252,7 +252,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
     }
 
     didSelectedVerseChange(chapter: number, verseNumOrRange: string): boolean {
-        const { verseStart, verseEnd } = getVerseStartAndEnd(verseNumOrRange)
+        const { verseStart } = getVerseStartAndEnd(verseNumOrRange)
         const newSelectedVerse = {
             chapter: chapter,
             verse: verseStart
