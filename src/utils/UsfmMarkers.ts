@@ -1,8 +1,6 @@
 import MarkerInfoMap from "./MarkerInfoMap"
 import { Node } from "slate"
-
-export const STYLE_TYPES = ['paragraph', 'character', 'note', 'milestone'] as const
-export type StyleType = typeof STYLE_TYPES[number]
+import { StyleType } from "./StyleTypes"
 
 export interface MarkerInfo {
     endMarker: string
