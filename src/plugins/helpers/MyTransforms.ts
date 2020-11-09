@@ -121,7 +121,6 @@ function setIdentification(
         )
         Transforms.insertNodes(
             editor,
-            // @ts-ignore
             sortedHeaders,
             { at: [0, 0] }
         )

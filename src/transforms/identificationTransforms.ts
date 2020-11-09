@@ -68,27 +68,29 @@ export function normalizeIdentificationValues(ids: IdentificationHeaders): Ident
     return normalized
 }
 
-export function identificationToSlate(ids: IdentificationHeaders): Array<HasType> {
-    function idHeader(tag, content): HasType {
-        const jsxVal = transformToSlate({
-            tag,
-            content
+export function identificationToSlate(ids: IdentificationHeaders): Array<TypedNode> {
+    function idHeader(tag, content): Array<TypedNode> {
+        const nodes: Array<Node> = asArray(transformToSlate({ tag, content }))
+        return nodes.flatMap(n => {
+            if (isTypedNode(n)) {
+                return [n as TypedNode]
+            } else {
+                console.error("type error", n)
+                return []
+            }
         })
-        if (hasType(jsxVal)) {
-            return jsxVal
-        } else {
-            console.error("type error", jsxVal)
-            return null
-        }
     }
 
-    return Object.entries(ids)
-        .flatMap( ([marker, value]) => (
-            Array.isArray(value)
-                ? value.map(text => idHeader(marker, text))
-                : [ idHeader(marker, value) ]
-        ))
-        .filter(x => x)
+    function asArray<T>(x: T | T[]): T[] {
+        return Array.isArray(x) ? x : [x]
+    }
+
+    const entries: Array<[string, string]> = Object.entries(ids)
+        .flatMap( ([marker, vals]) =>
+            asArray(vals).map<[string, string]>(v => [marker, v])
+        )
+
+    return entries.flatMap(([marker, value]) => idHeader(marker, value))
 }
 
 export function parseIdentificationFromUsfm(usfm: string): IdentificationHeaders {
@@ -117,11 +119,11 @@ const isValidIdentificationMarker = (marker: string): boolean =>
     UsfmMarkers.isIdentification(marker) &&
     UsfmMarkers.isValid(marker)
 
-const isNumberOrString = (value: any) =>
+const isNumberOrString = (value: unknown) =>
     typeof value === "string" ||
     typeof value === "number"
 
-function isValidMarkerValuePair(marker: string, value: any): boolean {
+function isValidMarkerValuePair(marker: string, value: unknown): boolean {
     if (value === null) return true
     const baseMarker = UsfmMarkers.getBaseMarker(marker)
     if (baseMarker === UsfmMarkers.IDENTIFICATION.rem) {
@@ -133,12 +135,10 @@ function isValidMarkerValuePair(marker: string, value: any): boolean {
     }
 }
 
-interface HasType {
-    type: string
-}
+type TypedNode = Node & { type: string }
 
-function hasType(o: any): o is HasType {
-    return ("type" in o)
+function isTypedNode(node: Node): node is TypedNode {
+    return ("type" in node)
 }
 
 interface IdHeader {
