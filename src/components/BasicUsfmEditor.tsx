@@ -31,16 +31,15 @@ import NodeRules from "../utils/NodeRules";
 import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { HoveringToolbar } from "./HoveringToolbar";
 
-export const createBasicUsfmEditor: () => ForwardRefUsfmEditor =
-    () => {
-        const e = React.forwardRef<BasicUsfmEditor, UsfmEditorProps>(({ ...props }, ref) =>
-            <BasicUsfmEditor
-                {...props}
-                ref={ref}
-            />
-        )
-        e.displayName = "BasicUsfmEditor"
-        return e;
+export const createBasicUsfmEditor = (): ForwardRefUsfmEditor => {
+    const e = React.forwardRef<BasicUsfmEditor, UsfmEditorProps>(({ ...props }, ref) =>
+        <BasicUsfmEditor
+            {...props}
+            ref={ref}
+        />
+    )
+    e.displayName = "BasicUsfmEditor"
+    return e;
 }
 
 /**
@@ -92,16 +91,11 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
     getParagraphTypesAtCursor: () => string[] = () => {
         if (!this.slateEditor.selection) return []
         let types = []
-        const nodes = Editor.nodes(this.slateEditor)
-        //@ts-ignore
-        let entry = nodes.next()
-        while (!entry.done) {
-            const node = entry.value[0]
+        for (const entry of Editor.nodes(this.slateEditor)) {
+            const node = entry[0]
             if (UsfmMarkers.isParagraphType(node)) {
                 types = types.concat(node.type)
             }
-            //@ts-ignore
-            entry = nodes.next()
         }
         return types
     }
