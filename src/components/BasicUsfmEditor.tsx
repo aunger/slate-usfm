@@ -295,7 +295,7 @@ export class BasicUsfmEditor extends React.Component<UsfmEditorProps, BasicUsfmE
 }
 
 interface BasicUsfmEditorState {
-    value: any,
+    value: Node[],
     selectedVerse: Verse
 }
 

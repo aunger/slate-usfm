@@ -5,11 +5,9 @@ import { jsx } from "slate-hyperscript";
 import NodeTypes from "../utils/NodeTypes";
 import { emptyInlineContainer, verseNumber, verseWithChildren } from "./basicSlateNodeFactory";
 import { UsfmMarkers }from "../utils/UsfmMarkers";
-import { Descendant, Element, Text } from "slate";
+import { Node } from "slate";
 
-type JsxValue = Text | Element | Descendant[]
-
-export function usfmToSlate(usfm: string): JsxValue {
+export function usfmToSlate(usfm: string): Node[] {
     const usfmJsDoc = usfmjs.toJSON(usfm);
     console.log("parsed from usfm-js", usfmJsDoc)
 
@@ -20,10 +18,10 @@ export function usfmToSlate(usfm: string): JsxValue {
     const slateTree = transformToSlate(processedAsArrays)
     console.log("slateTree", slateTree)
 
-    return slateTree
+    return Array.isArray(slateTree) ? slateTree : [slateTree]
 }
 
-export function transformToSlate(el: Record<string, unknown>): JsxValue {
+export function transformToSlate(el: Record<string, unknown>): Node | Node[] {
     if (el.hasOwnProperty("chapters")) {
         return fragment(el)
     } else if (el.hasOwnProperty("chapterNumber")) {
