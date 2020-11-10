@@ -16,12 +16,15 @@ interface VerseMenuButtonProps {
     text: string,
     handleClick: () => void,
 }
+
+const PROP_TYPES = {
+    icon: PropTypes.elementType.isRequired,
+    text: PropTypes.string.isRequired,
+    handleClick: PropTypes.func.isRequired
+} as const
+
 class VerseMenuButton extends Component<VerseMenuButtonProps> {
-    static propTypes = {
-        icon: PropTypes.elementType.isRequired,
-        text: PropTypes.string.isRequired,
-        handleClick: PropTypes.func.isRequired
-    }
+    static propTypes = PROP_TYPES
     render() {
         return (
             <MenuItem
@@ -47,6 +50,7 @@ export const JoinWithPreviousVerseButton: FC<HasHandleClick> = (
         />
     )
 }
+JoinWithPreviousVerseButton.propTypes = PROP_TYPES
 
 export const UnjoinVerseRangeButton: FC<HasHandleClick> = (
     { handleClick }
@@ -59,6 +63,7 @@ export const UnjoinVerseRangeButton: FC<HasHandleClick> = (
         />
     )
 }
+UnjoinVerseRangeButton.propTypes = PROP_TYPES
 
 export const AddVerseButton: FC<HasHandleClick> = (
     { handleClick }
@@ -71,6 +76,7 @@ export const AddVerseButton: FC<HasHandleClick> = (
         />
     )
 }
+AddVerseButton.propTypes = PROP_TYPES
 
 export const RemoveVerseButton: FC<HasHandleClick> = (
     { handleClick }
@@ -83,3 +89,4 @@ export const RemoveVerseButton: FC<HasHandleClick> = (
         />
     )
 }
+RemoveVerseButton.propTypes = PROP_TYPES
