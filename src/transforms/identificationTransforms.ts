@@ -4,6 +4,7 @@ import { UsfmMarkers } from "../utils/UsfmMarkers";
 import { transformToSlate } from "./usfmToSlate";
 import clonedeep from "lodash/cloneDeep"
 import { IdentificationHeaders } from "../UsfmEditor";
+import { TypedNode, isTypedNode } from "../utils/TypedNode";
 
 /**
  * Applies the desired updates to an identification json object
@@ -133,12 +134,6 @@ function isValidMarkerValuePair(marker: string, value: unknown): boolean {
     } else {
         return isNumberOrString(value) 
     }
-}
-
-type TypedNode = Node & { type: string }
-
-function isTypedNode(node: Node): node is TypedNode {
-    return ("type" in node)
 }
 
 interface IdHeader {
