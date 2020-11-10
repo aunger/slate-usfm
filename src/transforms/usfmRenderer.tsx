@@ -71,7 +71,6 @@ export function numberClassNames(node) {
 function isRenderedParagraphMarker(marker: string): boolean {
     const { baseMarker } = UsfmMarkers.destructureMarker(marker)
     return UsfmMarkers.isParagraphType(marker) &&
-        // @ts-ignore
         ! unrenderedParagraphMarkers.includes(baseMarker)
 }
 
