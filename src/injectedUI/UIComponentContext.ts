@@ -1,6 +1,4 @@
 import { FC, Component, createContext, ForwardRefExoticComponent } from "react"
-import * as PropTypes from "prop-types"
-
 // Default component implementations
 import BasicMenu from './defaultComponents/BasicMenu'
 import { JoinWithPreviousVerseButton } from './defaultComponents/verseMenuButtons'
@@ -32,30 +30,16 @@ export function buildUIComponentContext(
 ): UIComponents {
     return {
         VerseMenu: 
-            userDefined.VerseMenu || BasicMenu,
-        JoinWithPreviousVerseButton: addHandleClickPropType(
-            userDefined.JoinWithPreviousVerseButton || JoinWithPreviousVerseButton
-        ),
-        UnjoinVerseRangeButton: addHandleClickPropType(
-            userDefined.UnjoinVerseRangeButton || UnjoinVerseRangeButton,
-        ),
-        AddVerseButton: addHandleClickPropType(
-            userDefined.AddVerseButton || AddVerseButton,
-        ),
-        RemoveVerseButton: addHandleClickPropType(
-            userDefined.RemoveVerseButton || RemoveVerseButton
-        )
+            userDefined.VerseMenu ?? BasicMenu,
+        JoinWithPreviousVerseButton:
+            userDefined.JoinWithPreviousVerseButton ?? JoinWithPreviousVerseButton,
+        UnjoinVerseRangeButton:
+            userDefined.UnjoinVerseRangeButton ?? UnjoinVerseRangeButton,
+        AddVerseButton:
+            userDefined.AddVerseButton ?? AddVerseButton,
+        RemoveVerseButton:
+            userDefined.RemoveVerseButton ?? RemoveVerseButton
     }
-}
-
-function addHandleClickPropType(
-    VerseMenuButton: Comp<HasHandleClick>
-): Comp<HasHandleClick> {
-    //@ts-ignore
-    VerseMenuButton.propTypes = {
-        handleClick: PropTypes.func.isRequired
-    }
-    return VerseMenuButton
 }
 
 export const UIComponentContext = createContext(buildUIComponentContext({}))
