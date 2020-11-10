@@ -14,7 +14,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 interface VerseMenuButtonProps {
     icon: PropTypes.ReactComponentLike
     text: string,
-    handleClick: () => void,
+    handleClick: (event) => void,
 }
 
 const PROP_TYPES = {
@@ -28,7 +28,7 @@ class VerseMenuButton extends Component<VerseMenuButtonProps> {
     render() {
         return (
             <MenuItem
-                onClick={event => { this.props.handleClick() }}
+                onClick={ this.props.handleClick }
             >
                 <ListItemIcon>
                     <this.props.icon fontSize="small" />

@@ -1,4 +1,4 @@
-import { FC, Component, createContext, ForwardRefExoticComponent } from "react"
+import { FC, createContext, ForwardRefExoticComponent, ComponentType } from "react"
 // Default component implementations
 import BasicMenu from './defaultComponents/BasicMenu'
 import { JoinWithPreviousVerseButton } from './defaultComponents/verseMenuButtons'
@@ -7,15 +7,15 @@ import { AddVerseButton } from './defaultComponents/verseMenuButtons'
 import { RemoveVerseButton } from './defaultComponents/verseMenuButtons'
 
 export interface HasHandleClick {
-    handleClick: () => void
+    handleClick: (event) => void
 }
 
-type Comp<T> = Component<T> | FC<T>
+type Comp<T> = ComponentType<T> | FC<T>
 
 interface UIComponents {
     // VerseMenu must be able to hold a ref. Thus it can be a class
     // component or a component created by React.forwardRef.
-    VerseMenu: ForwardRefExoticComponent<any> | Component<any>
+    VerseMenu: ForwardRefExoticComponent<any> | ComponentType<any>
     JoinWithPreviousVerseButton: Comp<HasHandleClick>,
     UnjoinVerseRangeButton: Comp<HasHandleClick>,
     AddVerseButton: Comp<HasHandleClick>,
