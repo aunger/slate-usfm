@@ -58,23 +58,34 @@ class ToolbarEditor extends React.Component<HocUsfmEditorProps> implements UsfmE
     }
 }
 
-const UsfmToolbar = ({editor}) => {
+type UsfmToolbarProps = {
+  className?: string,
+  editor: UsfmEditorRef,
+}
+
+const UsfmToolbar: React.FC<UsfmToolbarProps> = ({editor, className}: UsfmToolbarProps) => {
     return (
-      //@ts-ignore
-        <Toolbar>
+        <Toolbar className={className}>
             <MarkButton mark={UsfmMarkers.SPECIAL_TEXT.nd} text="nd" editor={editor} />
             <MarkButton mark={UsfmMarkers.SPECIAL_TEXT.bk} text="bk" editor={editor} />
             <BlockButton marker={UsfmMarkers.TITLES_HEADINGS_LABELS.s} text="S" editor={editor} /> 
         </Toolbar>
     )
 }
+UsfmToolbar.defaultProps = { className: "" }
 
-//@ts-ignore
-const Toolbar = React.forwardRef(({ className, ...props }, ref) => (
+type ToolbarProps = {
+  className: string,
+  children: JSX.Element[],
+}
+
+const Toolbar = React.forwardRef(
+    ({ className, ...props }: ToolbarProps,
+    ref: React.RefObject<HTMLDivElement>
+) => (
   <Menu
     {...props}
     ref={ref}
-    //@ts-ignore
     className={cx(
       className,
       css`
@@ -90,11 +101,16 @@ const Toolbar = React.forwardRef(({ className, ...props }, ref) => (
 ))
 Toolbar.displayName = "Toolbar"
 
-//@ts-ignore
-export const Menu = React.forwardRef(({ className, ...props }, ref) => (
+type MenuProps = {
+  className: string,
+}
+
+export const Menu = React.forwardRef((
+  { className, ...props }: MenuProps,
+  ref: React.RefObject<HTMLDivElement>
+) => (
   <div
     {...props}
-    //@ts-ignore
     ref={ref}
     className={cx(
       className,
