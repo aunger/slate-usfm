@@ -24,7 +24,7 @@ export class ChapterEditorDemo extends React.Component<ChapterEditorDemoProps, C
         };
     }
 
-    handleEditorChange = (usfm: string) => this.setState({ usfmOutput: usfm });
+    handleEditorChange = (usfm: string): void => this.setState({ usfmOutput: usfm });
 
     // This editor can be given a ref of type UsfmEditor
     Editor = flowRight(
@@ -32,7 +32,7 @@ export class ChapterEditorDemo extends React.Component<ChapterEditorDemoProps, C
         createBasicUsfmEditor
     )()
 
-    render() {
+    render(): React.ReactElement {
         return (
             <div className="row">
                 <div className="column column-left">
