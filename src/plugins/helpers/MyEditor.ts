@@ -31,18 +31,18 @@ export const MyEditor = {
 function isMatchingNodeSelected(
     editor: Editor, 
     matchFcn: ((node: Node) => boolean) | ((node: Node) => node is Node)
-) {
+): boolean {
     const [match] = Editor.nodes(editor, {
         match: matchFcn
     })
     return !!match
 }
 
-function isVerseOrChapterNumberSelected(editor: Editor) {
+function isVerseOrChapterNumberSelected(editor: Editor): boolean {
     return isMatchingNodeSelected(editor, UsfmMarkers.isVerseOrChapterNumber)
 }
 
-function areMultipleBlocksSelected(editor: Editor) {
+function areMultipleBlocksSelected(editor: Editor): boolean {
     const { selection } = editor
     if (!selection) return false
     const anchorParent = Path.parent(selection.anchor.path)
@@ -53,7 +53,7 @@ function areMultipleBlocksSelected(editor: Editor) {
 function isNearbyBlockAnInlineContainer(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
-) {
+): boolean {
     const [block] = getNearbyBlock(editor, direction)
     return block &&
         block.type == NodeTypes.INLINE_CONTAINER
@@ -62,7 +62,7 @@ function isNearbyBlockAnInlineContainer(
 function isNearbyBlockAnEmptyInlineContainer(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
-) {
+): boolean {
     const [block] = getNearbyBlock(editor, direction)
     return block &&
         block.type == NodeTypes.INLINE_CONTAINER &&
@@ -72,7 +72,7 @@ function isNearbyBlockAnEmptyInlineContainer(
 function isNearbyBlockAVerseNumber(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
-) {
+): boolean {
     const [block] = getNearbyBlock(editor, direction)
     return block && block.type == UsfmMarkers.CHAPTERS_AND_VERSES.v
 }
@@ -80,7 +80,7 @@ function isNearbyBlockAVerseNumber(
 function isNearbyBlockAVerseOrChapterNumberOrNull(
     editor: Editor,
     direction: 'previous' | 'current' | 'next'
-) {
+): boolean {
     const [block] = getNearbyBlock(editor, direction)
     return !block ||
         UsfmMarkers.isVerseOrChapterNumber(block)
@@ -90,14 +90,14 @@ function isNearbyBlockAVerseOrChapterNumberOrNull(
  * Finds the parent block of the text node at the current selection's anchor point,
  * then returns the previous node
  */
-function getPreviousBlock(editor: Editor) {
+function getPreviousBlock(editor: Editor): NodeEntry {
     return getNearbyBlock(editor, 'previous')
 }
 
 /**
  * Finds the parent block of the text node at the current selection's anchor point
  */
-function getCurrentBlock(editor: Editor) {
+function getCurrentBlock(editor: Editor): NodeEntry {
     return getNearbyBlock(editor, 'current')
 }
 
@@ -105,7 +105,7 @@ function getCurrentBlock(editor: Editor) {
  * Finds the parent block of the text node at the current selection's anchor point,
  * then returns the next node
  */
-function getNextBlock(editor: Editor) {
+function getNextBlock(editor: Editor): NodeEntry {
     return getNearbyBlock(editor, 'next')
 }
 
