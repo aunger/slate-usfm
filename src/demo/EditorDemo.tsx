@@ -9,8 +9,8 @@ import { IdentificationSetter } from "./IdentificationSetter";
 import "./demo.css";
 import { IdentificationHeaders } from "../UsfmEditor";
 
-export class EditorDemo extends React.Component<DemoProps, DemoState> {
-    constructor(props: DemoProps) {
+export class EditorDemo extends React.Component<EditorDemoProps, EditorDemoState> {
+    constructor(props: EditorDemoProps) {
         super(props);
         // Get the first usfm string in the dropdown menu
         const initialUsfm = props.usfmStrings.values().next().value
@@ -23,34 +23,25 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
         };
     }
 
-    handleInputChange =
-        (input: string) => this.setState(
-            { 
-                usfmInput: input,
-                usfmOutput: transformToOutput(input),
-                identification: null,
-            }
-        )
+    handleInputChange = (input: string): void => this.setState({
+        usfmInput: input,
+        usfmOutput: transformToOutput(input),
+        identification: null,
+    })
 
-    handleEditorChange = (usfm: string) => this.setState({ usfmOutput: usfm });
-    handleShowInputChange = () => {
-        this.setState({ showInputUsfm: !this.state.showInputUsfm});
-    }
-    handleReadOnlyChange = () => {
-        this.setState({ readOnly: !this.state.readOnly});
-    }
-    onIdentificationChange = (id: IdentificationHeaders) => {
-        if (typeof id == "string") {
-            id = JSON.parse(id)
-        }
-        this.setState({ identification: id })
+    handleEditorChange = (usfm: string): void => this.setState({ usfmOutput: usfm });
+    handleShowInputChange = (): void => this.setState({ showInputUsfm: !this.state.showInputUsfm });
+    handleReadOnlyChange = (): void => this.setState({ readOnly: !this.state.readOnly});
+    onIdentificationChange = (id: string | IdentificationHeaders): void => {
+        const identification = (typeof id == "string") ? JSON.parse(id) : id
+        this.setState({ identification })
     }
 
     // This editor can be given a ref of type UsfmEditorRef
     // to have access to the editor API (use React.createRef<UsfmEditorRef>)
     Editor = createBasicUsfmEditor()
 
-    render() {
+    render(): React.ReactElement {
         return (
             <div>
                 <div className={ this.state.showInputUsfm ? "" : "row" }>
@@ -111,15 +102,15 @@ export class EditorDemo extends React.Component<DemoProps, DemoState> {
     }
 }
 
-function transformToOutput(usfm) {
+function transformToOutput(usfm: string) {
     return slateToUsfm(usfmToSlate(usfm))
 }
 
-type DemoProps = {
-    usfmStrings: string[]
+type EditorDemoProps = {
+    usfmStrings: Map<string, string>
 }
 
-type DemoState = {
+type EditorDemoState = {
     usfmInput: string,
     usfmOutput: string,
     showInputUsfm: boolean,
