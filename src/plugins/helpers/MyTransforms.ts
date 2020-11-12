@@ -1,4 +1,4 @@
-import { Transforms, Editor, Path, Node, Element, Text } from "slate";
+import { Transforms, Editor, Path, Node } from "slate";
 import NodeTypes from "../../utils/NodeTypes";
 import { VerseTransforms } from "./VerseTransforms"
 import { textNode } from "../../transforms/basicSlateNodeFactory";
@@ -17,6 +17,8 @@ export const MyTransforms = {
     setIdentification
 }
 
+type Mode = 'next' | 'previous'
+
 /**
  * Merges the selected block with the next or previous block,
  * then sets the resulting block to an inline container type.
@@ -24,12 +26,12 @@ export const MyTransforms = {
 function mergeSelectedBlockAndSetToInlineContainer(
     editor: Editor,
     options: {
-        mode?: 'next' | 'previous'
+        mode?: Mode
     }
-) {
+): void {
     const { mode = 'previous' } = options
 
-    const [_, selectedBlockPath] = Editor.parent(editor, editor.selection.anchor.path)
+    const [, selectedBlockPath] = Editor.parent(editor, editor.selection.anchor.path)
     const mergePath = mode === 'previous'
         ? selectedBlockPath
         : Path.next(selectedBlockPath)
@@ -61,8 +63,8 @@ function mergeSelectedBlockAndSetToInlineContainer(
 function replaceNodes(
     editor: Editor,
     path: Path,
-    nodes: Editor | Element | Text | Node[]
-) {
+    nodes: Node | Node[]
+): void {
     Editor.withoutNormalizing(editor, () => {
         Transforms.removeNodes(
             editor,
@@ -80,7 +82,7 @@ function replaceText(
     editor: Editor,
     path: Path,
     newText: string
-) {
+): void {
     Transforms.delete(
         editor,
         { at: path }
@@ -102,7 +104,7 @@ function replaceText(
 function setIdentification(
     editor: Editor, 
     identification: IdentificationHeaders 
-) {
+): void {
     const slateHeaders = identificationToSlate(identification)
 
     const sortedHeaders = slateHeaders.sort((a, b) => 
