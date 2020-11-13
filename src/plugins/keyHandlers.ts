@@ -5,7 +5,7 @@ import { UsfmMarkers }from "../utils/UsfmMarkers"
 import { ReactEditor } from "slate-react"
 import { SelectionTransforms } from "./helpers/SelectionTransforms"
 
-export function handleKeyPress(event, editor: Editor) {
+export function handleKeyPress(event: React.KeyboardEvent, editor: Editor): void {
 
     if (event.key == "ArrowLeft") {
         onLeftArrowPress(event, editor)
@@ -21,7 +21,7 @@ export function handleKeyPress(event, editor: Editor) {
     }
 }
 
-export const withEnter = (editor: ReactEditor) => {
+export const withEnter = (editor: ReactEditor): ReactEditor => {
 
     editor.insertBreak = () => {
         splitToInsertParagraph(editor)
@@ -29,7 +29,7 @@ export const withEnter = (editor: ReactEditor) => {
     return editor
 }
 
-export const withBackspace = (editor: ReactEditor) => {
+export const withBackspace = (editor: ReactEditor): ReactEditor => {
     const { deleteBackward } = editor
 
     editor.deleteBackward = (...args) => {
@@ -56,7 +56,7 @@ export const withBackspace = (editor: ReactEditor) => {
     return editor
 }
 
-export const withDelete = (editor: ReactEditor) => {
+export const withDelete = (editor: ReactEditor): ReactEditor => {
     const { deleteForward } = editor
 
     editor.deleteForward = (...args) => {

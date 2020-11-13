@@ -4,7 +4,7 @@ import { emptyInlineContainer } from '../transforms/basicSlateNodeFactory'
 import { UsfmMarkers }from '../utils/UsfmMarkers'
 import NodeRules from '../utils/NodeRules'
 
-export const withNormalize = (editor: Editor) => {
+export const withNormalize = (editor: Editor): Editor => {
     const { normalizeNode } = editor
 
     editor.normalizeNode = (entry) => {
