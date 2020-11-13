@@ -16,7 +16,7 @@ export const VerseTransforms = {
 function joinWithPreviousVerse(
     editor: Editor,
     path: Path
-) {
+): void {
     const [thisVerse, thisVersePath] = MyEditor.getVerseNode(editor, path)
     const [prevVerse, prevVersePath] = MyEditor.getPreviousVerse(editor, path)
     const thisVerseNumPath = thisVersePath.concat(0)
@@ -51,7 +51,7 @@ function joinWithPreviousVerse(
 function removeVerseAndConcatenateContentsWithPrevious(
     editor: Editor,
     path: Path
-) {
+): void {
     const [_thisVerse, thisVersePath] = MyEditor.getVerseNode(editor, path)
     const thisVerseNumPath = thisVersePath.concat(0)
 
@@ -73,7 +73,7 @@ function removeVerseAndConcatenateContentsWithPrevious(
 function unjoinVerses(
     editor: Editor,
     path: Path
-) {
+): void {
     const [verse, versePath] = MyEditor.getVerseNode(editor, path)
     const verseNumPath = versePath.concat(0)
     const verseRange = Node.string(verse.children[0])
@@ -108,7 +108,7 @@ function unjoinVerses(
 function addVerse(
     editor: Editor,
     path: Path
-) {
+): void {
     const [verse, versePath] = MyEditor.getVerseNode(editor, path)
     const verseNumPath = versePath.concat(0)
     const verseNumberOrRange = Node.string(verse.children[0])

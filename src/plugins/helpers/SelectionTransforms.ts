@@ -13,7 +13,7 @@ export const SelectionTransforms = {
 function selectDOMNodeStart(
     editor: ReactEditor,
     domNode: DOMNode
-) {
+): void {
     const path = MyEditor.getPathFromDOMNode(editor, domNode)
     Transforms.select(
         editor,
@@ -24,7 +24,7 @@ function selectDOMNodeStart(
     )
 }
 
-function selectNextSiblingNonEmptyText(editor: Editor) {
+function selectNextSiblingNonEmptyText(editor: Editor): void {
     if (!Range.isCollapsed(editor.selection)) {
         return
     }
@@ -53,7 +53,7 @@ function moveToStartOfFirstLeaf(
     editor: Editor,
     path: Path,
     options?: { edge: "focus" | "anchor" } | undefined
-) {
+): void {
     const [_leaf, leafPath] = Editor.leaf(
         editor,
         path,
@@ -81,7 +81,7 @@ function moveToEndOfLastLeaf(
     editor: Editor,
     path: Path,
     options?: { edge: "focus" | "anchor" } | undefined
-) {
+): void {
     const [leaf, leafPath] = Editor.leaf(
         editor,
         path,
