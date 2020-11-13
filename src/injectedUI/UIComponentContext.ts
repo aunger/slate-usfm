@@ -15,7 +15,7 @@ type Comp<T> = ComponentType<T> | FC<T>
 interface UIComponents {
     // VerseMenu must be able to hold a ref. Thus it can be a class
     // component or a component created by React.forwardRef.
-    VerseMenu: ForwardRefExoticComponent<any> | ComponentType<any>
+    VerseMenu: ForwardRefExoticComponent<unknown> | ComponentType<unknown> | typeof BasicMenu
     JoinWithPreviousVerseButton: Comp<HasHandleClick>,
     UnjoinVerseRangeButton: Comp<HasHandleClick>,
     AddVerseButton: Comp<HasHandleClick>,
@@ -26,10 +26,10 @@ interface UIComponents {
 // instead of the default components.
 // The resulting context should be passed as a prop to the UsfmEditor.
 export function buildUIComponentContext(
-    userDefined: Partial<UIComponents>
+    userDefined: Partial<UIComponents> = {}
 ): UIComponents {
     return {
-        VerseMenu: 
+        VerseMenu:
             userDefined.VerseMenu ?? BasicMenu,
         JoinWithPreviousVerseButton:
             userDefined.JoinWithPreviousVerseButton ?? JoinWithPreviousVerseButton,
@@ -42,4 +42,4 @@ export function buildUIComponentContext(
     }
 }
 
-export const UIComponentContext = createContext(buildUIComponentContext({}))
+export const UIComponentContext = createContext(buildUIComponentContext())

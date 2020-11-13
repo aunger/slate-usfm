@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import MenuList from '@material-ui/core/MenuList'
 import Paper from '@material-ui/core/Paper'
 
-export const BasicMenu = React.forwardRef<HTMLUListElement, BasicMenuProps>(
+const BasicMenu = React.forwardRef<HTMLUListElement, BasicMenuProps>(
     ({children}, ref) => (
         <Paper>
             <MenuList ref={ref}>
