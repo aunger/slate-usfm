@@ -173,8 +173,8 @@ function splitToInsertParagraph(editor: Editor) {
 }
 
 function isVerseOrChapterNumSelected(editor: Editor) {
-    const options = editor.selection ? { at: editor.selection } : undefined
-    for (const [node] of Editor.nodes(editor, options)) {
+    if (!editor.selection) return false
+    for (const [node] of Editor.nodes(editor, { at: editor.selection })) {
         if (UsfmMarkers.isVerseOrChapterNumber(node)) {
             return true
         }

@@ -98,7 +98,7 @@ export function transformToSlate(el: TransformElement): Node | Node[] {
             return paragraphElement(el)
         } else {
             // Character or Note marker
-            return getDescendantTextNodes(el) //textElement(el)
+            return getDescendantTextNodes(el)
         }
     } else if (isHasText(el)) {
         return processText(String(el.text))
