@@ -62,3 +62,18 @@ export type HocUsfmEditorProps<W extends UsfmEditorRef> = UsfmEditorProps &
 interface HasWrappedEditor<W extends UsfmEditorRef> {
     wrappedEditor: ForwardRefUsfmEditor<W>
 }
+
+export interface ButtonInfo {
+    icon: string,
+    text: string,
+    action: (editor: UsfmEditorRef) => void
+}
+
+export type ToolbarSpecs = ButtonInfo[]
+
+interface HasToolbarSpecs {
+    toolbarSpecs: ToolbarSpecs
+}
+
+export type ToolbarEditorProps<W extends UsfmEditorRef> = HocUsfmEditorProps<W> &
+    HasToolbarSpecs

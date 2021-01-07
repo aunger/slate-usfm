@@ -6,6 +6,9 @@ import { OutputUsfm } from "./UsfmContainer"
 import "./demo.css"
 import { flowRight } from "lodash"
 import { withToolbar } from "./ToolbarEditor"
+import { ToolbarSpecs } from "../UsfmEditor"
+import { ForwardRefUsfmEditor, UsfmEditorRef } from ".."
+import { withChapterPaging } from "./ChapterEditor"
 
 /**
  * This CompositionDemo implements a simple toolbar HOC wrapper (which itself implements
@@ -29,10 +32,22 @@ export class CompositionDemo extends React.Component<
 
     handleEditorChange = (usfm: string): void =>
         this.setState({ usfmOutput: usfm })
+    
+    toolbarSpecs: ToolbarSpecs = [
+        {
+            icon: "Hi",
+            text: "Hii",
+            action: (editor: UsfmEditorRef) => console.log("Hiii")
+        }
+    ]
 
-    // This editor can be given a ref of type UsfmEditorRef
-    // to have access to the editor API (use React.createRef<UsfmEditorRef>)
-    Editor = flowRight(withToolbar, withToolbar, createBasicUsfmEditor)()
+    EditorA = createBasicUsfmEditor()
+    EditorB = withToolbar(this.EditorA, this.toolbarSpecs)
+    Editor = withChapterPaging(this.EditorB)
+
+    // // This editor can be given a ref of type UsfmEditorRef
+    // // to have access to the editor API (use React.createRef<UsfmEditorRef>)
+    // Editor = flowRight(withToolbar, withToolbar, createBasicUsfmEditor)()
 
     render(): React.ReactElement {
         return (

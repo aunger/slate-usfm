@@ -27,7 +27,7 @@ export function withChapterPaging<W extends UsfmEditorRef>(
     return fc
 }
 
-class ChapterEditor<W extends UsfmEditorRef>
+export class ChapterEditor<W extends UsfmEditorRef>
     extends React.Component<HocUsfmEditorProps<W>, ChapterEditorState>
     implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes

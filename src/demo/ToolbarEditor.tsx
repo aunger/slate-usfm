@@ -8,20 +8,33 @@ import {
     usfmEditorPropTypes,
     usfmEditorDefaultProps,
     Verse,
+    ToolbarSpecs,
+    ToolbarEditorProps
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { MarkButton } from "../components/menu/MarkButton"
 import { BlockButton } from "../components/menu/BlockButton"
 import { UsfmEditorProps } from ".."
+import { Icon, IconButton, Toolbar } from "@material-ui/core"
+
+type ButtonSpec = "icon" | "text" | "action"
+
+const ButtonInfo: Record<ButtonSpec, any> = {
+    icon: "Hello",
+    text: "Hello",
+    action: "Hi"
+}
 
 export function withToolbar<W extends UsfmEditorRef>(
-    WrappedEditor: ForwardRefUsfmEditor<W>
+    WrappedEditor: ForwardRefUsfmEditor<W>,
+    toolbarSpecs: ToolbarSpecs
 ): ForwardRefUsfmEditor<ToolbarEditor<W>> {
     const fc = React.forwardRef<ToolbarEditor<W>, UsfmEditorProps>(
         ({ ...props }, ref) => (
             <ToolbarEditor
                 {...props}
                 wrappedEditor={WrappedEditor}
+                toolbarSpecs={toolbarSpecs}
                 ref={ref} // used to access the ToolbarEditor and its API
             />
         )
@@ -30,14 +43,15 @@ export function withToolbar<W extends UsfmEditorRef>(
     return fc
 }
 
-class ToolbarEditor<W extends UsfmEditorRef>
-    extends React.Component<HocUsfmEditorProps<W>>
+export class ToolbarEditor<W extends UsfmEditorRef>
+    extends React.Component<ToolbarEditorProps<W>>
     implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes
     public static defaultProps = usfmEditorDefaultProps
 
-    constructor(props: HocUsfmEditorProps<W>) {
+    constructor(props: ToolbarEditorProps<W>) {
         super(props)
+        console.log(props.toolbarSpecs)
     }
 
     wrappedEditorRef = React.createRef<W>()
@@ -63,7 +77,10 @@ class ToolbarEditor<W extends UsfmEditorRef>
     render() {
         return (
             <React.Fragment>
-                <UsfmToolbar editor={this} />
+                <UsfmToolbar 
+                    editor={this} 
+                    toolbarSpecs={this.props.toolbarSpecs}
+                />
                 <this.props.wrappedEditor
                     {...this.props}
                     ref={this.wrappedEditorRef}
@@ -75,15 +92,21 @@ class ToolbarEditor<W extends UsfmEditorRef>
 
 type UsfmToolbarProps = {
     className?: string
-    editor: UsfmEditorRef
+    editor: UsfmEditorRef,
+    toolbarSpecs: ToolbarSpecs
 }
 
 const UsfmToolbar: React.FC<UsfmToolbarProps> = ({
     editor,
+    toolbarSpecs,
     className,
 }: UsfmToolbarProps) => {
     return (
         <Toolbar className={className}>
+            <IconButton>
+                <Icon>star</Icon>
+                Hello
+            </IconButton>
             <MarkButton
                 mark={UsfmMarkers.SPECIAL_TEXT.nd}
                 text="nd"
@@ -104,53 +127,53 @@ const UsfmToolbar: React.FC<UsfmToolbarProps> = ({
 }
 UsfmToolbar.defaultProps = { className: "" }
 
-type ToolbarProps = {
-    className?: string
-    children: JSX.Element[]
-}
+// type ToolbarProps = {
+//     className?: string
+//     children: JSX.Element[]
+// }
 
-const Toolbar = React.forwardRef(
-    ({ className, ...props }: ToolbarProps, ref: React.Ref<HTMLDivElement>) => (
-        <Menu
-            {...props}
-            ref={ref}
-            className={cx(
-                className,
-                css`
-                    position: relative;
-                    padding: 1px 18px 17px;
-                    margin: 0 -20px;
-                    border-bottom: 2px solid #eee;
-                    margin-bottom: 20px;
-                    background-color: blue;
-                `
-            )}
-        />
-    )
-)
-Toolbar.displayName = "Toolbar"
+// const Toolbar = React.forwardRef(
+//     ({ className, ...props }: ToolbarProps, ref: React.Ref<HTMLDivElement>) => (
+//         <Menu
+//             {...props}
+//             ref={ref}
+//             className={cx(
+//                 className,
+//                 css`
+//                     position: relative;
+//                     padding: 1px 18px 17px;
+//                     margin: 0 -20px;
+//                     border-bottom: 2px solid #eee;
+//                     margin-bottom: 20px;
+//                     background-color: blue;
+//                 `
+//             )}
+//         />
+//     )
+// )
+// Toolbar.displayName = "Toolbar"
 
-type MenuProps = {
-    className: string
-}
+// type MenuProps = {
+//     className: string
+// }
 
-export const Menu = React.forwardRef(
-    ({ className, ...props }: MenuProps, ref: React.Ref<HTMLDivElement>) => (
-        <div
-            {...props}
-            ref={ref}
-            className={cx(
-                className,
-                css`
-                    & > * {
-                        display: inline-block;
-                    }
-                    & > * + * {
-                        margin-left: 15px;
-                    }
-                `
-            )}
-        />
-    )
-)
-Menu.displayName = "Menu"
+// export const Menu = React.forwardRef(
+//     ({ className, ...props }: MenuProps, ref: React.Ref<HTMLDivElement>) => (
+//         <div
+//             {...props}
+//             ref={ref}
+//             className={cx(
+//                 className,
+//                 css`
+//                     & > * {
+//                         display: inline-block;
+//                     }
+//                     & > * + * {
+//                         margin-left: 15px;
+//                     }
+//                 `
+//             )}
+//         />
+//     )
+// )
+// Menu.displayName = "Menu"
