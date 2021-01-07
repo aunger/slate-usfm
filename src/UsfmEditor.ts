@@ -18,7 +18,7 @@ export interface UsfmEditorProps {
     readOnly?: boolean
     identification?: IdentificationHeaders
     onIdentificationChange?: (identification: IdentificationHeaders) => void
-    goToVerse?: Verse
+    goToVerse?: VerseWithTimeMs
     onVerseChange?: (verseRange: VerseRange) => void
 }
 
@@ -42,6 +42,12 @@ export const usfmEditorDefaultProps = {
 }
 
 export type Verse = { chapter: number; verse: number }
+
+export type VerseWithTimeMs = {
+    chapter: number
+    verse: number
+    timeMs?: number | undefined
+}
 
 // VerseRange is essentially a superset of Verse, because it can specify a singular verse if
 // verseEnd = verseStart.
