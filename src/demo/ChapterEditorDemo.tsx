@@ -6,6 +6,8 @@ import { OutputUsfm } from "./UsfmContainer"
 import "./demo.css"
 import { flowRight } from "lodash"
 import { withChapterPaging } from "./ChapterEditor"
+import { withChapterSelection } from "./ChapterSelectionEditor"
+import { ForwardRefUsfmEditor, UsfmEditorRef } from ".."
 
 /**
  * This ChapterEditorDemo demonstrates the functionality of the goToVerse and onVerseChange properties, and the goToVerse() function
@@ -30,8 +32,12 @@ export class ChapterEditorDemo extends React.Component<
     handleEditorChange = (usfm: string): void =>
         this.setState({ usfmOutput: usfm })
 
-    // This editor can be given a ref of type UsfmEditor
-    Editor = flowRight(withChapterPaging, createBasicUsfmEditor)()
+    // This editor can be given a ref of type UsfmEditorRef
+    Editor: ForwardRefUsfmEditor<UsfmEditorRef> = flowRight(
+        withChapterSelection,
+        withChapterPaging,
+        createBasicUsfmEditor
+    )()
 
     render(): React.ReactElement {
         return (

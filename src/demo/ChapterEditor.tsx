@@ -6,10 +6,11 @@ import {
     usfmEditorPropTypes,
     usfmEditorDefaultProps,
     Verse,
-    VerseRange,
+    VerseWithTimeMs,
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { UsfmEditorProps } from ".."
+import { isEqual } from "lodash"
 
 export function withChapterPaging<W extends UsfmEditorRef>(
     WrappedEditor: ForwardRefUsfmEditor<W>
@@ -36,7 +37,9 @@ class ChapterEditor<W extends UsfmEditorRef>
     constructor(props: HocUsfmEditorProps<W>) {
         super(props)
         this.state = {
-            selectedVerse: undefined,
+            chapterUsfmString: props.usfmString,
+            // Do not immediately pass goToVerse to the wrapped editor.
+            // We will handle this top-down and pass it later.
             goToVersePropValue: undefined,
         }
     }
@@ -61,154 +64,73 @@ class ChapterEditor<W extends UsfmEditorRef>
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
-    goToVerse = (verse: Verse) => this.wrappedEditorInstance().goToVerse(verse)
+    goToVerse = (verseObject: Verse) => {
+        const chapterUsfm = this.getSingleChapterAndBookHeaders(
+            this.props.usfmString,
+            verseObject.chapter
+        )
+        const goToVersePropValue: VerseWithTimeMs = {
+            chapter: verseObject.chapter,
+            verse: verseObject.verse,
+            timeMs: Date.now(),
+        }
+
+        // Do not call the wrappedEditor's goToVerse() API function. If we do this,
+        // the wrapped editor will not have rendered the new usfm before
+        // it tries to set the selection to the proper verse.
+        this.setState({
+            chapterUsfmString: chapterUsfm,
+            goToVersePropValue: goToVersePropValue,
+        })
+    }
 
     /* End UsfmEditor API */
 
-    callGoToVerse = (chapterStr: string, verseStr: string) => {
-        const chapter = parseInt(chapterStr)
-        const verse = parseInt(verseStr)
-        if (chapter >= 0 && verse >= 0) {
-            this.wrappedEditorInstance().goToVerse({
-                chapter: chapter,
-                verse: verse,
-            })
+    getSingleChapterAndBookHeaders = (usfm: string, chapterNum: number) => {
+        const bookHeaders = usfm.substring(0, usfm.indexOf("\\c"))
+        const chapters = usfm.split("\\c").map((chapStr) => "\\c" + chapStr)
+        const chapter = chapters.find((chapUsfm) =>
+            chapUsfm.startsWith("\\c " + chapterNum)
+        )
+        return bookHeaders + chapter
+    }
+
+    handleEditorChange = (usfm: string): void => {
+        if (this.props.onChange) {
+            // TODO: Place this chapter's usfm into whole book usfm
+            this.props.onChange(usfm)
         }
     }
 
-    setGoToVerseProp = (chapterStr: string, verseStr: string) => {
-        const chapter = parseInt(chapterStr)
-        const verse = parseInt(verseStr)
-        if (chapter >= 0 && verse >= 0) {
-            this.setState({
-                goToVersePropValue: {
-                    chapter: chapter,
-                    verse: verse,
-                },
-            })
+    componentDidMount(): void {
+        if (this.props.goToVerse) {
+            this.goToVerse(this.props.goToVerse)
         }
     }
 
-    onVerseChange = (verseRange: VerseRange) => {
-        this.setState({
-            selectedVerse: {
-                chapter: verseRange.chapter,
-                verseStart: verseRange.verseStart,
-                verseEnd: verseRange.verseEnd,
-            },
-        })
+    componentDidUpdate(prevProps: UsfmEditorProps): void {
+        if (
+            !isEqual(prevProps.goToVerse, this.props.goToVerse) &&
+            this.props.goToVerse
+        ) {
+            this.goToVerse(this.props.goToVerse)
+        }
     }
 
     render() {
         return (
-            <React.Fragment>
-                <VerseSelector
-                    text="Call goToVerse() API function:"
-                    onChange={this.callGoToVerse}
-                />
-                <VerseSelector
-                    text="Set goToVerse Prop:"
-                    onChange={this.setGoToVerseProp}
-                />
-                <SelectedVerseTracker
-                    selectedVerse={this.state.selectedVerse}
-                />
-                <hr className="hr-separator" />
-                <this.props.wrappedEditor
-                    {...this.props}
-                    ref={this.wrappedEditorRef}
-                    goToVerse={this.state.goToVersePropValue}
-                    onVerseChange={this.onVerseChange}
-                />
-            </React.Fragment>
+            <this.props.wrappedEditor
+                {...this.props}
+                ref={this.wrappedEditorRef}
+                onChange={this.handleEditorChange}
+                usfmString={this.state.chapterUsfmString}
+                goToVerse={this.state.goToVersePropValue}
+            />
         )
     }
 }
 
 type ChapterEditorState = {
-    selectedVerse?: VerseRange
-    goToVersePropValue?: Verse
-}
-
-const VerseSelector: React.FC<VerseSelectorProps> = ({
-    text,
-    onChange,
-}: VerseSelectorProps) => {
-    const chapterInputRef = React.createRef<HTMLInputElement>()
-    const verseInputRef = React.createRef<HTMLInputElement>()
-    return (
-        <div className="verse-selector">
-            <div className="row">
-                <div className="column">
-                    <h4 className="demo-header no-margin-top">{text}</h4>
-                </div>
-            </div>
-            Chapter:
-            <input
-                className="verse-selector-input"
-                type="text"
-                onKeyPress={allowOnlyNumbers}
-                ref={chapterInputRef}
-            />
-            Verse:
-            <input
-                className="verse-selector-input"
-                type="text"
-                onKeyPress={allowOnlyNumbers}
-                ref={verseInputRef}
-            />
-            <button
-                onClick={(event) => {
-                    if (chapterInputRef.current && verseInputRef.current)
-                        onChange(
-                            chapterInputRef.current.value,
-                            verseInputRef.current.value
-                        )
-                }}
-            >
-                Set
-            </button>
-        </div>
-    )
-}
-
-interface VerseSelectorProps {
-    text: string
-    onChange: (chapterStr: string, verseStr: string) => void
-}
-
-const SelectedVerseTracker: React.FC<SelectedVerseTrackerProps> = ({
-    selectedVerse,
-}: SelectedVerseTrackerProps) => {
-    return (
-        <div>
-            <div className="row">
-                <div className="column">
-                    <h4 className="demo-header no-margin-top">
-                        Populated by onVerseChange:
-                    </h4>
-                </div>
-            </div>
-            <span className="verse-tracker-text">
-                Chapter: {selectedVerse?.chapter ?? ""}
-            </span>
-            <span className="verse-tracker-text">
-                Verse: {selectedVerse?.verseStart ?? ""}
-            </span>
-            <span className="verse-tracker-text">
-                VerseRangeEnd: {selectedVerse?.verseEnd ?? ""}
-            </span>
-        </div>
-    )
-}
-
-interface SelectedVerseTrackerProps {
-    selectedVerse?: VerseRange
-}
-
-const allowOnlyNumbers = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.charCode < 48 || event.charCode > 57) {
-        // allow only 0-9
-        event.preventDefault()
-    }
+    chapterUsfmString: string
+    goToVersePropValue?: VerseWithTimeMs
 }
