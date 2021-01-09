@@ -32,7 +32,7 @@ export const usfmEditorPropTypes = {
     onVerseChange: PropTypes.func,
 }
 
-export const usfmEditorDefaultProps = {
+export const usfmEditorDefaultProps: Partial<UsfmEditorProps> = {
     onChange: noop,
     readOnly: false,
     identification: {},

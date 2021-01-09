@@ -32,7 +32,11 @@ class ChapterEditor<W extends UsfmEditorRef>
     extends React.Component<HocUsfmEditorProps<W>, ChapterEditorState>
     implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes
-    public static defaultProps = usfmEditorDefaultProps
+    static defaultGoToVerse: VerseWithTimeMs = { chapter: 1, verse: 1 }
+    public static defaultProps: Partial<UsfmEditorProps> = {
+        ...usfmEditorDefaultProps,
+        goToVerse: ChapterEditor.defaultGoToVerse
+    }
 
     constructor(props: HocUsfmEditorProps<W>) {
         super(props)
