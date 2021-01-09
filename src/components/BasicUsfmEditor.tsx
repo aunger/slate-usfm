@@ -65,7 +65,6 @@ export class BasicUsfmEditor
         this.state = {
             value: usfmToSlate(props.usfmString),
             selectedVerse: undefined,
-            prevUsfmStringProp: props.usfmString,
         }
 
         this.slateEditor = flowRight(
@@ -77,17 +76,6 @@ export class BasicUsfmEditor
             createEditor
         )()
         this.slateEditor.isInline = () => false
-    }
-
-    // Since usfmString and goToVerse can be updated at the same time, we need to calculate the new
-    // value before the editor renders. Once it renders, we can proceed.
-    static getDerivedStateFromProps(props: UsfmEditorProps, state: BasicUsfmEditorState): BasicUsfmEditorState { 
-        const newValue = state.prevUsfmStringProp != props.usfmString ? usfmToSlate(props.usfmString) : state.value
-        return {
-            value: newValue,
-            selectedVerse: state.selectedVerse,
-            prevUsfmStringProp: props.usfmString
-        }
     }
 
     /* UsfmEditor interface functions */
@@ -351,8 +339,7 @@ export class BasicUsfmEditor
 
 interface BasicUsfmEditorState {
     value: Node[]
-    selectedVerse?: Verse,
-    prevUsfmStringProp: string
+    selectedVerse?: Verse
 }
 
 interface VerseStartAndEnd {
