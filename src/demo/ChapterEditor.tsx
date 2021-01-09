@@ -125,6 +125,7 @@ class ChapterEditor<W extends UsfmEditorRef>
                 onChange={this.handleEditorChange}
                 usfmString={this.state.chapterUsfmString}
                 goToVerse={this.state.goToVersePropValue}
+                key={this.state.goToVersePropValue?.timeMs}
             />
         )
     }
