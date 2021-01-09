@@ -35,11 +35,12 @@ class ChapterEditor<W extends UsfmEditorRef>
     static defaultGoToVerse: VerseWithTimeMs = { chapter: 1, verse: 1 }
     public static defaultProps: Partial<UsfmEditorProps> = {
         ...usfmEditorDefaultProps,
-        goToVerse: ChapterEditor.defaultGoToVerse
+        goToVerse: ChapterEditor.defaultGoToVerse,
     }
 
     constructor(props: HocUsfmEditorProps<W>) {
         super(props)
+        this.wholeBookUsfm = props.usfmString
         this.state = {
             chapterUsfmString: props.usfmString,
             // Do not immediately pass goToVerse to the wrapped editor.
@@ -47,6 +48,8 @@ class ChapterEditor<W extends UsfmEditorRef>
             goToVersePropValue: undefined,
         }
     }
+
+    wholeBookUsfm: string
 
     wrappedEditorRef = React.createRef<W>()
     wrappedEditorInstance: () => UsfmEditorRef = () =>
@@ -69,8 +72,8 @@ class ChapterEditor<W extends UsfmEditorRef>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
     goToVerse = (verseObject: Verse) => {
-        const chapterUsfm = this.getChapterAndIdentificationUsfm(
-            this.props.usfmString,
+        const chapterUsfm = getSingleChapterAndBookHeaders(
+            this.wholeBookUsfm,
             verseObject.chapter
         )
         const goToVersePropValue: VerseWithTimeMs = {
@@ -80,7 +83,7 @@ class ChapterEditor<W extends UsfmEditorRef>
         }
 
         // Do not call the wrappedEditor's goToVerse() API function. If we do this,
-        // the wrapped editor will not be done rendering with it's new usfm.
+        // the wrapped editor will not be done rendering with its new usfm.
         this.setState({
             chapterUsfmString: chapterUsfm,
             goToVersePropValue: goToVersePropValue,
@@ -89,19 +92,13 @@ class ChapterEditor<W extends UsfmEditorRef>
 
     /* End UsfmEditor API */
 
-    getChapterAndIdentificationUsfm = (usfm: string, chapterNum: number) => {
-        const identification = usfm.substring(0, usfm.indexOf("\\c"))
-        const chapters = usfm.split("\\c").map((chapStr) => "\\c" + chapStr)
-        const chapter = chapters.find((chapUsfm) =>
-            chapUsfm.startsWith("\\c " + chapterNum)
-        )
-        return identification + chapter
-    }
-
-    handleEditorChange = (usfm: string): void => {
+    handleEditorChange = (chapterUsfm: string): void => {
         if (this.props.onChange) {
-            // TODO: Place this chapter's usfm into whole book usfm
-            this.props.onChange(usfm)
+            this.wholeBookUsfm = getUpdatedWholeBookUsfm(
+                chapterUsfm,
+                this.wholeBookUsfm
+            )
+            this.props.onChange(this.wholeBookUsfm)
         }
     }
 
@@ -137,4 +134,44 @@ class ChapterEditor<W extends UsfmEditorRef>
 type ChapterEditorState = {
     chapterUsfmString: string
     goToVersePropValue?: VerseWithTimeMs
+}
+
+function getSingleChapterAndBookHeaders(
+    wholeBookUsfm: string,
+    chapterNum: number
+): string {
+    const bookHeaders = getBookHeaders(wholeBookUsfm)
+    const allChapters = getChapterUsfmArray(wholeBookUsfm)
+    const chapter = allChapters.find((chapUsfm) =>
+        chapUsfm.startsWith("\\c " + chapterNum)
+    )
+    return bookHeaders + chapter
+}
+
+function getUpdatedWholeBookUsfm(
+    chapterUsfm: string,
+    wholeBookUsfm: string
+): string {
+    const bookHeaders = getBookHeaders(chapterUsfm)
+    const thisChapter = chapterUsfm.substring(chapterUsfm.indexOf("\\c")) + "\n"
+    const chapterNum = thisChapter.match(/^\\c (\d+)/)?.slice(1)
+    const allChapters = getChapterUsfmArray(wholeBookUsfm)
+    const thisChapterIdx = allChapters.findIndex((chapUsfm) =>
+        chapUsfm.startsWith("\\c " + chapterNum)
+    )
+
+    // Replace this chapter's contents in the book usfm
+    allChapters.splice(thisChapterIdx, 1, thisChapter)
+    return bookHeaders + allChapters.join("")
+}
+
+function getBookHeaders(usfm: string): string {
+    return usfm.substring(0, usfm.indexOf("\\c"))
+}
+
+function getChapterUsfmArray(wholeBookUsfm: string): string[] {
+    return wholeBookUsfm
+        .split("\\c")
+        .map((chapStr) => "\\c" + chapStr)
+        .slice(1) // Remove the first element, which is the book headers
 }
