@@ -10,6 +10,8 @@ import {
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { UsfmEditorProps } from ".."
+import { ChapterEditor } from "../components/ChapterEditor"
+import { isEqual } from "lodash"
 
 export function withChapterSelection<W extends UsfmEditorRef>(
     WrappedEditor: ForwardRefUsfmEditor<W>
@@ -36,7 +38,8 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
     constructor(props: HocUsfmEditorProps<W>) {
         super(props)
         this.state = {
-            goToVersePropValue: props.goToVerse,
+            goToVersePropValue:
+                props.goToVerse || ChapterEditor.defaultGoToVerse,
         }
     }
 
@@ -60,8 +63,16 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
-    goToVerse = (verseObject: Verse) =>
+    goToVerse = (verseObject: Verse) => {
+        this.setState({
+            goToVersePropValue: {
+                chapter: verseObject.chapter,
+                verse: verseObject.verse,
+                timeMs: Date.now(),
+            },
+        })
         this.wrappedEditorInstance().goToVerse(verseObject)
+    }
 
     /* End UsfmEditor API */
 
@@ -79,10 +90,23 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
         }
     }
 
+    componentDidUpdate(prevProps: UsfmEditorProps): void {
+        if (
+            !isEqual(prevProps.goToVerse, this.props.goToVerse) &&
+            this.props.goToVerse
+        ) {
+            this.setState({ goToVersePropValue: this.props.goToVerse })
+        }
+    }
+
     render() {
         return (
             <React.Fragment>
-                <VerseSelector onChange={this.setGoToVerseProp} />
+                <VerseSelector
+                    onChange={this.setGoToVerseProp}
+                    initialVerse={this.state.goToVersePropValue}
+                    key={verseObjectToString(this.state.goToVersePropValue)}
+                />
                 <hr className="hr-separator" />
                 <this.props.wrappedEditor
                     {...this.props}
@@ -95,11 +119,12 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
 }
 
 type ChapterSelectionEditorState = {
-    goToVersePropValue?: VerseWithTimeMs
+    goToVersePropValue: VerseWithTimeMs
 }
 
 const VerseSelector: React.FC<VerseSelectorProps> = ({
     onChange,
+    initialVerse,
 }: VerseSelectorProps) => {
     const chapterInputRef = React.createRef<HTMLInputElement>()
     const verseInputRef = React.createRef<HTMLInputElement>()
@@ -110,6 +135,7 @@ const VerseSelector: React.FC<VerseSelectorProps> = ({
                 className="verse-selector-input"
                 type="text"
                 onKeyPress={allowOnlyNumbers}
+                defaultValue={initialVerse.chapter}
                 ref={chapterInputRef}
             />
             Verse:
@@ -117,6 +143,7 @@ const VerseSelector: React.FC<VerseSelectorProps> = ({
                 className="verse-selector-input"
                 type="text"
                 onKeyPress={allowOnlyNumbers}
+                defaultValue={initialVerse.verse}
                 ref={verseInputRef}
             />
             <button
@@ -136,6 +163,7 @@ const VerseSelector: React.FC<VerseSelectorProps> = ({
 
 interface VerseSelectorProps {
     onChange: (chapterStr: string, verseStr: string) => void
+    initialVerse: Verse
 }
 
 const allowOnlyNumbers = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -144,3 +172,6 @@ const allowOnlyNumbers = (event: React.KeyboardEvent<HTMLInputElement>) => {
         event.preventDefault()
     }
 }
+
+const verseObjectToString = (verseObject: Verse | VerseWithTimeMs): string =>
+    verseObject.chapter.toString().concat(verseObject.verse.toString())
