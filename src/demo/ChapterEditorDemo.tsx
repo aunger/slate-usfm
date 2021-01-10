@@ -5,7 +5,7 @@ import { slateToUsfm } from "../transforms/slateToUsfm"
 import { OutputUsfm } from "./UsfmContainer"
 import "./demo.css"
 import { flowRight } from "lodash"
-import { withChapterPaging } from "./ChapterEditor"
+import { withChapterPaging } from "../components/ChapterEditor"
 import { withChapterSelection } from "./ChapterSelectionEditor"
 import { ForwardRefUsfmEditor, UsfmEditorRef } from ".."
 
