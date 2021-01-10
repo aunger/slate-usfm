@@ -28,11 +28,11 @@ export function withChapterPaging<W extends UsfmEditorRef>(
     return fc
 }
 
-class ChapterEditor<W extends UsfmEditorRef>
+export class ChapterEditor<W extends UsfmEditorRef>
     extends React.Component<HocUsfmEditorProps<W>, ChapterEditorState>
     implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes
-    static defaultGoToVerse: VerseWithTimeMs = { chapter: 1, verse: 1 }
+    public static defaultGoToVerse: Verse = { chapter: 1, verse: 1 }
     public static defaultProps: Partial<UsfmEditorProps> = {
         ...usfmEditorDefaultProps,
         goToVerse: ChapterEditor.defaultGoToVerse,
