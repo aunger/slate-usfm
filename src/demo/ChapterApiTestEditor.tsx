@@ -12,24 +12,24 @@ import {
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { UsfmEditorProps } from ".."
 
-export function withChapterSelection<W extends UsfmEditorRef>(
+export function withChapterApiTest<W extends UsfmEditorRef>(
     WrappedEditor: ForwardRefUsfmEditor<W>
-): ForwardRefUsfmEditor<ChapterSelectionEditor<W>> {
-    const fc = React.forwardRef<ChapterSelectionEditor<W>, UsfmEditorProps>(
+): ForwardRefUsfmEditor<ChapterApiTestEditor<W>> {
+    const fc = React.forwardRef<ChapterApiTestEditor<W>, UsfmEditorProps>(
         ({ ...props }, ref) => (
-            <ChapterSelectionEditor
+            <ChapterApiTestEditor
                 {...props}
                 wrappedEditor={WrappedEditor}
-                ref={ref} // used to access the ChapterSelectionEditor and its API
+                ref={ref} // used to access the ChapterApiTestEditor and its API
             />
         )
     )
-    fc.displayName = (WrappedEditor.displayName ?? "") + "WithChapterSelection"
+    fc.displayName = (WrappedEditor.displayName ?? "") + "withChapterApiTest"
     return fc
 }
 
-class ChapterSelectionEditor<W extends UsfmEditorRef>
-    extends React.Component<HocUsfmEditorProps<W>, ChapterSelectionEditorState>
+class ChapterApiTestEditor<W extends UsfmEditorRef>
+    extends React.Component<HocUsfmEditorProps<W>, ChapterApiTestEditorState>
     implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes
     public static defaultProps = usfmEditorDefaultProps
@@ -128,7 +128,7 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
     }
 }
 
-type ChapterSelectionEditorState = {
+type ChapterApiTestEditorState = {
     selectedVerse?: VerseRange
     goToVersePropValue?: VerseWithTimeMs
 }

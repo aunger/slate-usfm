@@ -6,7 +6,7 @@ import { OutputUsfm } from "./UsfmContainer"
 import "./demo.css"
 import { flowRight } from "lodash"
 import { withChapterPaging } from "../components/ChapterEditor"
-import { withChapterSelection } from "./ChapterSelectionEditor"
+import { withChapterApiTest } from "./ChapterApiTestEditor"
 import { ForwardRefUsfmEditor, UsfmEditorRef } from ".."
 
 /**
@@ -34,7 +34,7 @@ export class ChapterEditorDemo extends React.Component<
 
     // This editor can be given a ref of type UsfmEditorRef
     Editor: ForwardRefUsfmEditor<UsfmEditorRef> = flowRight(
-        withChapterSelection,
+        withChapterApiTest,
         withChapterPaging,
         createBasicUsfmEditor
     )()
