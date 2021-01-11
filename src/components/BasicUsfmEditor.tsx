@@ -80,7 +80,7 @@ export class BasicUsfmEditor
 
     /* UsfmEditor interface functions */
 
-    getMarksAtCursor: () => string[] = () => {
+    getMarksAtCursor = (): string[] => {
         if (!this.slateEditor.selection) return []
         const record = Editor.marks(this.slateEditor)
         if (!record) return []
@@ -90,17 +90,17 @@ export class BasicUsfmEditor
         return markArray
     }
 
-    addMarkAtCursor: (mark: string) => void = (mark) => {
+    addMarkAtCursor = (mark: string): void => {
         if (!this.slateEditor.selection) return
         Editor.addMark(this.slateEditor, mark, true)
     }
 
-    removeMarkAtCursor: (mark: string) => void = (mark) => {
+    removeMarkAtCursor = (mark: string): void => {
         if (!this.slateEditor.selection) return
         Editor.removeMark(this.slateEditor, mark)
     }
 
-    getParagraphTypesAtCursor: () => string[] = () => {
+    getParagraphTypesAtCursor = (): string[] => {
         if (!this.slateEditor.selection) return []
         let types: string[] = []
         for (const entry of Editor.nodes(this.slateEditor)) {
@@ -112,7 +112,7 @@ export class BasicUsfmEditor
         return types
     }
 
-    setParagraphTypeAtCursor: (marker: string) => void = (marker) => {
+    setParagraphTypeAtCursor = (marker: string): void => {
         if (!this.slateEditor.selection) return
         Transforms.setNodes(
             this.slateEditor,

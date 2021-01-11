@@ -57,21 +57,22 @@ export class ChapterEditor<W extends UsfmEditorRef>
 
     /* UsfmEditor API */
 
-    getMarksAtCursor = () => this.wrappedEditorInstance().getMarksAtCursor()
+    getMarksAtCursor = (): string[] =>
+        this.wrappedEditorInstance().getMarksAtCursor()
 
-    addMarkAtCursor = (mark: string) =>
+    addMarkAtCursor = (mark: string): void =>
         this.wrappedEditorInstance().addMarkAtCursor(mark)
 
-    removeMarkAtCursor = (mark: string) =>
+    removeMarkAtCursor = (mark: string): void =>
         this.wrappedEditorInstance().removeMarkAtCursor(mark)
 
-    getParagraphTypesAtCursor = () =>
+    getParagraphTypesAtCursor = (): string[] =>
         this.wrappedEditorInstance().getParagraphTypesAtCursor()
 
-    setParagraphTypeAtCursor = (marker: string) =>
+    setParagraphTypeAtCursor = (marker: string): void =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
-    goToVerse = (verseObject: Verse) => {
+    goToVerse = (verseObject: Verse): void => {
         const chapterUsfm = getSingleChapterAndBookHeaders(
             this.wholeBookUsfm,
             verseObject.chapter
@@ -117,7 +118,7 @@ export class ChapterEditor<W extends UsfmEditorRef>
         }
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <this.props.wrappedEditor
                 {...this.props}
