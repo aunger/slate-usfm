@@ -48,21 +48,22 @@ class ChapterApiTestEditor<W extends UsfmEditorRef>
 
     /* UsfmEditor API */
 
-    getMarksAtCursor = () => this.wrappedEditorInstance().getMarksAtCursor()
+    getMarksAtCursor = (): string[] =>
+        this.wrappedEditorInstance().getMarksAtCursor()
 
-    addMarkAtCursor = (mark: string) =>
+    addMarkAtCursor = (mark: string): void =>
         this.wrappedEditorInstance().addMarkAtCursor(mark)
 
-    removeMarkAtCursor = (mark: string) =>
+    removeMarkAtCursor = (mark: string): void =>
         this.wrappedEditorInstance().removeMarkAtCursor(mark)
 
-    getParagraphTypesAtCursor = () =>
+    getParagraphTypesAtCursor = (): string[] =>
         this.wrappedEditorInstance().getParagraphTypesAtCursor()
 
-    setParagraphTypeAtCursor = (marker: string) =>
+    setParagraphTypeAtCursor = (marker: string): void =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
 
-    goToVerse = (verseObject: Verse) =>
+    goToVerse = (verseObject: Verse): void =>
         this.wrappedEditorInstance().goToVerse(verseObject)
 
     /* End UsfmEditor API */
@@ -102,7 +103,7 @@ class ChapterApiTestEditor<W extends UsfmEditorRef>
         })
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <React.Fragment>
                 <VerseSelector
