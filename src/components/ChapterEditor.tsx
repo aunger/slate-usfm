@@ -80,9 +80,6 @@ export class ChapterEditor<W extends UsfmEditorRef>
             key: Date.now(),
         }
 
-        // Provided that the wrapped editor's key is set to the chapterUsfmString,
-        // we could alternatively call the wrapped editor's goToVerse() function,
-        // in a callback of setState().
         this.setState({
             chapterUsfmString: chapterUsfm,
             goToVersePropValue: goToVersePropValue,
@@ -124,7 +121,6 @@ export class ChapterEditor<W extends UsfmEditorRef>
                 onChange={this.handleEditorChange}
                 usfmString={this.state.chapterUsfmString}
                 goToVerse={this.state.goToVersePropValue}
-                key={this.state.chapterUsfmString}
             />
         )
     }
