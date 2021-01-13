@@ -6,7 +6,6 @@ import {
     usfmEditorPropTypes,
     usfmEditorDefaultProps,
     Verse,
-    VerseWithTimeMs,
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { UsfmEditorProps } from ".."
@@ -69,7 +68,7 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
             goToVersePropValue: {
                 chapter: verseObject.chapter,
                 verse: verseObject.verse,
-                timeMs: Date.now(),
+                key: Date.now(),
             },
         })
     }
@@ -84,7 +83,7 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
                 goToVersePropValue: {
                     chapter: chapter,
                     verse: verse,
-                    timeMs: Date.now(),
+                    key: Date.now(),
                 },
             })
         }
@@ -119,7 +118,7 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
 }
 
 type ChapterSelectionEditorState = {
-    goToVersePropValue: VerseWithTimeMs
+    goToVersePropValue: Verse
 }
 
 const VerseSelector: React.FC<VerseSelectorProps> = ({
@@ -173,5 +172,5 @@ const allowOnlyNumbers = (event: React.KeyboardEvent<HTMLInputElement>) => {
     }
 }
 
-const verseObjectToString = (verseObject: Verse | VerseWithTimeMs): string =>
+const verseObjectToString = (verseObject: Verse): string =>
     verseObject.chapter.toString().concat(verseObject.verse.toString())

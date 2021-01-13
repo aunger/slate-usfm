@@ -7,7 +7,6 @@ import {
     usfmEditorDefaultProps,
     Verse,
     VerseRange,
-    VerseWithTimeMs,
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { UsfmEditorProps } from ".."
@@ -87,7 +86,7 @@ class ChapterApiTestEditor<W extends UsfmEditorRef>
                 goToVersePropValue: {
                     chapter: chapter,
                     verse: verse,
-                    timeMs: Date.now(),
+                    key: Date.now(),
                 },
             })
         }
@@ -131,7 +130,7 @@ class ChapterApiTestEditor<W extends UsfmEditorRef>
 
 type ChapterApiTestEditorState = {
     selectedVerse?: VerseRange
-    goToVersePropValue?: VerseWithTimeMs
+    goToVersePropValue?: Verse
 }
 
 const VerseSelector: React.FC<VerseSelectorProps> = ({

@@ -6,7 +6,6 @@ import {
     usfmEditorPropTypes,
     usfmEditorDefaultProps,
     Verse,
-    VerseWithTimeMs,
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { UsfmEditorProps } from ".."
@@ -75,10 +74,10 @@ export class ChapterEditor<W extends UsfmEditorRef>
             this.wholeBookUsfm,
             verseObject.chapter
         )
-        const goToVersePropValue: VerseWithTimeMs = {
+        const goToVersePropValue: Verse = {
             chapter: verseObject.chapter,
             verse: verseObject.verse,
-            timeMs: Date.now(),
+            key: Date.now(),
         }
 
         // Provided that the wrapped editor's key is set to the chapterUsfmString,
@@ -133,7 +132,7 @@ export class ChapterEditor<W extends UsfmEditorRef>
 
 type ChapterEditorState = {
     chapterUsfmString: string
-    goToVersePropValue?: VerseWithTimeMs
+    goToVersePropValue?: Verse
 }
 
 function getSingleChapterAndBookHeaders(
