@@ -83,9 +83,9 @@ export class ChapterEditor<W extends UsfmEditorRef>
             timeMs: Date.now(),
         }
 
-        // Do not call the wrappedEditor's goToVerse() API function. If we do this,
-        // the wrapped editor will not have rendered the new usfm before
-        // it tries to set the selection to the proper verse.
+        // Provided that the wrapped editor's key is set to the chapterUsfmString,
+        // we could alternatively call the wrapped editor's goToVerse() function,
+        // in a callback of setState().
         this.setState({
             chapterUsfmString: chapterUsfm,
             goToVersePropValue: goToVersePropValue,
@@ -127,7 +127,7 @@ export class ChapterEditor<W extends UsfmEditorRef>
                 onChange={this.handleEditorChange}
                 usfmString={this.state.chapterUsfmString}
                 goToVerse={this.state.goToVersePropValue}
-                key={this.state.goToVersePropValue?.timeMs}
+                key={this.state.chapterUsfmString}
             />
         )
     }
