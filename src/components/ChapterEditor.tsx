@@ -43,9 +43,7 @@ export class ChapterEditor<W extends UsfmEditorRef>
         this.wholeBookUsfm = props.usfmString
         this.state = {
             chapterUsfmString: props.usfmString,
-            // Do not immediately pass goToVerse to the wrapped editor.
-            // We will handle this top-down and pass it later.
-            goToVersePropValue: undefined,
+            goToVersePropValue: props.goToVerse,
         }
     }
 

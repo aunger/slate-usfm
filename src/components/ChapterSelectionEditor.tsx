@@ -72,7 +72,6 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
                 timeMs: Date.now(),
             },
         })
-        this.wrappedEditorInstance().goToVerse(verseObject)
     }
 
     /* End UsfmEditor API */
