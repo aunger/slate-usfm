@@ -65,6 +65,7 @@ export class BasicUsfmEditor
         this.state = {
             value: usfmToSlate(props.usfmString),
             selectedVerse: undefined,
+            prevUsfmStringProp: props.usfmString,
         }
 
         this.slateEditor = flowRight(
@@ -76,6 +77,23 @@ export class BasicUsfmEditor
             createEditor
         )()
         this.slateEditor.isInline = () => false
+    }
+
+    // Since usfmString and goToVerse can be updated at the same time, we need to calculate the new
+    // value before the editor renders. Once it renders, we can proceed.
+    static getDerivedStateFromProps(
+        props: UsfmEditorProps,
+        state: BasicUsfmEditorState
+    ): BasicUsfmEditorState {
+        const newValue =
+            state.prevUsfmStringProp != props.usfmString
+                ? usfmToSlate(props.usfmString)
+                : state.value
+        return {
+            value: newValue,
+            selectedVerse: state.selectedVerse,
+            prevUsfmStringProp: props.usfmString,
+        }
     }
 
     /* UsfmEditor interface functions */
@@ -231,6 +249,18 @@ export class BasicUsfmEditor
         }
     }
 
+    updateIdentificationFromUsfm = (): void => {
+        const parsedIdentification = parseIdentificationFromUsfm(
+            this.props.usfmString
+        )
+        const validParsed = this.filterAndNormalize(parsedIdentification)
+
+        MyTransforms.setIdentification(this.slateEditor, validParsed)
+        if (this.props.onIdentificationChange) {
+            this.props.onIdentificationChange(validParsed)
+        }
+    }
+
     updateIdentificationFromUsfmAndProp = (): void => {
         const parsedIdentification = parseIdentificationFromUsfm(
             this.props.usfmString
@@ -305,10 +335,19 @@ export class BasicUsfmEditor
     }
 
     componentDidUpdate(prevProps: UsfmEditorProps): void {
-        if (prevProps.usfmString != this.props.usfmString) {
+        if (
+            prevProps.usfmString != this.props.usfmString &&
+            prevProps.identification != this.props.identification
+        ) {
             this.updateIdentificationFromUsfmAndProp()
         } else if (prevProps.identification != this.props.identification) {
             this.updateIdentificationFromProp()
+        } else if (prevProps.usfmString != this.props.usfmString) {
+            this.updateIdentificationFromUsfm()
+        }
+
+        if (prevProps.usfmString != this.props.usfmString) {
+            Transforms.deselect(this.slateEditor)
         }
 
         if (!isEqual(prevProps.goToVerse, this.props.goToVerse)) {
@@ -317,6 +356,12 @@ export class BasicUsfmEditor
     }
 
     render(): JSX.Element {
+        if (
+            this.slateEditor.selection &&
+            isInvalidRange(this.slateEditor.selection, this.state.value)
+        ) {
+            Transforms.deselect(this.slateEditor)
+        }
         return (
             <Slate
                 editor={this.slateEditor}
@@ -340,6 +385,7 @@ export class BasicUsfmEditor
 interface BasicUsfmEditorState {
     value: Node[]
     selectedVerse?: Verse
+    prevUsfmStringProp: string
 }
 
 interface VerseStartAndEnd {
@@ -354,4 +400,14 @@ function getVerseStartAndEnd(verseNumOrRange: string): VerseStartAndEnd {
     const verseStart = parseInt(startVerseStr)
     const verseEnd = parseInt(endVerseStrOrNull) || verseStart
     return { verseStart, verseEnd }
+}
+
+function isInvalidRange(range: Range, nodes: Node[]): boolean {
+    const anchorPath = range.anchor.path
+    const focusPath = range.focus.path
+    return (
+        nodes.length <= Math.min(anchorPath[0], focusPath[0]) ||
+        !Node.has(nodes[anchorPath[0]], anchorPath.slice(1)) ||
+        !Node.has(nodes[focusPath[0]], focusPath.slice(1))
+    )
 }
