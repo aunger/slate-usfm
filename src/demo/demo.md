@@ -7,6 +7,7 @@ const usfmStrings = new Map([
 \\c 1
 \\p
 \\v 1 the first verse
+\\v 2 the second verse
 \\s section
 `,
     ],
@@ -34,6 +35,7 @@ and Jacob,
 \\p Front 1
 \\v 1 the first verse
 \\v 2 the second verse
+\\v 3 the third verse
 \\c 2
 \\p Front 2
 \\v 1 the first verse

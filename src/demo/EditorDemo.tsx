@@ -7,7 +7,7 @@ import { OptionCheckbox } from "./OptionCheckbox"
 import { InputUsfm, OutputUsfm } from "./UsfmContainer"
 import { IdentificationSetter } from "./IdentificationSetter"
 import "./demo.css"
-import { IdentificationHeaders } from "../UsfmEditor"
+import { IdentificationHeaders, Verse } from "../UsfmEditor"
 
 export class EditorDemo extends React.Component<
     EditorDemoProps,
@@ -15,14 +15,14 @@ export class EditorDemo extends React.Component<
 > {
     constructor(props: EditorDemoProps) {
         super(props)
-        // Get the first usfm string in the dropdown menu
-        const initialUsfm = props.usfmStrings.values().next().value
+        const initialUsfm = props.usfmStrings.get("usfmString2") as string
         this.state = {
             usfmInput: initialUsfm,
             usfmOutput: transformToOutput(initialUsfm),
             showInputUsfm: false,
             readOnly: false,
             identification: {},
+            goToVerse: { chapter: 1, verse: 3 },
         }
     }
 
@@ -42,6 +42,15 @@ export class EditorDemo extends React.Component<
     onIdentificationChange = (id: string | IdentificationHeaders): void => {
         const identification = typeof id == "string" ? JSON.parse(id) : id
         this.setState({ identification })
+    }
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.setState({
+                usfmInput: this.props.usfmStrings.get("small") as string,
+                goToVerse: { chapter: 1, verse: 2, key: Date.now() },
+            })
+        }, 4000)
     }
 
     // This editor can be given a ref of type UsfmEditorRef
@@ -90,11 +99,11 @@ export class EditorDemo extends React.Component<
                         <h2>Editor</h2>
                         <this.Editor
                             usfmString={this.state.usfmInput}
-                            key={this.state.usfmInput}
                             onChange={this.handleEditorChange}
                             readOnly={this.state.readOnly}
                             identification={this.state.identification}
                             onIdentificationChange={this.onIdentificationChange}
+                            goToVerse={this.state.goToVerse}
                         />
                     </div>
                     <div className="column column-right">
@@ -122,4 +131,5 @@ type EditorDemoState = {
     showInputUsfm: boolean
     readOnly: boolean
     identification: IdentificationHeaders
+    goToVerse: Verse
 }
