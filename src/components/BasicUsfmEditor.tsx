@@ -356,6 +356,8 @@ export class BasicUsfmEditor
     }
 
     render(): JSX.Element {
+        // The selection may be invalid if the slate value is updated by an external source,
+        // e.g. when the usfmString property just changed.
         if (
             this.slateEditor.selection &&
             isInvalidRange(this.slateEditor.selection, this.state.value)
