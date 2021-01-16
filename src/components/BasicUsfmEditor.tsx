@@ -84,14 +84,10 @@ export class BasicUsfmEditor
     static getDerivedStateFromProps(
         props: UsfmEditorProps,
         state: BasicUsfmEditorState
-    ): BasicUsfmEditorState {
-        const newValue =
-            state.prevUsfmStringProp != props.usfmString
-                ? usfmToSlate(props.usfmString)
-                : state.value
+    ): BasicUsfmEditorState | null {
+        if (state.prevUsfmStringProp == props.usfmString) return null
         return {
-            value: newValue,
-            selectedVerse: state.selectedVerse,
+            value: usfmToSlate(props.usfmString),
             prevUsfmStringProp: props.usfmString,
         }
     }
