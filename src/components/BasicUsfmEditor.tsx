@@ -36,7 +36,6 @@ import {
 } from "../UsfmEditor"
 import NodeRules from "../utils/NodeRules"
 import { UsfmMarkers } from "../utils/UsfmMarkers"
-import { HoveringToolbar } from "./HoveringToolbar"
 import { isTypedNode } from "../utils/TypedNode"
 import NodeTypes from "../utils/NodeTypes"
 
@@ -409,7 +408,6 @@ export class BasicUsfmEditor
                 value={this.state.value}
                 onChange={this.handleChange}
             >
-                <HoveringToolbar usfmEditor={this} />
                 <Editable
                     readOnly={this.props.readOnly}
                     renderElement={renderElementByType}
