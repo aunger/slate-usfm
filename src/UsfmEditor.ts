@@ -7,8 +7,10 @@ export interface UsfmEditorRef {
     getMarksAtCursor: () => string[]
     addMarkAtCursor: (mark: string) => void
     removeMarkAtCursor: (mark: string) => void
+    toggleMarkAtCursor: (mark: string) => void
     getParagraphTypesAtCursor: () => string[]
     setParagraphTypeAtCursor: (marker: string) => void
+    toggleParagraphTypeAtCursor: (marker: string) => void
     goToVerse: (verseObject: Verse) => void
 }
 
