@@ -18,6 +18,10 @@ module.exports = {
                 loader: "source-map-loader",
                 enforce: "pre",
             },
+            {
+                test: /\.svg$/,
+                use: ["@svgr/webpack", "url-loader"],
+            },
         ],
     },
     optimization: {
