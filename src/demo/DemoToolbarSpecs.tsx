@@ -1,6 +1,5 @@
 import FormatItalicButton from "@material-ui/icons/FormatItalic"
 import { UsfmMarkers } from "../utils/UsfmMarkers"
-import { UsfmEditorRef } from ".."
 import { ToolbarSpecs } from "../components/UsfmToolbar"
 
 export const DemoToolbarSpecs: ToolbarSpecs = {
@@ -10,7 +9,7 @@ export const DemoToolbarSpecs: ToolbarSpecs = {
         actionSpec: {
             buttonType: "BlockButton",
             usfmMarker: UsfmMarkers.TITLES_HEADINGS_LABELS.s,
-            additionalAction: (ref: UsfmEditorRef) =>
+            additionalAction: () =>
                 console.log("Section header button pressed!"),
         },
     },

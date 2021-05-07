@@ -19,6 +19,7 @@ export const UsfmToolbar: React.FC<UsfmToolbarProps> = ({
             {Object.keys(toolbarSpecs).map(function (text) {
                 return (
                     <ToolbarButton
+                        key={text}
                         buttonSpec={toolbarSpecs[text]}
                         editor={editor}
                         buttonLabel={text}
