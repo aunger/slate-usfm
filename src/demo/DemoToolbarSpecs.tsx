@@ -1,4 +1,5 @@
 import FormatItalicButton from "@material-ui/icons/FormatItalic"
+import { ReactComponent as AppleLogo } from "./apple-logo.svg"
 import { UsfmMarkers } from "../utils/UsfmMarkers"
 import { ToolbarSpecs } from "../components/UsfmToolbar"
 
@@ -14,7 +15,7 @@ export const DemoToolbarSpecs: ToolbarSpecs = {
         },
     },
     "Quoted Book Title": {
-        icon: "BK",
+        icon: AppleLogo,
         cssClass: "bk-toolbar-button",
         actionSpec: {
             buttonType: "MarkButton",
