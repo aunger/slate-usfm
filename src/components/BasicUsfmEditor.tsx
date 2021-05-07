@@ -131,6 +131,11 @@ export class BasicUsfmEditor
             const node = entry[0]
             if (isTypedNode(node) && UsfmMarkers.isParagraphType(node)) {
                 types = types.concat(node.type)
+            } else if (
+                isTypedNode(node) &&
+                node.type == NodeTypes.INLINE_CONTAINER
+            ) {
+                types = types.concat("")
             }
         }
         return types

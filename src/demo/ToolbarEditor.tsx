@@ -1,6 +1,4 @@
 import * as React from "react"
-import { cx, css } from "emotion"
-import { UsfmMarkers } from "../utils/UsfmMarkers"
 import {
     UsfmEditorRef,
     ForwardRefUsfmEditor,
@@ -10,9 +8,8 @@ import {
     Verse,
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
-import { MarkButton } from "../components/menu/MarkButton"
-import { BlockButton } from "../components/menu/BlockButton"
 import { UsfmEditorProps } from ".."
+import { UsfmToolbar } from "../components/UsfmToolbar"
 
 export function withToolbar<W extends UsfmEditorRef>(
     WrappedEditor: ForwardRefUsfmEditor<W>
@@ -67,9 +64,14 @@ class ToolbarEditor<W extends UsfmEditorRef>
     goToVerse = (verse: Verse) => this.wrappedEditorInstance().goToVerse(verse)
 
     render() {
+        if (!this.props.toolbarSpecs)
+            console.warn("Toolbar specs not supplied to ToolbarEditor!")
         return (
             <React.Fragment>
-                <UsfmToolbar editor={this} />
+                <UsfmToolbar
+                    toolbarSpecs={this.props.toolbarSpecs || {}}
+                    editor={this}
+                />
                 <this.props.wrappedEditor
                     {...this.props}
                     ref={this.wrappedEditorRef}
@@ -78,85 +80,3 @@ class ToolbarEditor<W extends UsfmEditorRef>
         )
     }
 }
-
-type UsfmToolbarProps = {
-    className?: string
-    editor: UsfmEditorRef
-}
-
-const UsfmToolbar: React.FC<UsfmToolbarProps> = ({
-    editor,
-    className,
-}: UsfmToolbarProps) => {
-    return (
-        <Toolbar className={className}>
-            <MarkButton
-                mark={UsfmMarkers.SPECIAL_TEXT.nd}
-                text="nd"
-                editor={editor}
-            />
-            <MarkButton
-                mark={UsfmMarkers.SPECIAL_TEXT.bk}
-                text="bk"
-                editor={editor}
-            />
-            <BlockButton
-                marker={UsfmMarkers.TITLES_HEADINGS_LABELS.s}
-                text="S"
-                editor={editor}
-            />
-        </Toolbar>
-    )
-}
-UsfmToolbar.defaultProps = { className: "" }
-
-type ToolbarProps = {
-    className?: string
-    children: JSX.Element[]
-}
-
-const Toolbar = React.forwardRef(
-    ({ className, ...props }: ToolbarProps, ref: React.Ref<HTMLDivElement>) => (
-        <Menu
-            {...props}
-            ref={ref}
-            className={cx(
-                className,
-                css`
-                    position: relative;
-                    padding: 1px 18px 17px;
-                    margin: 0 -20px;
-                    border-bottom: 2px solid #eee;
-                    margin-bottom: 20px;
-                    background-color: blue;
-                `
-            )}
-        />
-    )
-)
-Toolbar.displayName = "Toolbar"
-
-type MenuProps = {
-    className: string
-}
-
-export const Menu = React.forwardRef(
-    ({ className, ...props }: MenuProps, ref: React.Ref<HTMLDivElement>) => (
-        <div
-            {...props}
-            ref={ref}
-            className={cx(
-                className,
-                css`
-                    & > * {
-                        display: inline-block;
-                    }
-                    & > * + * {
-                        margin-left: 15px;
-                    }
-                `
-            )}
-        />
-    )
-)
-Menu.displayName = "Menu"

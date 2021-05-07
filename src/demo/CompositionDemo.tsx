@@ -7,6 +7,7 @@ import "./demo.css"
 import { flowRight } from "lodash"
 import { withToolbar } from "./ToolbarEditor"
 import { ForwardRefUsfmEditor, UsfmEditorRef } from ".."
+import { DemoToolbarSpecs } from "./DemoToolbarSpecs"
 
 /**
  * This CompositionDemo implements a simple toolbar HOC wrapper (which itself implements
@@ -46,6 +47,7 @@ export class CompositionDemo extends React.Component<
                     <h2>Editor</h2>
                     <this.Editor
                         usfmString={this.state.usfmInput}
+                        toolbarSpecs={DemoToolbarSpecs}
                         key={this.state.usfmInput}
                         onChange={this.handleEditorChange}
                     />

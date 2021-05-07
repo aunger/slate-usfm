@@ -1,5 +1,6 @@
 import { noop } from "lodash"
 import PropTypes from "prop-types"
+import { ToolbarSpecs } from "./components/UsfmToolbar"
 
 export type IdentificationHeaders = Record<string, string | string[] | null>
 
@@ -22,6 +23,7 @@ export interface UsfmEditorProps {
     onIdentificationChange?: (identification: IdentificationHeaders) => void
     goToVerse?: Verse
     onVerseChange?: (verseRange: VerseRange) => void
+    toolbarSpecs?: ToolbarSpecs
 }
 
 export const usfmEditorPropTypes = {
@@ -32,6 +34,7 @@ export const usfmEditorPropTypes = {
     onIdentificationChange: PropTypes.func,
     goToVerse: PropTypes.object,
     onVerseChange: PropTypes.func,
+    toolbarSpecs: PropTypes.object,
 }
 
 export const usfmEditorDefaultProps: Partial<UsfmEditorProps> = {
@@ -41,6 +44,7 @@ export const usfmEditorDefaultProps: Partial<UsfmEditorProps> = {
     onIdentificationChange: noop,
     goToVerse: undefined,
     onVerseChange: undefined,
+    toolbarSpecs: {},
 }
 
 export type Verse = {
