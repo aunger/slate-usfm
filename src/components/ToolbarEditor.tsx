@@ -9,7 +9,7 @@ import {
 } from "../UsfmEditor"
 import { NoopUsfmEditor } from "../NoopUsfmEditor"
 import { UsfmEditorProps } from ".."
-import { UsfmToolbar } from "../components/UsfmToolbar"
+import { UsfmToolbar } from "./UsfmToolbar"
 
 export function withToolbar<W extends UsfmEditorRef>(
     WrappedEditor: ForwardRefUsfmEditor<W>
@@ -27,7 +27,7 @@ export function withToolbar<W extends UsfmEditorRef>(
     return fc
 }
 
-export class ToolbarEditor<W extends UsfmEditorRef>
+class ToolbarEditor<W extends UsfmEditorRef>
     extends React.Component<HocUsfmEditorProps<W>>
     implements UsfmEditorRef {
     public static propTypes = usfmEditorPropTypes
