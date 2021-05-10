@@ -7,7 +7,7 @@ export const DemoToolbarSpecs: ToolbarSpecs = {
         icon: "S",
         cssClass: "s-toolbar-button",
         actionSpec: {
-            buttonType: "BlockButton",
+            buttonType: "ParagraphButton",
             usfmMarker: UsfmMarkers.TITLES_HEADINGS_LABELS.s,
             additionalAction: () =>
                 console.log("Section header button pressed!"),

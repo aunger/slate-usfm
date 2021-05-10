@@ -55,7 +55,7 @@ export interface ToolbarButtonSpec {
     actionSpec: ActionSpec
 }
 
-export type ActionSpec = MarkButtonSpec | BlockButtonSpec | ActionButtonSpec
+export type ActionSpec = MarkButtonSpec | ParagraphButtonSpec | ActionButtonSpec
 
 /**
  * Defines a toolbar button that toggles a non-paragraph usfm marker.
@@ -71,8 +71,8 @@ export interface MarkButtonSpec {
  * Defines a toolbar button that toggles a paragraph usfm marker
  * additionalAction() defines a custom action to be performed after the toggle.
  */
-export interface BlockButtonSpec {
-    buttonType: "BlockButton"
+export interface ParagraphButtonSpec {
+    buttonType: "ParagraphButton"
     usfmMarker: string
     additionalAction?: (editor: UsfmEditorRef) => void
 }
