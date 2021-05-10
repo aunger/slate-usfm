@@ -119,13 +119,12 @@ export class BasicUsfmEditor
         let types: string[] = []
         for (const entry of Editor.nodes(this.slateEditor)) {
             const node = entry[0]
-            if (isTypedNode(node) && UsfmMarkers.isParagraphType(node)) {
-                types = types.concat(node.type)
-            } else if (
+            if (
                 isTypedNode(node) &&
-                node.type == NodeTypes.INLINE_CONTAINER
+                (UsfmMarkers.isParagraphType(node) ||
+                    node.type == NodeTypes.INLINE_CONTAINER)
             ) {
-                types = types.concat("")
+                types = types.concat(node.type)
             }
         }
         return types
