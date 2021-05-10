@@ -114,15 +114,6 @@ export class BasicUsfmEditor
         Editor.removeMark(this.slateEditor, mark)
     }
 
-    toggleMarkAtCursor = (mark: string): void => {
-        const isActive = this.isMarkActive(mark)
-        if (isActive) {
-            this.removeMarkAtCursor(mark)
-        } else {
-            this.addMarkAtCursor(mark)
-        }
-    }
-
     getParagraphTypesAtCursor = (): string[] => {
         if (!this.slateEditor.selection) return []
         let types: string[] = []
@@ -147,24 +138,6 @@ export class BasicUsfmEditor
             { type: marker },
             { match: NodeRules.isFormattableBlockType }
         )
-    }
-
-    toggleParagraphTypeAtCursor = (marker: string): void => {
-        const isActive = this.isBlockActive(marker)
-        if (isActive) {
-            if (
-                MyEditor.isNearbyBlockAnEmptyInlineContainer(
-                    this.slateEditor,
-                    "previous"
-                )
-            ) {
-                this.setParagraphTypeAtCursor(NodeTypes.INLINE_CONTAINER)
-            } else {
-                this.setParagraphTypeAtCursor(UsfmMarkers.PARAGRAPHS.p)
-            }
-        } else {
-            this.setParagraphTypeAtCursor(marker)
-        }
     }
 
     goToVerse = (verseObject?: Verse): void => {
@@ -201,16 +174,6 @@ export class BasicUsfmEditor
     }
 
     /* BasicUsfmEditor functions */
-
-    isMarkActive: (mark: string) => boolean = (mark) => {
-        const marks = this.getMarksAtCursor()
-        return marks.includes(mark)
-    }
-
-    isBlockActive: (marker: string) => boolean = (marker) => {
-        const types = this.getParagraphTypesAtCursor()
-        return types.includes(marker)
-    }
 
     handleChange: (value: Node[]) => void = (value) => {
         console.debug("after change", value)

@@ -60,9 +60,6 @@ export class ChapterEditor<W extends UsfmEditorRef>
     addMarkAtCursor = (mark: string): void =>
         this.wrappedEditorInstance().addMarkAtCursor(mark)
 
-    toggleMarkAtCursor = (mark: string): void =>
-        this.wrappedEditorInstance().toggleMarkAtCursor(mark)
-
     removeMarkAtCursor = (mark: string): void =>
         this.wrappedEditorInstance().removeMarkAtCursor(mark)
 
@@ -71,9 +68,6 @@ export class ChapterEditor<W extends UsfmEditorRef>
 
     setParagraphTypeAtCursor = (marker: string): void =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
-
-    toggleParagraphTypeAtCursor = (marker: string): void =>
-        this.wrappedEditorInstance().toggleParagraphTypeAtCursor(marker)
 
     goToVerse = (verseObject: Verse): void => {
         const chapterUsfm = getSingleChapterAndBookHeaders(

@@ -49,17 +49,11 @@ class ToolbarEditor<W extends UsfmEditorRef>
     removeMarkAtCursor = (mark: string) =>
         this.wrappedEditorInstance().removeMarkAtCursor(mark)
 
-    toggleMarkAtCursor = (mark: string): void =>
-        this.wrappedEditorInstance().toggleMarkAtCursor(mark)
-
     getParagraphTypesAtCursor = () =>
         this.wrappedEditorInstance().getParagraphTypesAtCursor()
 
     setParagraphTypeAtCursor = (marker: string) =>
         this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
-
-    toggleParagraphTypeAtCursor = (marker: string): void =>
-        this.wrappedEditorInstance().toggleParagraphTypeAtCursor(marker)
 
     goToVerse = (verse: Verse) => this.wrappedEditorInstance().goToVerse(verse)
 
