@@ -48,7 +48,6 @@
         "slate": "0.58.4",
         "slate-hyperscript": "0.58.4",
         "slate-react": "0.58.4",
-        "url-loader": "4.1.1",
         "usfm-js": "2.0.1"
     },
     "peerDependencies": {
