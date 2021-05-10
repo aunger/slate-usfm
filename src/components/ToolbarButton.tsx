@@ -2,6 +2,7 @@ import * as React from "react"
 import { Button, Icon, Tooltip } from "@material-ui/core"
 import { UsfmEditorRef } from ".."
 import { ActionSpec, ToolbarButtonSpec } from "./UsfmToolbar"
+import { UsfmMarkers } from "../utils/UsfmMarkers"
 
 export const ToolbarButton: React.FC<ToolbarButtonProps> = ({
     editor,
@@ -68,13 +69,31 @@ const onClick = (
             actionSpec.action(editor)
             return
         case "MarkButton":
-            editor.toggleMarkAtCursor(actionSpec.usfmMarker)
+            toggleMarkAtCursor(editor, actionSpec.usfmMarker)
             if (actionSpec.additionalAction) actionSpec.additionalAction(editor)
             return
         case "BlockButton":
-            editor.toggleParagraphTypeAtCursor(actionSpec.usfmMarker)
+            toggleParagraphTypeAtCursor(editor, actionSpec.usfmMarker)
             if (actionSpec.additionalAction) actionSpec.additionalAction(editor)
             return
+    }
+}
+
+const toggleMarkAtCursor = (editor: UsfmEditorRef, mark: string) => {
+    const isActive = isMarkActive(editor, mark)
+    if (isActive) {
+        editor.removeMarkAtCursor(mark)
+    } else {
+        editor.addMarkAtCursor(mark)
+    }
+}
+
+const toggleParagraphTypeAtCursor = (editor: UsfmEditorRef, marker: string) => {
+    const isActive = isBlockActive(editor, marker)
+    if (isActive) {
+        editor.setParagraphTypeAtCursor(UsfmMarkers.PARAGRAPHS.p)
+    } else {
+        editor.setParagraphTypeAtCursor(marker)
     }
 }
 
