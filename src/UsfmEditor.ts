@@ -5,7 +5,7 @@ import { ToolbarSpecs } from "./components/UsfmToolbar"
 export type IdentificationHeaders = Record<string, string | string[] | null>
 
 export interface UsfmEditorRef {
-    getMarksAtCursor: () => string[]
+    getMarksAtSelection: () => string[]
     addMarkAtSelection: (mark: string) => void
     removeMarkAtSelection: (mark: string) => void
     getParagraphTypesAtSelection: () => string[]

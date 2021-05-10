@@ -1,9 +1,9 @@
 import { UsfmEditorRef } from "./UsfmEditor"
 
 export class NoopUsfmEditor implements UsfmEditorRef {
-    getMarksAtCursor = (): string[] => {
+    getMarksAtSelection = (): string[] => {
         console.debug(
-            "Editor not initialized before getMarksAtCursor called. " +
+            "Editor not initialized before getMarksAtSelection called. " +
                 "This does not necessarily indicate an error."
         )
         return []

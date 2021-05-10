@@ -41,7 +41,7 @@ class ToolbarEditor<W extends UsfmEditorRef>
     wrappedEditorInstance: () => UsfmEditorRef = () =>
         this.wrappedEditorRef.current ?? new NoopUsfmEditor()
 
-    getMarksAtCursor = () => this.wrappedEditorInstance().getMarksAtCursor()
+    getMarksAtSelection = () => this.wrappedEditorInstance().getMarksAtSelection()
 
     addMarkAtSelection = (mark: string) =>
         this.wrappedEditorInstance().addMarkAtSelection(mark)

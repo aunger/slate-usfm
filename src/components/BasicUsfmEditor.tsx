@@ -94,7 +94,7 @@ export class BasicUsfmEditor
 
     /* UsfmEditor interface functions */
 
-    getMarksAtCursor = (): string[] => {
+    getMarksAtSelection = (): string[] => {
         if (!this.slateEditor.selection) return []
         const record = Editor.marks(this.slateEditor)
         if (!record) return []

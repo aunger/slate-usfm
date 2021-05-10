@@ -48,8 +48,8 @@ class ChapterSelectionEditor<W extends UsfmEditorRef>
 
     /* UsfmEditor API */
 
-    getMarksAtCursor = (): string[] =>
-        this.wrappedEditorInstance().getMarksAtCursor()
+    getMarksAtSelection = (): string[] =>
+        this.wrappedEditorInstance().getMarksAtSelection()
 
     addMarkAtSelection = (mark: string): void =>
         this.wrappedEditorInstance().addMarkAtSelection(mark)

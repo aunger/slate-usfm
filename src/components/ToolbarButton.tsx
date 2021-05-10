@@ -98,7 +98,7 @@ const toggleParagraphTypeAtCursor = (editor: UsfmEditorRef, marker: string) => {
 }
 
 const isMarkActive = (editor: UsfmEditorRef, mark: string) => {
-    const marks = editor.getMarksAtCursor()
+    const marks = editor.getMarksAtSelection()
     return marks.includes(mark)
 }
 
