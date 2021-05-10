@@ -50,17 +50,17 @@ class ChapterApiTestEditor<W extends UsfmEditorRef>
     getMarksAtCursor = (): string[] =>
         this.wrappedEditorInstance().getMarksAtCursor()
 
-    addMarkAtCursor = (mark: string): void =>
-        this.wrappedEditorInstance().addMarkAtCursor(mark)
+    addMarkAtSelection = (mark: string): void =>
+        this.wrappedEditorInstance().addMarkAtSelection(mark)
 
-    removeMarkAtCursor = (mark: string): void =>
-        this.wrappedEditorInstance().removeMarkAtCursor(mark)
+    removeMarkAtSelection = (mark: string): void =>
+        this.wrappedEditorInstance().removeMarkAtSelection(mark)
 
-    getParagraphTypesAtCursor = (): string[] =>
-        this.wrappedEditorInstance().getParagraphTypesAtCursor()
+    getParagraphTypesAtSelection = (): string[] =>
+        this.wrappedEditorInstance().getParagraphTypesAtSelection()
 
-    setParagraphTypeAtCursor = (marker: string): void =>
-        this.wrappedEditorInstance().setParagraphTypeAtCursor(marker)
+    setParagraphTypeAtSelection = (marker: string): void =>
+        this.wrappedEditorInstance().setParagraphTypeAtSelection(marker)
 
     goToVerse = (verseObject: Verse): void =>
         this.wrappedEditorInstance().goToVerse(verseObject)

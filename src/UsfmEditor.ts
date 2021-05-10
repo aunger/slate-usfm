@@ -6,10 +6,10 @@ export type IdentificationHeaders = Record<string, string | string[] | null>
 
 export interface UsfmEditorRef {
     getMarksAtCursor: () => string[]
-    addMarkAtCursor: (mark: string) => void
-    removeMarkAtCursor: (mark: string) => void
-    getParagraphTypesAtCursor: () => string[]
-    setParagraphTypeAtCursor: (marker: string) => void
+    addMarkAtSelection: (mark: string) => void
+    removeMarkAtSelection: (mark: string) => void
+    getParagraphTypesAtSelection: () => string[]
+    setParagraphTypeAtSelection: (marker: string) => void
     goToVerse: (verseObject: Verse) => void
 }
 

@@ -104,17 +104,17 @@ export class BasicUsfmEditor
         return markArray
     }
 
-    addMarkAtCursor = (mark: string): void => {
+    addMarkAtSelection = (mark: string): void => {
         if (!this.slateEditor.selection) return
         Editor.addMark(this.slateEditor, mark, true)
     }
 
-    removeMarkAtCursor = (mark: string): void => {
+    removeMarkAtSelection = (mark: string): void => {
         if (!this.slateEditor.selection) return
         Editor.removeMark(this.slateEditor, mark)
     }
 
-    getParagraphTypesAtCursor = (): string[] => {
+    getParagraphTypesAtSelection = (): string[] => {
         if (!this.slateEditor.selection) return []
         let types: string[] = []
         for (const entry of Editor.nodes(this.slateEditor)) {
@@ -131,7 +131,7 @@ export class BasicUsfmEditor
         return types
     }
 
-    setParagraphTypeAtCursor = (marker: string): void => {
+    setParagraphTypeAtSelection = (marker: string): void => {
         if (!this.slateEditor.selection) return
         Transforms.setNodes(
             this.slateEditor,

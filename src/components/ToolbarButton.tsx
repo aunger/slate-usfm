@@ -43,7 +43,7 @@ interface ToolbarButtonProps {
 const isDisabled = (actionSpec: ActionSpec, editor: UsfmEditorRef): boolean => {
     return (
         actionSpec.buttonType == "BlockButton" &&
-        editor.getParagraphTypesAtCursor().length > 1
+        editor.getParagraphTypesAtSelection().length > 1
     )
 }
 
@@ -82,18 +82,18 @@ const onClick = (
 const toggleMarkAtCursor = (editor: UsfmEditorRef, mark: string) => {
     const isActive = isMarkActive(editor, mark)
     if (isActive) {
-        editor.removeMarkAtCursor(mark)
+        editor.removeMarkAtSelection(mark)
     } else {
-        editor.addMarkAtCursor(mark)
+        editor.addMarkAtSelection(mark)
     }
 }
 
 const toggleParagraphTypeAtCursor = (editor: UsfmEditorRef, marker: string) => {
     const isActive = isBlockActive(editor, marker)
     if (isActive) {
-        editor.setParagraphTypeAtCursor(UsfmMarkers.PARAGRAPHS.p)
+        editor.setParagraphTypeAtSelection(UsfmMarkers.PARAGRAPHS.p)
     } else {
-        editor.setParagraphTypeAtCursor(marker)
+        editor.setParagraphTypeAtSelection(marker)
     }
 }
 
@@ -103,6 +103,6 @@ const isMarkActive = (editor: UsfmEditorRef, mark: string) => {
 }
 
 const isBlockActive = (editor: UsfmEditorRef, marker: string) => {
-    const types = editor.getParagraphTypesAtCursor()
+    const types = editor.getParagraphTypesAtSelection()
     return types.includes(marker)
 }
