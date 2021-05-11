@@ -46,6 +46,7 @@ hr.usfm-editor-hr {
 }
 
 .usfm-editor {
+    overflow-y: scroll;
 } /* Override font, bg color, etc. */
 
 .usfm-editor-chapter {
@@ -148,4 +149,18 @@ the last child. */
 
 .toolbar-button-inactive .toolbar-icon {
     fill: rgb(204, 204, 204);
+}
+
+.fixed-size {
+    display: flex;
+    flex-flow: column;
+}
+
+.fixed-size ::-webkit-scrollbar {
+    width: 10px;
+}
+
+.fixed-size ::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
 }

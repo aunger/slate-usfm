@@ -22,6 +22,8 @@ export interface UsfmEditorProps {
     goToVerse?: Verse
     onVerseChange?: (verseRange: VerseRange) => void
     toolbarSpecs?: ToolbarSpecs
+    height?: string | number
+    width?: string | number
 }
 
 export const usfmEditorPropTypes = {
@@ -33,6 +35,8 @@ export const usfmEditorPropTypes = {
     goToVerse: PropTypes.object,
     onVerseChange: PropTypes.func,
     toolbarSpecs: PropTypes.object,
+    height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export const usfmEditorDefaultProps: Partial<UsfmEditorProps> = {
@@ -43,6 +47,8 @@ export const usfmEditorDefaultProps: Partial<UsfmEditorProps> = {
     goToVerse: undefined,
     onVerseChange: undefined,
     toolbarSpecs: {},
+    height: "100%",
+    width: "100%",
 }
 
 export type Verse = {
