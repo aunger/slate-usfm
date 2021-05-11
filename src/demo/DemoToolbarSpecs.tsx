@@ -9,7 +9,7 @@ export const DemoToolbarSpecs: ToolbarSpecs = {
         actionSpec: {
             buttonType: "ParagraphButton",
             usfmMarker: UsfmMarkers.TITLES_HEADINGS_LABELS.s,
-            additionalAction: () =>
+            additionalAction: (): void =>
                 console.log("Section header button pressed!"),
         },
     },
