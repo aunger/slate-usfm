@@ -12,7 +12,9 @@ export class NoopUsfmEditor implements UsfmEditorRef {
         console.error("Editor not initialized before addMarkAtSelection called")
     }
     removeMarkAtSelection = (): void => {
-        console.error("Editor not initialized before removeMarkAtSelection called")
+        console.error(
+            "Editor not initialized before removeMarkAtSelection called"
+        )
     }
     getParagraphTypesAtSelection = (): string[] => {
         console.debug(

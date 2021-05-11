@@ -1,4 +1,4 @@
- This ToolbarDemo demonstrates the functionality of the basic ToolbarEditor, which is constructed by wrapping a BasicUsfmEditor inside a ToolbarEditor, following the [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)).
+This ToolbarDemo demonstrates the functionality of the basic ToolbarEditor, which is constructed by wrapping a BasicUsfmEditor inside a ToolbarEditor, following the [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)).
 
 ```js
 const usfmString = `

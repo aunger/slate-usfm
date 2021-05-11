@@ -135,7 +135,7 @@ the last child. */
 }
 
 .toolbar-button-inactive {
-    color: rgb(204, 204, 204)
+    color: rgb(204, 204, 204);
 }
 
 .toolbar-button:hover {
@@ -143,9 +143,9 @@ the last child. */
 }
 
 .toolbar-button-active .toolbar-icon {
-    fill: black
+    fill: black;
 }
 
 .toolbar-button-inactive .toolbar-icon {
-    fill: rgb(204, 204, 204)
+    fill: rgb(204, 204, 204);
 }

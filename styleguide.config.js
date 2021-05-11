@@ -24,7 +24,7 @@ module.exports = {
         },
         {
             name: "Toolbar test",
-            content: "src/demo/toolbar-editor-demo.md"
+            content: "src/demo/toolbar-editor-demo.md",
         },
         {
             name: "Composition test",
