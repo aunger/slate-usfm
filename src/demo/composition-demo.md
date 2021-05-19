@@ -1,4 +1,4 @@
-This CompositionDemo implements a simple toolbar HOC wrapper (which itself implements the UsfmEditor interface, following the [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)). It then wraps a basic editor with the toolbar wrapper, and then wraps all that inside another toolbar wrapper instance. So, we can see two toolbars, and each of them works upon the basic editor. Finally, the entire composition is wrapped with a fixed size wrapper, which defines the height and width of the combined toolbars and editor. This demo demonstrates the modularity and composability of the component architecture.
+This CompositionDemo implements a simple toolbar HOC wrapper (which itself implements the UsfmEditor interface, following the [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern)). It then wraps a basic editor with the toolbar wrapper, and then wraps all that inside another toolbar wrapper instance. So, we can see two toolbars, and each of them works upon the basic editor. This demonstrates the modularity and composability of the component architecture.
 
 ```js
 const usfmString = `
