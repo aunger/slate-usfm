@@ -7,7 +7,15 @@ import { OptionCheckbox } from "./OptionCheckbox"
 import { InputUsfm, OutputUsfm } from "./UsfmContainer"
 import { IdentificationSetter } from "./IdentificationSetter"
 import "./demo.css"
-import { IdentificationHeaders } from "../UsfmEditor"
+import {
+    ForwardRefUsfmEditor,
+    IdentificationHeaders,
+    UsfmEditorRef,
+} from "../UsfmEditor"
+import { flowRight } from "lodash"
+import { withChapterApiTest } from "./ChapterApiTestEditor"
+import { withChapterSelection } from "../components/ChapterSelectionEditor"
+import { withChapterPaging } from "../components/ChapterEditor"
 
 export class EditorDemo extends React.Component<
     EditorDemoProps,
@@ -46,7 +54,12 @@ export class EditorDemo extends React.Component<
 
     // This editor can be given a ref of type UsfmEditorRef
     // to have access to the editor API (use React.createRef<UsfmEditorRef>)
-    Editor = createBasicUsfmEditor()
+    Editor: ForwardRefUsfmEditor<UsfmEditorRef> = flowRight(
+        withChapterApiTest,
+        withChapterSelection,
+        withChapterPaging,
+        createBasicUsfmEditor
+    )()
 
     render(): React.ReactElement {
         return (
@@ -89,6 +102,7 @@ export class EditorDemo extends React.Component<
                         />
                         <h2>Editor</h2>
                         <this.Editor
+                            goToVerse={{ chapter: 11, verse: 2 }}
                             usfmString={this.state.usfmInput}
                             key={this.state.usfmInput}
                             onChange={this.handleEditorChange}
